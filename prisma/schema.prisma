@@ -14,4 +14,8 @@ model Product {
   price       Float
   createdAt   DateTime @default(now())
   imageUrl    String
+  slug        String @unique
+  gender      String
+  category    String
+  colors      Int
 }

@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
+import CartDrawer from "./CartDrawer"
 
 const logoImage = "/images/logo.png";
 
@@ -25,6 +27,7 @@ const navLinks = [
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [collectionOpen, setCollectionOpen] = useState(false);
+  const { cart } = useCart();
 
   const handleMobileLinkClick = () => {
     setIsOpen(false);
@@ -32,7 +35,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-[#154733] text-white px-6 py-4">
+    <nav className="bg-[#154733] text-white px-6 py-2">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
@@ -49,60 +52,70 @@ const Navbar: React.FC = () => {
         </Link>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex gap-8 uppercase text-sm tracking-wider relative">
-          {navLinks.map((link) => (
-            <React.Fragment key={link.label}>
-              {link.label === "COLLECTIONS" ? (
-                <li className="relative">
-                  <button
-                    onClick={() => setCollectionOpen((prev) => !prev)}
-                    className="flex items-center gap-1 hover:underline"
-                  >
-                    {link.label}
-                    <ChevronDown
-                      size={14}
-                      className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
+        <div className="hidden md:flex items-center gap-8 uppercase text-sm tracking-wider">
+          <ul className="flex gap-8">
+            {navLinks.map((link) => (
+              <React.Fragment key={link.label}>
+                {link.label === "COLLECTIONS" ? (
+                  <li className="relative">
+                    <button
+                      onClick={() => setCollectionOpen((prev) => !prev)}
+                      className="flex items-center gap-1 hover:underline"
+                    >
+                      {link.label}
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
 
-                  <AnimatePresence>
-                    {collectionOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -5 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 bg-white text-black text-sm mt-2 rounded shadow-lg z-50 min-w-[220px] overflow-hidden"
-                      >
-                        {collections.map((col) => (
-                          <Link
-                            key={col.label}
-                            href={col.href}
-                            className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
-                            onClick={() => setCollectionOpen(false)}
-                          >
-                            {col.label}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-              ) : (
-                <li>
-                  <Link href={link.href} className="hover:underline">
-                    {link.label}
-                  </Link>
-                </li>
-              )}
-            </React.Fragment>
-          ))}
-        </ul>
+                    <AnimatePresence>
+                      {collectionOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full left-0 bg-white text-black text-sm mt-2 rounded shadow-lg z-50 min-w-[220px] overflow-hidden"
+                        >
+                          {collections.map((col) => (
+                            <Link
+                              key={col.label}
+                              href={col.href}
+                              className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                              onClick={() => setCollectionOpen(false)}
+                            >
+                              {col.label}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                ) : (
+                  <li>
+                    <Link href={link.href} className="hover:underline">
+                      {link.label}
+                    </Link>
+                  </li>
+                )}
+              </React.Fragment>
+            ))}
+          </ul>
 
-        {/* Mobile Menu Icon */}
-        <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          {/* Panier Desktop */}
+          <CartDrawer />
+        </div>
+
+        {/* Mobile Icons */}
+        <div className="flex items-center gap-4 md:hidden">
+          {/* Panier Mobile */}
+          <CartDrawer />
+          {/* Menu Mobile */}
+          <button onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -128,9 +141,7 @@ const Navbar: React.FC = () => {
                           {link.label}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${
-                              collectionOpen ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
                           />
                         </button>
                       </li>

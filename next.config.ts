@@ -3,18 +3,12 @@ import type { NextConfig } from 'next';
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'dtcralphlauren.scene7.com',
-        pathname: '/**',
-      },
-    ],
-  },
   eslint: {
     ignoreDuringBuilds: true,
-  }
+  },
+  images: {
+    domains: ['mugpnlsqeqbojnzrfnjf.supabase.co'],
+  },
 };
 
 export default nextConfig;
