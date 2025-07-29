@@ -35,16 +35,16 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-[#154733] text-white px-6 py-2">
+    <nav className="bg-neutral-800 w-11/12 max-w-3xl left-1/2 -translate-x-1/2 fixed top-2 z-10 text-white px-6 rounded-xl">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
-          <div className="w-20 h-auto">
+          <div className="w-12 sm:w-14 h-auto">
             <Image
               src={logoImage}
               alt="FYSU Logo"
-              width={80}
-              height={80}
+              width={60}
+              height={60}
               priority
               className="w-full h-auto object-contain"
             />
@@ -122,13 +122,19 @@ const Navbar: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden mt-4"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            className="md:hidden mt-4 rounded-xl bg-neutral-800 overflow-hidden"
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <ul className="flex flex-col gap-4 uppercase text-sm tracking-wider">
+            <motion.ul
+              className="flex flex-col gap-4 uppercase text-sm tracking-wider px-4 py-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.3, duration: 0.2 }}
+            >
               {navLinks.map((link) => (
                 <React.Fragment key={link.label}>
                   {link.label === "COLLECTIONS" ? (
@@ -181,7 +187,7 @@ const Navbar: React.FC = () => {
                   )}
                 </React.Fragment>
               ))}
-            </ul>
+            </motion.ul>
           </motion.div>
         )}
       </AnimatePresence>

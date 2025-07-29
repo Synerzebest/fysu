@@ -115,7 +115,7 @@ export default function ProductForm() {
   });  
 
   return (
-    <div className="w-[98%] max-w-3xl mx-auto flex flex-col items-center p-8 my-4 rounded-lg shadow-[0px_0px_3px_0px_rgba(100,_100,_111,_0.2)]">
+    <div className="relative top-24 w-[98%] max-w-3xl mx-auto flex flex-col items-center p-8 my-4 rounded-lg shadow-[0px_0px_3px_0px_rgba(100,_100,_111,_0.2)]">
       <p className="text-2xl text-gray-800 mb-4">Ajouter un produit</p>
       <Form layout="vertical" onFinish={handleSubmit} className="w-full">
         <Form.Item label="Nom" required>

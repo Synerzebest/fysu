@@ -63,10 +63,10 @@ export default function ProductClient() {
   if (!product) return notFound()
 
   return (
-    <div className="px-4 sm:px-8 py-12 max-w-6xl mx-auto">
+    <div className="px-4 sm:px-8 py-12 max-w-6xl mx-auto relative top-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         {/* IMAGES */}
-        <div className="h-[80vh] overflow-y-auto flex flex-col gap-6 pr-2">
+        <div className="h-[60vh] sm:h-[70vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6 pr-2">
           <div className="relative w-full aspect-[3/4] bg-neutral-100 rounded-3xl overflow-hidden shadow-sm">
             <img
               src={product.imageUrl}
