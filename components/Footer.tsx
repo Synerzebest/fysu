@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#154733] text-white px-6 py-10 text-sm md:text-base">
+    <footer className="bg-[#154733] text-white px-6 py-10 text-sm md:text-base mt-36">
       {/* Email Signup */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>

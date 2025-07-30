@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react"
 import { ProductType } from "@/types/product"
+import toast from "react-hot-toast"
 
 type CartItem = ProductType & { quantity: number }
 
@@ -16,7 +17,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([])
 
-  const addToCart = (product: ProductType) => {
+  const addToCart = (product: ProductType) => {  
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id)
       if (existing) {
@@ -26,7 +27,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
       return [...prev, { ...product, quantity: 1 }]
     })
+  
+    // toast après le rendu
+    toast.success(`${product.name} ajouté au panier`)
   }
+  
 
   const removeFromCart = (productId: number) => {
     setCart((prev) => prev.filter((item) => item.id !== productId))

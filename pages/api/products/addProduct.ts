@@ -1,16 +1,17 @@
+// /pages/api/products/addProduct.ts
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from '@/lib/prisma'
+import { supabase } from '@/lib/supabaseClient'
 
-// Fonction utilitaire pour transformer un nom en slug
+// Fonction pour slugifier un nom
 function slugify(text: string) {
   return text
     .toString()
-    .normalize('NFD') // remove accents
+    .normalize('NFD') // accents
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-') // remplace tout par des -
-    .replace(/^-+|-+$/g, '')     // supprime les - en début/fin
+    .replace(/^-+|-+$/g, '')     // retire les - en début/fin
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -25,33 +26,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // 1. Générer un slug de base
+    // Slug unique
     let baseSlug = slugify(name)
     let slug = baseSlug
     let counter = 1
 
-    // 2. Vérifier l’unicité
-    while (await prisma.product.findUnique({ where: { slug } })) {
+    // Vérifie si le slug existe déjà
+    while (true) {
+      const { data: existing, error } = await supabase
+        .from('products')
+        .select('id')
+        .eq('slug', slug)
+        .single()
+
+      if (error) break // pas trouvé = slug dispo
       slug = `${baseSlug}-${counter++}`
     }
 
-    // 3. Création du produit avec le slug
-    const product = await prisma.product.create({
-      data: {
-        name,
-        description,
-        price: parseFloat(price),
-        imageUrl,
-        slug,
-        gender,
-        category,
-        colors
-      },
-    })
+    const { data, error: insertError } = await supabase
+  .from('products')
+  .insert({
+    name,
+    description,
+    price: parseFloat(price),
+    imageUrl,
+    slug,
+    gender,
+    category,
+    colors: parseInt(colors),
+  })
+  .select()
+  .single()
 
-    return res.status(201).json(product)
+
+    if (insertError) {
+      console.error('Erreur ajout produit :', insertError)
+      return res.status(500).json({ error: 'Erreur insertion' })
+    }
+
+    return res.status(201).json(data)
   } catch (error) {
-    console.error('Erreur ajout produit :', error)
-    return res.status(500).json({ error: 'Internal Server Error' })
+    console.error('Erreur inconnue :', error)
+    return res.status(500).json({ error: 'Erreur serveur' })
   }
 }

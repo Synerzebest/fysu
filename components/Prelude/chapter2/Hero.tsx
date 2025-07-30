@@ -20,10 +20,10 @@ const HeroChapter2: React.FC = () => {
       {/* Overlay text */}
       <div className="absolute inset-0 bg-black/10 flex items-center justify-center px-4">
         <div className="text-center text-white space-y-4">
-          <h1 className="text-3xl md:text-5xl font-serif tracking-wide">
+          <h1 className="text-3xl md:text-5xl font-cinzel m-[0] tracking-wide">
             THE PRELUDE
           </h1>
-          <h2 className="text-2xl md:text-4xl font-serif tracking-wider">
+          <h2 className="text-2xl md:text-4xl font-cinzel m-[0] tracking-wider">
             CHAPTER II
           </h2>
         </div>

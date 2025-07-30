@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-neutral-800 w-11/12 max-w-3xl left-1/2 -translate-x-1/2 fixed top-2 z-10 text-white px-6 rounded-xl">
+    <nav className="bg-neutral-800/60 backdrop-blur-md w-11/12 max-w-3xl left-1/2 -translate-x-1/2 fixed top-2 z-10 text-white px-6 rounded-xl">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
@@ -76,13 +76,13 @@ const Navbar: React.FC = () => {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -5 }}
                           transition={{ duration: 0.2 }}
-                          className="absolute top-full left-0 bg-white text-black text-sm mt-2 rounded shadow-lg z-50 min-w-[220px] overflow-hidden"
+                          className="absolute top-8 left-0 bg-neutral-800/60 backdrop-blur-md text-white text-sm mt-2 rounded shadow-lg z-50 min-w-[220px] overflow-hidden"
                         >
                           {collections.map((col) => (
                             <Link
                               key={col.label}
                               href={col.href}
-                              className="block px-4 py-2 hover:bg-gray-100 whitespace-nowrap"
+                              className="block px-4 py-2 hover:bg-neutral-900/60 duration-300 whitespace-nowrap"
                               onClick={() => setCollectionOpen(false)}
                             >
                               {col.label}
@@ -122,14 +122,14 @@ const Navbar: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden mt-4 rounded-xl bg-neutral-800 overflow-hidden"
+            className="md:hidden mt-4 overflow-hidden text-white rounded-xl bg-transparent"
             initial={{ height: 0 }}
             animate={{ height: "auto" }}
             exit={{ height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             <motion.ul
-              className="flex flex-col gap-4 uppercase text-sm tracking-wider px-4 py-4"
+              className="flex flex-col gap-4 uppercase text-sm tracking-wider px-4 py-4 bg-transparent"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -142,7 +142,7 @@ const Navbar: React.FC = () => {
                       <li>
                         <button
                           onClick={() => setCollectionOpen(!collectionOpen)}
-                          className="flex items-center justify-between w-full py-2 border-b border-white/20"
+                          className="flex items-center justify-between w-full py-2 border-b border-white/20 bg-transparent"
                         >
                           {link.label}
                           <ChevronDown
@@ -157,14 +157,14 @@ const Navbar: React.FC = () => {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="pl-4 space-y-2 text-xs"
+                            className="pl-4 space-y-2 text-xs bg-transparent"
                           >
                             {collections.map((col) => (
                               <li key={col.label}>
                                 <Link
                                   href={col.href}
                                   onClick={handleMobileLinkClick}
-                                  className="block py-1 border-b border-white/10"
+                                  className="block py-1 border-b border-white/10 bg-transparent"
                                 >
                                   {col.label}
                                 </Link>
@@ -179,7 +179,7 @@ const Navbar: React.FC = () => {
                       <Link
                         href={link.href}
                         onClick={handleMobileLinkClick}
-                        className="block py-2 border-b border-white/20"
+                        className="block py-2 border-b border-white/20 bg-transparent"
                       >
                         {link.label}
                       </Link>
@@ -191,6 +191,7 @@ const Navbar: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
     </nav>
   );
 };

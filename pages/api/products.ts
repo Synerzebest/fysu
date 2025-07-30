@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Méthode non autorisée' })
   }
 
-  const { data, error } = await supabase.from('Product').select('*')
+  const { data, error } = await supabase.from('products').select('*')
 
   if (error) {
     console.error('Erreur Supabase:', error)

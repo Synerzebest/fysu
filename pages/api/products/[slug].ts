@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (typeof slug !== 'string') return res.status(400).json({ error: 'Invalid slug' })
 
   const { data: product, error } = await supabase
-    .from('Product')
+    .from('products')
     .select('*')
     .eq('slug', slug)
     .single()

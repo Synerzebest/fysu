@@ -104,7 +104,7 @@ export default function ProductForm() {
       setFormState({ name: '', description: '', price: 0, imageUrl: '', gender: '', category: '', colors: 0 });
       setFile(null);
     } else {
-      message.error("Erreur lors de l'ajout du produit.");
+      toast.error("Erreur lors de l'ajout du produit.");
     }
 
     setLoading(false);

@@ -31,7 +31,7 @@ export default function ProductClient() {
 
   if (loading) {
     return (
-      <div className="px-4 sm:px-8 py-12 max-w-6xl mx-auto animate-pulse">
+      <div className="px-4 sm:px-8 py-12 max-w-6xl mx-auto animate-pulse relative top-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
           {/* Skeleton image */}
           <div className="h-[80vh] overflow-y-auto flex flex-col gap-6 pr-2">
