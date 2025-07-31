@@ -5,9 +5,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
 import ReactDOM from "react-dom"
+import { Plus, Minus} from "lucide-react";
 
 export default function CartDrawer() {
-  const { cart, removeFromCart } = useCart()
+  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart()
   const [isOpen, setIsOpen] = useState(false)
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
@@ -51,7 +52,7 @@ export default function CartDrawer() {
             className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-[101] shadow-lg p-6 flex flex-col"
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-black">Mon panier</h2>
+              <h2 className="text-xl font-semibold text-black font-sans">Mon panier</h2>
               <button className="text-black cursor-pointer" onClick={() => setIsOpen(false)}>
                 <X size={22} />
               </button>
@@ -62,44 +63,65 @@ export default function CartDrawer() {
                 <p className="text-neutral-500">Votre panier est vide.</p>
               ) : (
                 cart.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 border-b pb-2">
-                    <div className="relative w-16 h-20 bg-neutral-100 rounded overflow-hidden shrink-0">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        className="object-contain"
-                        sizes="64px"
-                      />
+                    <div key={item.id} className="flex items-center justify-between gap-4 border-b pb-2">
+                      {/* Image + Infos */}
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-16 h-20 bg-neutral-100 rounded overflow-hidden shrink-0">
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.name}
+                            fill
+                            className="object-contain"
+                            sizes="64px"
+                          />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-medium text-sm text-gray-700 font-sans">{item.name}</p>
+                          <p className="text-xs text-gray-500 mt-1 font-sans">€{(item.price * item.quantity).toFixed(2)}</p>
+                        </div>
+                      </div>
+                  
+                      {/* Actions */}
+                      <div className="flex gap-4">
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => decreaseQuantity(item.id)}
+                            className="p-[3px] bg-gray-100 rounded-full text-gray-600 cursor-pointer hover:bg-gray-200 text-sm duration-300"
+                          >
+                            <Minus size={16} />
+                          </button>
+                          <span className="text-sm font-sans">{item.quantity}</span>
+                          <button
+                            onClick={() => increaseQuantity(item.id)}
+                            className="p-[3px] rounded-full bg-gray-100 text-gray-600 text-sm cursor-pointer hover:bg-gray-200 duration-300"
+                          >
+                            <Plus size={16} />
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="cursor-pointer text-gray-400 hover:text-gray-600 "
+                          aria-label={`Supprimer ${item.name}`}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm text-gray-500">{item.name}</p>
-                      <p className="text-xs text-gray-500">
-                        {item.quantity} × €{item.price.toFixed(2)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="cursor-pointer text-gray-400"
-                      aria-label={`Supprimer ${item.name}`}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
                 ))
+                  
               )}
             </div>
 
             {cart.length > 0 && (
               <div className="pt-4 border-t mt-4 space-y-3">
-                <div className="flex justify-between text-sm font-medium text-black">
+                <div className="flex justify-between text-sm font-medium text-black font-sans">
                   <span>Total</span>
                   <span>€{total.toFixed(2)}</span>
                 </div>
                 <Link
-                  href="/cart"
+                  href="/checkout"
                   onClick={() => setIsOpen(false)}
-                  className="block text-center bg-black text-white py-2 rounded-md text-sm font-medium hover:bg-neutral-800 transition"
+                  className="block text-center bg-black text-white py-2 rounded-md text-sm font-medium hover:bg-neutral-800 transition font-sans"
                 >
                   Checkout
                 </Link>

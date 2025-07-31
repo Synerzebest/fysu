@@ -6,17 +6,17 @@ import Product from "../Product";
 import ProductSkeleton from '../ProductSkeleton';
   
 
-const NewIn = () => {
+const CoatsJackets = () => {
   const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchNewInProducts = async () => {
+    const fetchCoatsJacketsProducts = async () => {
       try {
         const res = await fetch('/api/products')
         const data = await res.json()
         console.log(data)
-        const filtered = data.filter((p: ProductType) => p.category === 'new-in')
+        const filtered = data.filter((p: ProductType) => p.category === 'coats-and-jackets')
         setProducts(filtered)
       } catch (err) {
         console.error('Erreur récupération produits :', err)
@@ -25,7 +25,7 @@ const NewIn = () => {
       }
     }
 
-    fetchNewInProducts()
+    fetchCoatsJacketsProducts()
   }, [])
 
   return (
@@ -45,4 +45,4 @@ const NewIn = () => {
   )
 }
 
-export default NewIn
+export default CoatsJackets

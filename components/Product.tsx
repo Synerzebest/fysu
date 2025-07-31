@@ -1,39 +1,50 @@
-import React from "react";
-import Image from "next/image";
-import { CiHeart } from "react-icons/ci";
+import { Heart } from 'lucide-react';
+import Image from 'next/image';
+import Link from "next/link";
+import { ProductType } from "@/types/product"
 
-interface ProductProps {
-  name: string;
-  price: number;
-  imageUrl: string;
-  colors?: number;
-}
 
-const Product: React.FC<ProductProps> = ({ name, price, imageUrl, colors = 1 }) => {
-  return (
-    <div className="relative text-center">
-      <div className="absolute left-2 top-2">
-        <p className="uppercase tracking-wider text-sm">collection name</p>
+const Product = ({ product }: { product: ProductType }) => {
+    return (
+      <div className="relative text-center max-w-[350px]">
+        <div className="absolute left-2 top-2">
+          <p className="uppercase tracking-wide text-sm text-gray-500">{product.category}</p>
+        </div>
+  
+        {/* Bouton like indépendant */}
+        <div
+          className="absolute top-1 right-1 duration-300 cursor-pointer rounded-full p-1 hover:bg-gray-200 z-10"
+          onClick={(e) => {
+            e.stopPropagation()
+            console.log('Liked', product.id)
+          }}
+        >
+          <Heart size={24} strokeWidth={0.75} />
+        </div>
+  
+        {/* Bloc cliquable = image + infos */}
+        <Link href={`/product/${product.slug}`} className="group block">
+          <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100">
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              width={400}
+              height={600}
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <div className="space-y-0.5 mt-2">
+            <p className="text-sm font-semibold uppercase tracking-wide group-hover:underline transition">
+              {product.name}
+            </p>
+            <p className="text-sm font-light">€{product.price}</p>
+            <p className="text-xs text-neutral-500">
+              {product.colors} COLOR{product.colors > 1 ? 'S' : ''}
+            </p>
+          </div>
+        </Link>
       </div>
-      <div className="absolute top-1 right-1 duration-300 cursor-pointer rounded-full p-1 hover:bg-gray-200">
-        <CiHeart size={24} />
-      </div>
-      <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100">
-        <Image
-          src={imageUrl}
-          alt={name}
-          width={400}
-          height={600}
-          className="w-full h-full object-contain"
-        />
-      </div>
-      <div className="space-y-0.5">
-        <p className="text-sm font-semibold uppercase tracking-wide">{name}</p>
-        <p className="text-sm font-light">€{price}</p>
-        <p className="text-xs text-neutral-500">{colors} COLOR{colors > 1 ? "S" : ""}</p>
-      </div>
-    </div>
-  );
-};
+    )
+  }
 
 export default Product;
