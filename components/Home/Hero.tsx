@@ -26,7 +26,6 @@ const HomeHero = () => {
       }
 
       setImages(data || [])
-      console.log(data)
     }
 
     fetchImages()
@@ -44,7 +43,7 @@ const HomeHero = () => {
               className="object-cover object-center"
               priority={index === 0}
             />
-            <div className="absolute inset-0 bg-black/10 flex items-center justify-center px-4">
+            <div className="absolute inset-0 bg-black/10 flex items-end justify-center px-4">
               <div className="text-center text-white space-y-4">
                 {/* <h1 className="text-3xl md:text-5xl font-sans tracking-widest uppercase">
                   Artisanal
@@ -52,7 +51,7 @@ const HomeHero = () => {
                 <h2 className="text-2xl md:text-4xl font-serif tracking-wider">前奏曲</h2>
                 <h2 className="text-2xl md:text-4xl font-serif tracking-wider">第1章</h2> */}
                 <Link href="/collections/prelude/chapter-one">
-                  <button className="rounded-lg uppercase bg-white text-black p-4 border border-white hover:text-white hover:bg-black hover:border-black duration-300 cursor-pointer">
+                  <button className="mb-12 rounded-lg uppercase bg-white text-black p-4 border border-white hover:text-white hover:bg-black hover:border-black duration-300 cursor-pointer">
                     Explore the collection
                   </button>
                 </Link>

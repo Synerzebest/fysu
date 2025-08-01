@@ -3,9 +3,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound } from "lucide-react";
 import Image from "next/image";
-import { useCart } from "@/context/CartContext";
 import CartDrawer from "./CartDrawer"
 
 const logoImage = "/images/logo.png";
@@ -27,7 +26,6 @@ const navLinks = [
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [collectionOpen, setCollectionOpen] = useState(false);
-  const { cart } = useCart();
 
   const handleMobileLinkClick = () => {
     setIsOpen(false);
@@ -105,12 +103,19 @@ const Navbar: React.FC = () => {
 
           {/* Panier Desktop */}
           <CartDrawer />
+
+          <Link href="/profile">
+            <UserRound size={20} />
+          </Link>
         </div>
 
         {/* Mobile Icons */}
         <div className="flex items-center gap-4 md:hidden">
           {/* Panier Mobile */}
           <CartDrawer />
+          <Link href="/profile">
+            <UserRound size={20} />
+          </Link>
           {/* Menu Mobile */}
           <button onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={24} /> : <Menu size={24} />}

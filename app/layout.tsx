@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { CartProvider } from "@/context/CartContext";
+import AuthProvider from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Fysu",
@@ -18,10 +19,12 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-cinzel">
-        <CartProvider>
-          {children}
-        </CartProvider>
+      <body>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </AuthProvider>
         <Toaster />
         
       </body>

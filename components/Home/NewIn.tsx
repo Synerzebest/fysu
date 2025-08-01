@@ -15,7 +15,6 @@ const NewIn = () => {
       try {
         const res = await fetch('/api/products')
         const data = await res.json()
-        console.log(data)
         const filtered = data.filter((p: ProductType) => p.category === 'new-in')
         setProducts(filtered)
       } catch (err) {
