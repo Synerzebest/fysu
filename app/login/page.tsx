@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { motion } from "framer-motion"
-import { FcGoogle } from "react-icons/fc"
 import { Mail, Lock, ArrowRight } from "lucide-react"
 
 export default function LoginPage() {
@@ -84,7 +83,6 @@ export default function LoginPage() {
           onClick={() => signIn("google", { callbackUrl: "/" })}
           className="flex items-center justify-center gap-3 w-full px-4 py-2 text-sm font-semibold text-neutral-800 bg-white border border-neutral-300 rounded-lg shadow hover:shadow-md transition"
         >
-          <FcGoogle size={20} />
           Se connecter avec Google
           <ArrowRight size={16} className="ml-auto text-neutral-400" />
         </motion.button>
