@@ -56,7 +56,7 @@ export default function SuccessPage() {
         >
           <div className="relative w-40 h-56 mx-auto mb-4">
             <Image
-              src={lastProduct.imageUrl}
+              src={lastProduct.product_images?.[0]?.url}
               alt={lastProduct.name}
               fill
               className="object-contain rounded-xl"

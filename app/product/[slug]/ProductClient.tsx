@@ -1,10 +1,10 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { useParams, notFound } from "next/navigation"
 import { useEffect, useState } from "react"
-import { notFound } from "next/navigation"
 import { useCart } from "@/context/CartContext"
 import { ProductType } from "@/types/product"
+import Image from "next/image"
 
 export default function ProductClient() {
   const { slug } = useParams() as { slug: string }
@@ -33,47 +33,76 @@ export default function ProductClient() {
     return (
       <div className="px-4 sm:px-8 py-12 max-w-6xl mx-auto animate-pulse relative top-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          {/* Skeleton image */}
-          <div className="h-[80vh] overflow-y-auto flex flex-col gap-6 pr-2">
-            <div className="w-full aspect-[3/4] bg-neutral-200 rounded-3xl" />
-          </div>
-  
-          {/* Skeleton text */}
+          <div className="h-[70vh] bg-neutral-200 rounded-3xl" />
           <div className="space-y-6 sticky top-24">
-            <div className="space-y-2">
-              <div className="h-8 w-2/3 bg-neutral-200 rounded" />
-              <div className="h-6 w-1/4 bg-neutral-200 rounded" />
-            </div>
-  
-            <div className="space-y-2">
-              <div className="h-4 w-full bg-neutral-200 rounded" />
-              <div className="h-4 w-5/6 bg-neutral-200 rounded" />
-              <div className="h-4 w-3/4 bg-neutral-200 rounded" />
-            </div>
-  
-            <div className="pt-6">
-              <div className="h-12 bg-neutral-300 rounded-full" />
-            </div>
+            <div className="h-8 w-2/3 bg-neutral-200 rounded" />
           </div>
         </div>
       </div>
     )
   }
-  
+
   if (!product) return notFound()
+
+  const mainImage = product.product_images?.[0]?.url
+  const otherImages = product.product_images?.slice(1) || []
 
   return (
     <div className="px-4 sm:px-8 py-12 max-w-6xl mx-auto relative top-12">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         {/* IMAGES */}
-        <div className="h-[60vh] sm:h-[70vh] md:h-[80vh] overflow-y-auto flex flex-col gap-6 pr-2">
-          <div className="relative w-full aspect-[3/4] bg-neutral-100 rounded-3xl overflow-hidden shadow-sm">
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-contain"
-            />
-          </div>
+        <div className="space-y-4">
+          {/* Grande image principale */}
+          {mainImage && (
+            <div className="relative w-full max-h-[70vh] aspect-[3/4] bg-neutral-100 rounded-3xl overflow-hidden shadow-sm">
+              <Image
+                src={mainImage}
+                alt={product.name}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          )}
+
+          {/* Autres images */}
+          {otherImages.length > 0 && (
+            <div>
+              {/* Desktop : grid 2 colonnes */}
+              <div className="hidden sm:grid grid-cols-2 gap-4">
+                {otherImages.map((img) => (
+                  <div
+                    key={img.id}
+                    className="relative aspect-[3/4] bg-neutral-100 rounded-xl overflow-hidden shadow-sm"
+                  >
+                    <Image
+                      src={img.url}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile : stack vertical */}
+              <div className="sm:hidden flex flex-col gap-3">
+                {otherImages.map((img) => (
+                  <div
+                    key={img.id}
+                    className="relative h-40 w-full bg-neutral-100 rounded-xl overflow-hidden shadow-sm"
+                  >
+                    <Image
+                      src={img.url}
+                      alt={product.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* INFOS */}

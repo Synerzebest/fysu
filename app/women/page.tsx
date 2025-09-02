@@ -1,5 +1,6 @@
 import React from 'react';
-import { Navbar, Footer } from "@/components";
+import Navbar from '@/components/Navbar';
+import Footer from "@/components/Footer";
 import HeroForHer from '@/components/Her/Hero';
 import CoatsJackets from '@/components/Her/CoatsJackets';
 

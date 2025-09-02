@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabaseClient' // assure-toi d'avoir ce fichier
+import { supabaseClient } from '@/lib/supabaseClient' // assure-toi d'avoir ce fichier
 import { Carousel } from 'antd'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -15,7 +15,7 @@ const HomeHero = () => {
 
   useEffect(() => {
     const fetchImages = async () => {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('hero_slider')
         .select('image_path')
         .order('order')

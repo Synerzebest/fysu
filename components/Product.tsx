@@ -26,7 +26,7 @@ const Product = ({ product }: { product: ProductType }) => {
         <Link href={`/product/${product.slug}`} className="group block">
           <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100">
             <Image
-              src={product.imageUrl}
+              src={product.product_images?.[0]?.url}
               alt={product.name}
               width={400}
               height={600}

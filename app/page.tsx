@@ -1,4 +1,5 @@
-import { Navbar, Footer } from "@/components";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import HomeHero from "@/components/Home/Hero";
 import SubHero from "@/components/Home/SubHero";
 import NewIn from "@/components/Home/NewIn";

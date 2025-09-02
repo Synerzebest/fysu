@@ -1,5 +1,6 @@
-import { Navbar, Footer } from "@/components"
-import ProductClient from "./ProductClient"
+import Navbar from "@/components/Navbar";
+import Footer from '@/components/Footer';
+import ProductClient from "./ProductClient";
 
 export default function ProductPage() {
   return (

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { Input, Button, Upload, message, Spin } from "antd";
+import { supabaseClient } from "@/lib/supabaseClient";
+import { Button, Upload, message, Spin } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 
 interface HeroImage {
@@ -22,7 +22,7 @@ const HeroSliderDashboard = () => {
 
   const fetchImages = async () => {
     setLoading(true)
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("hero_slider")
       .select("id, image_path, order")
       .order("order")
@@ -36,68 +36,43 @@ const HeroSliderDashboard = () => {
   }
 
   const handleUpload = async (file: File) => {
-    setUploading(true);
-    const fileName = file.name.replace(/\s+/g, "_");
-    const filePath = `hero-slider/${Date.now()}_${fileName}`;
+    const formData = new FormData();
+    formData.append("file", file);
   
-    const { error: uploadError } = await supabase.storage
-      .from("hero-images")
-      .upload(filePath, file);
+    const res = await fetch("/api/admin/hero-images/upload", {
+      method: "POST",
+      body: formData,
+    });
   
-    if (uploadError) {
-      message.error("Erreur lors de l'upload");
-      setUploading(false);
-      return false;
-    }
-  
-    const { data: existingOrders, error: orderError } = await supabase
-      .from("hero_slider")
-      .select("order")
-      .order("order", { ascending: false })
-      .limit(1);
-  
-    const newOrder =
-      !orderError && existingOrders && existingOrders.length > 0
-        ? existingOrders[0].order + 1
-        : 1;
-  
-    const { error: insertError } = await supabase
-      .from("hero_slider")
-      .insert({
-        image_path: filePath,
-        order: newOrder,
-      });
-  
-    if (insertError) {
-      message.error("Image uploadée mais non enregistrée");
-    } else {
+    if (res.ok) {
       message.success("Image ajoutée");
       fetchImages();
+    } else {
+      message.error("Erreur lors de l'upload");
     }
+  };  
+
+  const handleDelete = async (image: HeroImage) => {
+    const res = await fetch("/api/admin/hero-images/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", 
+      },
+      body: JSON.stringify({
+        id: image.id,
+        path: image.image_path,
+      }),
+    });
   
-    setUploading(false);
-    return false;
+    if (res.ok) {
+      message.success("Image supprimée");
+      fetchImages();
+    } else {
+      message.error("Erreur lors de la suppression");
+    }
   };
   
   
-
-  const handleDelete = async (image: HeroImage) => {
-    const { error: storageError } = await supabase.storage
-      .from("hero-images")
-      .remove([image.image_path])
-
-    const { error: dbError } = await supabase
-      .from("hero_slider")
-      .delete()
-      .eq("id", image.id)
-
-    if (storageError || dbError) {
-      message.error("Erreur lors de la suppression")
-    } else {
-      message.success("Image supprimée")
-      fetchImages()
-    }
-  }
 
   return (
     <div className="max-w-3xl mx-auto p-6 relative top-24 pb-48">

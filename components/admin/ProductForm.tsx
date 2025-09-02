@@ -3,24 +3,19 @@
 import { useState } from 'react';
 import { Form, Input, InputNumber, Upload, Button, message, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { supabase } from '@/lib/supabaseClient';
+import { supabaseClient } from '@/lib/supabaseClient';
 import toast from "react-hot-toast";
 
 const { Option } = Select;
 
 export const categories = [
-  // Section "New In" (neutre)
   { value: "new-in", label: "New In" },
-
-  // Section "For Her"
   { value: "coats-and-jackets", label: "Coats and Jackets", sex: "her" },
   { value: "dresses-and-suits", label: "Dresses and Suits", sex: "her" },
   { value: "trousers-and-skirts", label: "Trousers and Skirts", sex: "her" },
   { value: "tops-her", label: "Tops", sex: "her" },
   { value: "shoes-her", label: "Shoes", sex: "her" },
   { value: "accessories-her", label: "Accessories", sex: "her" },
-
-  // Section "For Him"
   { value: "coats", label: "Coats", sex: "him" },
   { value: "jackets", label: "Jackets", sex: "him" },
   { value: "trousers", label: "Trousers", sex: "him" },
@@ -29,20 +24,18 @@ export const categories = [
   { value: "accessories-him", label: "Accessories", sex: "him" },
 ]
 
-
 export default function ProductForm() {
   const [formState, setFormState] = useState({
     name: '',
     description: '',
     price: 0,
-    imageUrl: '',
     gender: '',
     category: '',
     colors: 0
   });
 
-  const [file, setFile] = useState<File | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
@@ -53,56 +46,46 @@ export default function ProductForm() {
   };
 
   const handleFileUpload = (info: any) => {
-    const fileList = info.fileList;
-    const latestFile = fileList[fileList.length - 1];
-
-    if (latestFile?.originFileObj) {
-      setFile(latestFile.originFileObj);
-    } else {
-      setFile(null);
-    }
+    const fileList = info.fileList.map((f: any) => f.originFileObj).filter(Boolean);
+    setFiles(fileList);
   };
 
   const handleSubmit = async () => {
     setLoading(true);
 
-    let imageUrl = '';
+    let imageUrls: string[] = [];
 
-    if (file) {
-      const fileName = `${Date.now()}-${file.name}`;
-      const { error: uploadError } = await supabase.storage
+    for (const f of files) {
+      const fileName = `${Date.now()}-${f.name}`;
+      const { error: uploadError } = await supabaseClient.storage
         .from('products')
-        .upload(fileName, file);
+        .upload(fileName, f);
 
       if (uploadError) {
-        console.error('Erreur upload Supabase:', uploadError);
-        message.error("Erreur lors de l'upload de l'image.");
+        message.error("Erreur lors de l'upload d'une image.");
         setLoading(false);
         return;
       }
 
-      await new Promise((r) => setTimeout(r, 300));
-      const { data: publicUrlData } = supabase.storage.from('products').getPublicUrl(fileName);
+      const { data: publicUrlData } = supabaseClient.storage
+        .from('products')
+        .getPublicUrl(fileName);
 
-      if (!publicUrlData?.publicUrl) {
-        message.error("L'URL publique n'a pas pu être récupérée.");
-        setLoading(false);
-        return;
+      if (publicUrlData?.publicUrl) {
+        imageUrls.push(publicUrlData.publicUrl);
       }
-
-      imageUrl = publicUrlData.publicUrl;
     }
 
     const res = await fetch('/api/products/addProduct', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...formState, imageUrl }),
+      body: JSON.stringify({ ...formState, imageUrls }),
     });
 
     if (res.ok) {
       toast.success('Produit ajouté');
-      setFormState({ name: '', description: '', price: 0, imageUrl: '', gender: '', category: '', colors: 0 });
-      setFile(null);
+      setFormState({ name: '', description: '', price: 0, gender: '', category: '', colors: 0 });
+      setFiles([]);
     } else {
       toast.error("Erreur lors de l'ajout du produit.");
     }
@@ -115,7 +98,7 @@ export default function ProductForm() {
   });  
 
   return (
-    <div className="relative top-24 w-[98%] max-w-3xl mx-auto flex flex-col items-center p-8 my-4 rounded-lg shadow-[0px_0px_3px_0px_rgba(100,_100,_111,_0.2)]">
+    <div className="relative top-24 w-[98%] max-w-8xl mx-auto flex flex-col items-center p-8 my-4 rounded-lg shadow-[0px_0px_3px_0px_rgba(100,_100,_111,_0.2)]">
       <p className="text-2xl text-gray-800 mb-4">Ajouter un produit</p>
       <Form layout="vertical" onFinish={handleSubmit} className="w-full">
         <Form.Item label="Nom" required>
@@ -171,7 +154,7 @@ export default function ProductForm() {
             placeholder="Choisir une catégorie"
             value={formState.category || undefined}
             onChange={(value) => handleSelectChange(value, 'category')}
-            disabled={!formState.gender} // empêche de choisir une catégorie tant que genre pas sélectionné
+            disabled={!formState.gender}
           >
             {filteredCategories.map((cat) => (
               <Option key={cat.value} value={cat.value}>
@@ -181,15 +164,15 @@ export default function ProductForm() {
           </Select>
         </Form.Item>
 
-        <Form.Item label="Image">
+        <Form.Item label="Images">
           <Upload
+            multiple
             beforeUpload={() => false}
-            maxCount={1}
             showUploadList={{ showRemoveIcon: true }}
             onChange={handleFileUpload}
-            onRemove={() => setFile(null)}
+            onRemove={() => setFiles([])}
           >
-            <Button icon={<UploadOutlined />}>Choisir une image</Button>
+            <Button icon={<UploadOutlined />}>Choisir des images</Button>
           </Upload>
         </Form.Item>
 

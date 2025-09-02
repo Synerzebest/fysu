@@ -68,7 +68,7 @@ export default function CartDrawer() {
                       <div className="flex items-center gap-4">
                         <div className="relative w-16 h-20 bg-neutral-100 rounded overflow-hidden shrink-0">
                           <Image
-                            src={item.imageUrl}
+                            src={item.product_images?.[0]?.url}
                             alt={item.name}
                             fill
                             className="object-contain"
