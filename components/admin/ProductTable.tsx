@@ -152,6 +152,14 @@ export default function ProductTable({
                 <Input name="description" defaultValue={editing.description} />
               </div>
               <div>
+                <Label>Détails</Label>
+                <Input name="details" defaultValue={editing.details} />
+              </div>
+              <div>
+                <Label>Size Fit</Label>
+                <Input name="size_fit" defaultValue={editing.size_fit} />
+              </div>
+              <div>
                 <Label>Prix</Label>
                 <Input type="number" name="price" defaultValue={editing.price} />
               </div>

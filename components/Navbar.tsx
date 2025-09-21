@@ -23,122 +23,68 @@ const navLinks = [
   { label: "ABOUT FYSU", href: "/about" },
 ];
 
-const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [collectionOpen, setCollectionOpen] = useState(false);
 
-  const handleMobileLinkClick = () => {
-    setIsOpen(false);
-    setCollectionOpen(false);
-  };
-
+function MobileMenu({
+  isOpen,
+  setIsOpen,
+  collectionOpen,
+  setCollectionOpen,
+  handleMobileLinkClick
+}: {
+  isOpen: boolean
+  setIsOpen: (val: boolean) => void
+  collectionOpen: boolean
+  setCollectionOpen: (val: boolean) => void
+  handleMobileLinkClick: () => void
+}) {
   return (
-    <nav className="z-50 bg-neutral-800/60 backdrop-blur-sm w-11/12 max-w-3xl left-1/2 -translate-x-1/2 fixed top-2 text-white px-6 rounded-xl">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/">
-          <div className="w-12 sm:w-14 h-auto">
-            <Image
-              src={logoImage}
-              alt="FYSU Logo"
-              width={60}
-              height={60}
-              priority
-              className="w-full h-auto object-contain"
-            />
-          </div>
-        </Link>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-8 uppercase text-sm tracking-wider">
-          <ul className="flex gap-8">
-            {navLinks.map((link) => (
-              <React.Fragment key={link.label}>
-                {link.label === "COLLECTIONS" ? (
-                  <li className="relative">
-                    <button
-                      onClick={() => setCollectionOpen((prev) => !prev)}
-                      className="flex items-center gap-1 hover:underline"
-                    >
-                      {link.label}
-                      <ChevronDown
-                        size={14}
-                        className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
-                      />
-                    </button>
-
-                    <AnimatePresence>
-                      {collectionOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-8 left-0 bg-neutral-800/60 backdrop-blur-md text-white text-sm mt-2 rounded shadow-lg z-50 min-w-[220px] overflow-hidden"
-                        >
-                          {collections.map((col) => (
-                            <Link
-                              key={col.label}
-                              href={col.href}
-                              className="block px-4 py-2 hover:bg-neutral-900/60 duration-300 whitespace-nowrap"
-                              onClick={() => setCollectionOpen(false)}
-                            >
-                              {col.label}
-                            </Link>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </li>
-                ) : (
-                  <li>
-                    <Link href={link.href} className="hover:underline">
-                      {link.label}
-                    </Link>
-                  </li>
-                )}
-              </React.Fragment>
-            ))}
-          </ul>
-
-          {/* Panier Desktop */}
-          <CartDrawer />
-
-          <Link href="/profile">
-            <UserRound size={20} />
+    <div className="md:hidden fixed top-2 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-3xl">
+      {/* Barre mobile */}
+      <div className="flex items-center gap-3">
+        <div className="bg-neutral-800/60 backdrop-blur-sm w-[60%] rounded-4xl flex justify-center">
+          <Link href="/">
+            <div className="w-12 sm:w-14 h-auto">
+              <Image
+                src={logoImage}
+                alt="FYSU Logo"
+                width={30}
+                height={30}
+                priority
+                className="w-full h-auto object-contain"
+              />
+            </div>
           </Link>
         </div>
-
-        {/* Mobile Icons */}
-        <div className="flex items-center gap-4 md:hidden">
-          {/* Panier Mobile */}
+        <div className="bg-neutral-800/60 backdrop-blur-sm w-[40%] rounded-4xl flex gap-3 justify-center items-center text-white h-[50px]">
           <CartDrawer />
           <Link href="/profile">
             <UserRound size={20} />
           </Link>
-          {/* Menu Mobile */}
           <button onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Menu déroulant */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden mt-4 overflow-hidden text-white rounded-xl bg-transparent"
+            className="absolute top-full mt-2 w-full overflow-hidden text-white rounded-xl bg-neutral-800/60 backdrop-blur-sm"
             initial={{ height: 0 }}
             animate={{ height: "auto" }}
             exit={{ height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
+            <p className="text-5xl font-bold tracking-tighter text-white px-4 py-4">
+              Menu
+            </p>
             <motion.ul
-              className="flex flex-col gap-4 uppercase text-sm tracking-wider px-4 py-4 bg-transparent"
+              className="flex flex-col gap-4 uppercase text-sm tracking-wider px-4 pb-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ delay: 0.3, duration: 0.2 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
             >
               {navLinks.map((link) => (
                 <React.Fragment key={link.label}>
@@ -147,12 +93,14 @@ const Navbar: React.FC = () => {
                       <li>
                         <button
                           onClick={() => setCollectionOpen(!collectionOpen)}
-                          className="flex items-center justify-between w-full py-2 border-b border-white/20 bg-transparent"
+                          className="flex items-center justify-between w-full py-2 border-b border-white/20"
                         >
                           {link.label}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
+                            className={`transition-transform ${
+                              collectionOpen ? "rotate-180" : ""
+                            }`}
                           />
                         </button>
                       </li>
@@ -162,14 +110,14 @@ const Navbar: React.FC = () => {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="pl-4 space-y-2 text-xs bg-transparent"
+                            className="pl-4 space-y-2 text-xs"
                           >
                             {collections.map((col) => (
                               <li key={col.label}>
                                 <Link
                                   href={col.href}
                                   onClick={handleMobileLinkClick}
-                                  className="block py-1 border-b border-white/10 bg-transparent"
+                                  className="block py-1 border-b border-white/10"
                                 >
                                   {col.label}
                                 </Link>
@@ -184,7 +132,7 @@ const Navbar: React.FC = () => {
                       <Link
                         href={link.href}
                         onClick={handleMobileLinkClick}
-                        className="block py-2 border-b border-white/20 bg-transparent"
+                        className="block py-2 border-b border-white/20"
                       >
                         {link.label}
                       </Link>
@@ -196,8 +144,109 @@ const Navbar: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  )
+}
 
-    </nav>
+
+
+const Navbar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [collectionOpen, setCollectionOpen] = useState(false);
+
+  const handleMobileLinkClick = () => {
+    setIsOpen(false);
+    setCollectionOpen(false);
+  };
+
+  return (
+    <>
+      <nav className="hidden md:block z-50 bg-neutral-800/60 backdrop-blur-sm w-11/12 max-w-3xl left-1/2 -translate-x-1/2 fixed top-2 text-white px-6 rounded-xl">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/">
+            <div className="w-12 sm:w-14 h-auto">
+              <Image
+                src={logoImage}
+                alt="FYSU Logo"
+                width={60}
+                height={60}
+                priority
+                className="w-full h-auto object-contain"
+              />
+            </div>
+          </Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-8 uppercase text-sm tracking-wider">
+            <ul className="flex gap-8">
+              {navLinks.map((link) => (
+                <React.Fragment key={link.label}>
+                  {link.label === "COLLECTIONS" ? (
+                    <li className="relative">
+                      <button
+                        onClick={() => setCollectionOpen((prev) => !prev)}
+                        className="flex items-center gap-1 hover:underline"
+                      >
+                        {link.label}
+                        <ChevronDown
+                          size={14}
+                          className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
+                        />
+                      </button>
+
+                      <AnimatePresence>
+                        {collectionOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -5 }}
+                            transition={{ duration: 0.2 }}
+                            className="absolute top-8 left-0 bg-neutral-800/60 backdrop-blur-md text-white text-sm mt-2 rounded shadow-lg z-50 min-w-[220px] overflow-hidden"
+                          >
+                            {collections.map((col) => (
+                              <Link
+                                key={col.label}
+                                href={col.href}
+                                className="block px-4 py-2 hover:bg-neutral-900/60 duration-300 whitespace-nowrap"
+                                onClick={() => setCollectionOpen(false)}
+                              >
+                                {col.label}
+                              </Link>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </li>
+                  ) : (
+                    <li>
+                      <Link href={link.href} className="hover:underline">
+                        {link.label}
+                      </Link>
+                    </li>
+                  )}
+                </React.Fragment>
+              ))}
+            </ul>
+
+            {/* Panier Desktop */}
+            <CartDrawer />
+
+            <Link href="/profile">
+              <UserRound size={20} />
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      <MobileMenu
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        collectionOpen={collectionOpen}
+        setCollectionOpen={setCollectionOpen}
+        handleMobileLinkClick={handleMobileLinkClick}
+      />
+    </>
   );
 };
 

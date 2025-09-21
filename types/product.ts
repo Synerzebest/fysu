@@ -9,5 +9,7 @@ export type ProductType = {
     category: string;
     colors: number;
     product_images: { id: number; url: string }[];
+    details: string;
+    size_fit: string;
   };
   

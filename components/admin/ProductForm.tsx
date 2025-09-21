@@ -31,7 +31,9 @@ export default function ProductForm() {
     price: 0,
     gender: '',
     category: '',
-    colors: 0
+    colors: 0,
+    details: '',
+    size_fit: ''
   });
 
   const [files, setFiles] = useState<File[]>([]);
@@ -84,7 +86,7 @@ export default function ProductForm() {
 
     if (res.ok) {
       toast.success('Produit ajouté');
-      setFormState({ name: '', description: '', price: 0, gender: '', category: '', colors: 0 });
+      setFormState({ name: '', description: '', price: 0, gender: '', category: '', colors: 0, details: '', size_fit: '' });
       setFiles([]);
     } else {
       toast.error("Erreur lors de l'ajout du produit.");
@@ -109,6 +111,24 @@ export default function ProductForm() {
           <Input.TextArea
             name="description"
             value={formState.description}
+            onChange={handleChange}
+            rows={4}
+          />
+        </Form.Item>
+
+        <Form.Item label="Détails">
+          <Input.TextArea
+            name="details"
+            value={formState.details}
+            onChange={handleChange}
+            rows={4}
+          />
+        </Form.Item>
+
+        <Form.Item label="Size Fit">
+          <Input.TextArea
+            name="size_fit"
+            value={formState.size_fit}
             onChange={handleChange}
             rows={4}
           />

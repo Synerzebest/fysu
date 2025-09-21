@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, Row, Col } from "antd";
 import {
+  Shirt,
   Package,
   ShoppingCart,
   Users,
@@ -18,13 +19,13 @@ export default function AdminHome() {
       title: "Catalogue",
       description: "Gérez les vêtements (ajout, édition, suppression).",
       href: "/admin/catalog",
-      icon: <Package className="w-6 h-6 text-blue-500" />,
+      icon: <Shirt className="w-6 h-6 text-blue-500" />,
     },
     {
       title: "Bundles",
       description: "Créez et gérez des packs de vêtements.",
       href: "/admin/bundles",
-      icon: <Layers className="w-6 h-6 text-purple-500" />,
+      icon: <Package className="w-6 h-6 text-purple-500" />,
     },
     {
       title: "Commandes",
@@ -44,6 +45,12 @@ export default function AdminHome() {
       href: "/admin/home-images",
       icon: <Images className="w-6 h-6 text-pink-500" />,
     },
+    {
+      title: "Pages",
+      description: "Gérez les pages du site.",
+      href: "/admin/pages",
+      icon: <Layers className="w-6 h-6 text-gray-800" />
+    }
   ];
 
   return (

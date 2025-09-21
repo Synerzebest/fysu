@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { name, description, price, imageUrls, gender, category, colors } = req.body;
+  const { name, description, price, imageUrls, gender, category, colors, details, size_fit } = req.body;
 
   if (!name || !price || !description || !imageUrls?.length || !gender || !category) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -53,6 +53,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         gender,
         category,
         colors: parseInt(colors),
+        details,
+        size_fit
       })
       .select()
       .single();
