@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, ChevronDown, UserRound } from "lucide-react";
@@ -8,12 +8,6 @@ import Image from "next/image";
 import CartDrawer from "./CartDrawer"
 
 const logoImage = "/images/logo.png";
-
-const collections = [
-  { label: "The Prelude Chapter 1", href: "/collections/prelude/chapter-one" },
-  { label: "The Prelude Chapter 2", href: "/collections/prelude/chapter-two" },
-  { label: "The Prelude Chapter 3", href: "/collections/prelude/chapter-two" },
-];
 
 const navLinks = [
   { label: "FOR HIM", href: "/men" },
@@ -29,13 +23,15 @@ function MobileMenu({
   setIsOpen,
   collectionOpen,
   setCollectionOpen,
-  handleMobileLinkClick
+  handleMobileLinkClick,
+  collections
 }: {
   isOpen: boolean
   setIsOpen: (val: boolean) => void
   collectionOpen: boolean
   setCollectionOpen: (val: boolean) => void
   handleMobileLinkClick: () => void
+  collections: { label: string; href: string }[]
 }) {
   return (
     <div className="md:hidden fixed top-2 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-3xl">
@@ -153,6 +149,27 @@ function MobileMenu({
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [collectionOpen, setCollectionOpen] = useState(false);
+  const [collections, setCollections] = useState<{ label: string; href: string }[]>([])
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const res = await fetch("/api/collections")
+        if (!res.ok) throw new Error("Erreur API collections")
+        const data = await res.json()
+        setCollections(
+          data.map((col: any) => ({
+            label: col.title,
+            href: `/collections/${col.slug}`
+          }))
+        )
+      } catch (err) {
+        console.error("Erreur fetch collections:", err)
+      }
+    }
+  
+    fetchCollections()
+  }, [])
 
   const handleMobileLinkClick = () => {
     setIsOpen(false);
@@ -245,6 +262,7 @@ const Navbar: React.FC = () => {
         collectionOpen={collectionOpen}
         setCollectionOpen={setCollectionOpen}
         handleMobileLinkClick={handleMobileLinkClick}
+        collections={collections}
       />
     </>
   );

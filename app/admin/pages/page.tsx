@@ -1,13 +1,28 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Table, Button, Modal, Form, Input, Popconfirm, message } from "antd"
-import Link from 'next/link'
+import { Table, Button, Modal, Form, Input, Popconfirm, message, Upload } from "antd"
+import { UploadOutlined } from "@ant-design/icons"
+import Link from "next/link"
+import { Checkbox } from "antd"
+
+// Fonction utilitaire pour transformer un titre en slug
+const slugify = (text: string) =>
+  text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")        // espaces -> tirets
+    .replace(/[^\w\-]+/g, "")    // supprime caractères spéciaux
+    .replace(/\-\-+/g, "-")      // remplace double tirets
+    .replace(/^-+/, "")          // supprime tirets début
+    .replace(/-+$/, "")          // supprime tirets fin
 
 type Page = {
   id: string
   title: string
   slug: string
+  hero_image?: string
   visible: boolean
   created_at: string
 }
@@ -17,8 +32,35 @@ export default function AdminPages() {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [form] = Form.useForm()
+  const [file, setFile] = useState<File | null>(null)
+  const [products, setProducts] = useState<any[]>([])
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+  const [openProductsModal, setOpenProductsModal] = useState(false)
+  const [currentPageId, setCurrentPageId] = useState<string | null>(null)
 
-  // Charger les pages via ton API
+  const loadProducts = async () => {
+    const res = await fetch("/api/products")
+    const data = await res.json()
+    setProducts(data)
+  }
+
+  const openAssignProducts = (pageId: string) => {
+    setCurrentPageId(pageId)
+    loadProducts()
+    setOpenProductsModal(true)
+  }
+
+  const handleSaveProducts = async () => {
+    if (!currentPageId) return
+    await fetch(`/api/admin/pages/${currentPageId}/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productIds: selectedProducts }),
+    })
+    message.success("Produits assignés !")
+    setOpenProductsModal(false)
+  }
+
   const loadPages = async () => {
     setLoading(true)
     try {
@@ -37,30 +79,51 @@ export default function AdminPages() {
     loadPages()
   }, [])
 
-  // Créer une nouvelle page
   const handleCreate = async (values: any) => {
     try {
+      let heroUrl: string | null = null
+      console.log("File à uploader :", file)
+
+      if (file) {
+        const formData = new FormData()
+        formData.append("file", file)
+      
+        const uploadRes = await fetch("/api/admin/uploadHero", {
+          method: "POST",
+          body: formData,
+        })
+      
+        if (!uploadRes.ok) {
+          throw new Error("Erreur API uploadHero")
+        }
+      
+        const { url } = await uploadRes.json()
+        heroUrl = url
+      }      
+      
+
+      const slug = slugify(values.title)
+
       const res = await fetch("/api/admin/pages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, slug, hero_image: heroUrl }),
       })
+
       if (!res.ok) throw new Error("Erreur API création")
       message.success("Page créée !")
       setOpen(false)
       form.resetFields()
+      setFile(null)
       loadPages()
     } catch (err: any) {
       message.error(err.message)
     }
   }
 
-  // Supprimer une page
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/admin/pages/${id}`, {
-        method: "DELETE",
-      })
+      const res = await fetch(`/api/admin/pages/${id}`, { method: "DELETE" })
       if (!res.ok) throw new Error("Erreur API suppression")
       message.success("Page supprimée")
       loadPages()
@@ -72,6 +135,20 @@ export default function AdminPages() {
   const columns = [
     { title: "Titre", dataIndex: "title" },
     { title: "Slug", dataIndex: "slug" },
+    {
+      title: "Image Hero",
+      dataIndex: "hero_image",
+      render: (url: string) =>
+        url ? <img src={url} alt="hero" className="h-12 w-auto" /> : "-",
+    },
+    {
+      title: "Produits",
+      render: (_: any, record: Page) => (
+        <Button onClick={() => openAssignProducts(record.id)}>
+          Gérer produits
+        </Button>
+      )
+    },
     {
       title: "Actions",
       render: (_: any, record: Page) => (
@@ -89,8 +166,8 @@ export default function AdminPages() {
         <Link href={`/collections/${record.slug}`}>
           {record.slug}
         </Link>
-      )
-    }
+      ),
+    },
   ]
 
   return (
@@ -100,12 +177,7 @@ export default function AdminPages() {
         + Ajouter une page
       </Button>
 
-      <Table
-        rowKey="id"
-        dataSource={pages}
-        columns={columns}
-        loading={loading}
-      />
+      <Table rowKey="id" dataSource={pages} columns={columns} loading={loading} />
 
       <Modal
         open={open}
@@ -117,10 +189,39 @@ export default function AdminPages() {
           <Form.Item name="title" label="Titre" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
-            <Input />
+
+          <Form.Item label="Image Hero">
+            <Upload
+              beforeUpload={() => false}
+              showUploadList
+              maxCount={1}
+              onChange={(info) => {
+                const f = info.fileList[0]?.originFileObj as File
+                setFile(f || null)
+              }}
+            >
+              <Button icon={<UploadOutlined />}>Choisir une image</Button>
+            </Upload>
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        open={openProductsModal}
+        onCancel={() => setOpenProductsModal(false)}
+        onOk={handleSaveProducts}
+        title="Assigner des produits"
+      >
+        <Checkbox.Group
+          value={selectedProducts}
+          onChange={(values) => setSelectedProducts(values as string[])}
+          className="flex flex-col gap-2"
+        >
+          {products.map((prod) => (
+            <Checkbox key={prod.id} value={prod.id}>
+              {prod.name}
+            </Checkbox>
+          ))}
+        </Checkbox.Group>
       </Modal>
     </div>
   )

@@ -5,6 +5,7 @@ import LogoutButton from "@/components/profile/LogoutButton"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Orders from "@/components/profile/Orders"
+import Wishlist from "@/components/profile/Wishlist"
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions)
@@ -22,6 +23,8 @@ export default async function ProfilePage() {
             <h1 className="text-3xl font-bold mb-6 tracking-tighter">Bonjour {user.name}</h1>
 
             <Orders />
+
+            <Wishlist />
 
             <LogoutButton />
         </div>

@@ -12,11 +12,11 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
       const body = await req.json()
-      const { title, slug } = body
+      const { title, slug, hero_image } = body
   
       const { data, error } = await supabaseServer
         .from("pages")
-        .insert({ title, slug })
+        .insert({ title, slug, hero_image })
         .select()
         .single()
   

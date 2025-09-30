@@ -59,7 +59,7 @@ export default function Orders() {
       ) : orders.length === 0 ? (
         <Empty description="Aucune commande trouvée" />
       ) : (
-        <div className="space-y-8">
+        <div className="flex sm:flex-row flex-col gap-4">
           {orders.map((order, idx) => {
             let items: any[] = []
             try {
