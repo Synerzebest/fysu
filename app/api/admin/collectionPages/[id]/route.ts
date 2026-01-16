@@ -2,14 +2,15 @@ import { supabaseServer } from "@/lib/supabaseServer";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = await supabaseServer();
+  const { id } = await params;
   try {
     const { error } = await supabase
       .from("collectionPages")
       .delete()
-      .eq("id", params.id);
+      .eq("id", id);
 
     if (error) throw error;
 

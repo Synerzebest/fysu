@@ -2,7 +2,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = await supabaseServer();
   const { id } = await params;

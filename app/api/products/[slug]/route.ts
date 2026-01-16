@@ -1,17 +1,11 @@
 import { supabaseAdmin } from "@/lib/supabaseAdmin"
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 
 export const runtime = "nodejs"
 
-type Params = {
-  params: {
-    slug: string
-  }
-}
-
 export async function GET(
   _req: Request,
-  { params }: Params
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params  
 

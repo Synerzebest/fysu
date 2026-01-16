@@ -1,6 +1,8 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 
 async function generateUniqueSlug(baseName: string) {
+  const supabase = await supabaseServer();
+
   const baseSlug = baseName
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -13,13 +15,14 @@ async function generateUniqueSlug(baseName: string) {
   let counter = 1;
 
   while (true) {
-    const { data, error } = await supabaseServer
+    const { error } = await supabase
       .from("products")
       .select("id")
       .eq("slug", slug)
       .single();
 
-    if (error) break; // slug disponible
+    if (error) break;
+
     slug = `${baseSlug}-${counter++}`;
   }
 
@@ -27,6 +30,8 @@ async function generateUniqueSlug(baseName: string) {
 }
 
 export async function POST(req: Request) {
+  const supabase = await supabaseServer(); 
+
   try {
     const body = await req.json();
 
@@ -57,7 +62,7 @@ export async function POST(req: Request) {
 
     const slug = await generateUniqueSlug(name);
 
-    const { data: product, error: insertError } = await supabaseServer
+    const { data: product, error: insertError } = await supabase
       .from("products")
       .insert({
         name,
@@ -81,7 +86,8 @@ export async function POST(req: Request) {
       );
     }
 
-    let allImages: { url: string; color: string }[] = [];
+    // Préparation des images
+    const allImages: { productId: string; url: string; color: string }[] = [];
 
     for (const set of colors) {
       const { color, imageUrls } = set;
@@ -97,7 +103,7 @@ export async function POST(req: Request) {
     }
 
     if (allImages.length > 0) {
-      const { error: imgError } = await supabaseServer
+      const { error: imgError } = await supabase
         .from("product_images")
         .insert(allImages);
 
