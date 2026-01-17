@@ -53,34 +53,25 @@ export default function AdminCatalogue() {
     }
   }
 
-  async function handleUpdate(e: any) {
-    if (typeof e.preventDefault === "function") e.preventDefault();
-  
-    // 🧠 Si l’event vient du ProductTable (objet complet stringifié)
-    const raw = e.target?.value;
-    let payload: Record<string, any> | null = null;
-  
-    try {
-      payload = raw ? JSON.parse(raw) : null;
-    } catch {
-      payload = null;
-    }
-  
-    if (!payload && editing) {
-      // Cas de fallback : si jamais on vient d’un simple formulaire
-      const formData = new FormData(e.currentTarget);
-      payload = Object.fromEntries(formData);
-      payload.id = editing.id;
-      payload.price = Number(payload.price);
-    }
-  
+  async function handleUpdate(payload: any) {
     if (!payload?.id) return;
   
+    // 🧼 Sécurité : normalisation
+    const cleanPayload = {
+      ...payload,
+      price: Number(payload.price),
+    };
+  
+    if (Number.isNaN(cleanPayload.price)) {
+      toast.error("Prix invalide");
+      return;
+    }
+  
     try {
-      const res = await fetch(`/api/admin/products/update`, {
+      const res = await fetch("/api/admin/products/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(cleanPayload),
       });
   
       if (!res.ok) {
@@ -95,6 +86,7 @@ export default function AdminCatalogue() {
       toast.error(err.message || "Erreur serveur");
     }
   }
+  
   
 
   return (

@@ -6,6 +6,7 @@ import Image from "next/image"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Product from "@/components/Product"
+import ProductFilters from "@/components/ProductFilters"
 
 export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -14,6 +15,11 @@ export default function CollectionPage() {
   const [page, setPage] = useState<any>(null)
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState({
+    price: [0, 1000] as [number, number],
+    gender: "all",
+    sort: "default",
+  })
 
   useEffect(() => {
     if (!slug) return
@@ -41,12 +47,33 @@ export default function CollectionPage() {
     fetchData()
   }, [slug, router])
 
+  const filteredProducts = products
+  .filter((p) => {
+    if (p.price < filters.price[0]) return false
+    if (p.price > filters.price[1]) return false
+    if (filters.gender !== "all" && p.gender !== filters.gender)
+      return false
+    return true
+  })
+  .sort((a, b) => {
+    if (filters.sort === "price-asc") return a.price - b.price
+    if (filters.sort === "price-desc") return b.price - a.price
+    if (filters.sort === "newest") {
+      return (
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime()
+      )
+    }
+    return 0
+  })
+
+
   if (loading) {
     return (
       <>
         <Navbar />
-        <div className="p-20 text-center text-neutral-500">
-          Chargement…
+        <div className="h-[100vh] w-[100vw] font-pagetitle flex items-center justify-center text-center text-neutral-500 text-4xl">
+          Fysu
         </div>
         <Footer />
       </>
@@ -73,7 +100,7 @@ export default function CollectionPage() {
 
       {/* HERO */}
       {hasHero && (
-        <div className="relative top-24 w-full h-[300px] md:h-[500px]">
+        <div className="relative w-full h-[90vh] min-h-[600px]">
           <Image
             src={page.hero_image}
             alt={page.title}
@@ -82,7 +109,7 @@ export default function CollectionPage() {
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-white">
+            <h1 className="text-lg font-pagetitle font-thin text-white">
               {page.title}
             </h1>
           </div>
@@ -92,7 +119,7 @@ export default function CollectionPage() {
       {/* CONTENT */}
       <div
         className={`relative p-6 pb-44 ${
-          hasHero ? "top-36" : "top-24"
+          hasHero ? "top-28" : "top-24"
         }`}
       >
         {products.length === 0 ? (
@@ -100,11 +127,15 @@ export default function CollectionPage() {
             Aucun produit dans cette collection.
           </p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <Product key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <ProductFilters filters={filters} setFilters={setFilters} />
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
+              {filteredProducts.map((product) => (
+                <Product key={product.id} product={product} />
+              ))}
+            </div>
+          </>
         )}
       </div>
 

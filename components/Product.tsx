@@ -93,7 +93,7 @@ const Product = ({ product }: { product: ProductType }) => {
           <p className="text-sm font-semibold uppercase tracking-wide group-hover:underline transition">
             {product.name}
           </p>
-          <p className="text-sm font-light">€{product.price}</p>
+          <p className="text-sm font-light">{product.price} EUR</p>
 
           {/* 🎨 Boules de couleur */}
           {uniqueColors.length > 0 ? (

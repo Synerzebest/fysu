@@ -187,8 +187,8 @@ export default function Navbar() {
   return (
     <>
       {/* DESKTOP NAVBAR */}
-      <nav className="hidden md:block fixed top-2 left-1/2 -translate-x-1/2 w-11/12 max-w-3xl z-50 bg-neutral-800/60 backdrop-blur-sm text-white px-6 rounded-xl">
-        <div className="flex items-center justify-between py-[4px]">
+      <nav className="hidden md:block fixed top-2 left-1/2 -translate-x-1/2 z-50 bg-neutral-800/60 backdrop-blur-sm text-white px-6 rounded-xl w-fit">
+        <div className="inline-flex items-center justify-between py-[4px] gap-4">
           <Link href="/">
             <Image src={logoImage} alt="FYSU Logo" width={25} height={25} />
           </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, Input, Button, Form, Divider } from "antd";
+import { Modal, Input, InputNumber, Button, Form, Divider } from "antd";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductType } from "@/types/product";
@@ -38,147 +38,192 @@ export default function ProductTable({
   };
 
   const addColor = () => setColors([...colors, { color: "#000000" }]);
-
-  const updateColor = (index: number, newColor: string) => {
-    const newColors = [...colors];
-    newColors[index].color = newColor;
-    setColors(newColors);
-  };
-
-  const removeColor = (index: number) => {
-    const newColors = [...colors];
-    newColors.splice(index, 1);
-    setColors(newColors);
-  };
+  const updateColor = (i: number, color: string) =>
+    setColors(colors.map((c, idx) => (idx === i ? { ...c, color } : c)));
+  const removeColor = (i: number) =>
+    setColors(colors.filter((_, idx) => idx !== i));
 
   const handleSubmit = (values: any) => {
-    handleUpdate({
-      ...editing,
-      ...values,
-      colors,
-    });
+    handleUpdate({ ...editing, ...values, colors });
     setEditing(null);
   };
 
   return (
-    <div className="p-4 sm:p-6 relative top-24">
-      <h1 className="text-2xl font-bold mb-6">Catalogue produits</h1>
+    <div className="relative top-24 px-4 sm:px-6 pb-24 max-w-7xl mx-auto">
+      {/* HEADER */}
+      <div className="mb-10">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Catalogue produits
+        </h1>
+        <p className="text-sm text-neutral-500 mt-1">
+          Gérer les produits visibles sur le site
+        </p>
+      </div>
 
       {loading ? (
-        <p>Chargement...</p>
+        <p className="text-neutral-500">Chargement…</p>
       ) : (
         <>
-          {/* TABLE DESKTOP */}
-          <div className="hidden md:block overflow-x-auto border rounded-lg">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100 text-left">
-                <tr>
-                  <th className="p-3">Image</th>
-                  <th className="p-3">Nom</th>
-                  <th className="p-3">Catégorie</th>
-                  <th className="p-3">Genre</th>
-                  <th className="p-3">Prix (€)</th>
-                  <th className="p-3">Ajouté le</th>
-                  <th className="p-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((p) => (
-                  <tr key={p.id} className="border-t">
-                    <td className="p-3">
-                      <img
-                        src={p.product_images?.[0]?.url}
-                        alt={p.name}
-                        className="w-16 h-20 object-cover rounded"
-                      />
-                    </td>
-                    <td className="p-3">{p.name}</td>
-                    <td className="p-3">{p.category}</td>
-                    <td className="p-3">{p.gender}</td>
-                    <td className="p-3">{p.price.toFixed(2)} €</td>
-                    <td className="p-3">
-                      {new Date(p.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="p-3 flex gap-2">
-                      <Button
-                        icon={<Pencil size={16} />}
-                        onClick={() => handleOpenEdit(p)}
-                      />
-                      <Button
-                        danger
-                        icon={<Trash2 size={16} />}
-                        onClick={() => handleDelete(p.id)}
-                      />
-                    </td>
+          {/* ================= DESKTOP TABLE ================= */}
+          <div className="hidden md:block">
+            <div className="rounded-2xl border border-neutral-200/70 bg-white shadow-sm overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-neutral-50 text-neutral-500">
+                  <tr>
+                    <th className="px-5 py-4 font-medium">Produit</th>
+                    <th className="px-5 py-4 font-medium">Catégorie</th>
+                    <th className="px-5 py-4 font-medium">Genre</th>
+                    <th className="px-5 py-4 font-medium text-right">Prix</th>
+                    <th className="px-5 py-4 font-medium">Ajouté le</th>
+                    <th className="px-5 py-4"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody className="divide-y divide-neutral-100">
+                  {products.map((p) => (
+                    <tr
+                      key={p.id}
+                      className="hover:bg-neutral-50 transition"
+                    >
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-4">
+                          <img
+                            src={p.product_images?.[0]?.url}
+                            alt={p.name}
+                            className="w-12 h-16 object-cover rounded-lg bg-neutral-100"
+                          />
+                          <div>
+                            <p className="font-medium leading-tight">
+                              {p.name}
+                            </p>
+                            <p className="text-xs text-neutral-500">
+                              #{p.slug}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-5 py-4 text-neutral-600">
+                        {p.category}
+                      </td>
+
+                      <td className="px-5 py-4 text-neutral-600">
+                        {p.gender}
+                      </td>
+
+                      <td className="px-5 py-4 text-right font-medium">
+                        {p.price.toFixed(2)} €
+                      </td>
+
+                      <td className="px-5 py-4 text-neutral-500">
+                        {new Date(p.createdAt).toLocaleDateString()}
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <div className="flex justify-end gap-2 opacity-60 hover:opacity-100 transition">
+                          <Button
+                            type="text"
+                            icon={<Pencil size={16} />}
+                            onClick={() => handleOpenEdit(p)}
+                          />
+                          <Button
+                            type="text"
+                            danger
+                            icon={<Trash2 size={16} />}
+                            onClick={() => handleDelete(p.id)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* CARDS MOBILE */}
+          {/* ================= MOBILE CARDS ================= */}
           <div className="md:hidden space-y-4">
             {products.map((p) => (
-              <div
+              <motion.div
                 key={p.id}
-                className="border rounded-lg p-4 flex gap-4 items-center"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className="rounded-2xl border border-neutral-200/70 bg-white p-4 flex gap-4 shadow-sm"
               >
                 <img
                   src={p.product_images?.[0]?.url}
                   alt={p.name}
-                  className="w-20 h-24 object-cover rounded"
+                  className="w-16 h-20 object-cover rounded-lg bg-neutral-100"
                 />
-                <div className="flex-1 space-y-1">
-                  <p className="font-semibold">{p.name}</p>
-                  <p className="text-xs text-gray-500">
+
+                <div className="flex-1">
+                  <p className="font-medium">{p.name}</p>
+                  <p className="text-xs text-neutral-500 mt-0.5">
                     {p.category} • {p.gender}
                   </p>
-                  <p className="text-sm font-medium">{p.price.toFixed(2)} €</p>
+                  <p className="mt-2 font-medium">
+                    {p.price.toFixed(2)} €
+                  </p>
                 </div>
-                <div className="flex flex-col gap-2">
+
+                <div className="flex flex-col justify-center gap-2 opacity-70">
                   <Button
+                    type="text"
                     icon={<Pencil size={16} />}
                     onClick={() => handleOpenEdit(p)}
                   />
                   <Button
+                    type="text"
                     danger
                     icon={<Trash2 size={16} />}
                     onClick={() => handleDelete(p.id)}
                   />
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </>
       )}
 
-      {/* ----------------------------------- */}
-      {/* MODAL ANTD + ANIMATION FRAMER MOTION */}
-      {/* ----------------------------------- */}
+      {/* ================= MODAL ================= */}
       <Modal
-        title="Modifier un produit"
         open={!!editing}
         onCancel={() => setEditing(null)}
         footer={null}
         centered
+        styles={{
+          body: {
+            padding: 24,
+          },
+          header: {
+            padding: 0,
+            borderBottom: "none",
+          },
+          footer: {
+            borderTop: "none",
+          },
+        }}
+        className="[&_.ant-modal-content]:rounded-2xl"
       >
         {editing && (
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold">
+                Modifier le produit
+              </h2>
+              <p className="text-sm text-neutral-500">
+                Mettre à jour les informations
+              </p>
+            </div>
+
             <Form
               layout="vertical"
-              initialValues={{
-                name: editing.name,
-                description: editing.description,
-                details: editing.details,
-                size_fit: editing.size_fit,
-                price: editing.price,
-                category: editing.category,
-                gender: editing.gender,
-              }}
+              initialValues={editing}
               onFinish={handleSubmit}
             >
               <Form.Item label="Nom" name="name">
@@ -193,12 +238,23 @@ export default function ProductTable({
                 <Input />
               </Form.Item>
 
-              <Form.Item label="Size Fit" name="size_fit">
+              <Form.Item label="Size fit" name="size_fit">
                 <Input />
               </Form.Item>
 
-              <Form.Item label="Prix (€)" name="price">
-                <Input type="number" />
+              <Form.Item
+                label="Prix (€)"
+                name="price"
+                rules={[
+                  { required: true, message: "Le prix est obligatoire" },
+                ]}
+              >
+                <InputNumber
+                  min={0}
+                  step={0.01}
+                  className="w-full"
+                  controls={false}
+                />
               </Form.Item>
 
               <Form.Item label="Catégorie" name="category">
@@ -211,7 +267,6 @@ export default function ProductTable({
 
               <Divider />
 
-              {/* COULEURS */}
               <Form.Item label="Couleurs">
                 <div className="flex flex-wrap gap-3 items-center">
                   {colors.map((c, i) => (
@@ -222,9 +277,10 @@ export default function ProductTable({
                         onChange={(e) =>
                           updateColor(i, e.target.value)
                         }
-                        className="w-8 h-8 cursor-pointer"
+                        className="w-8 h-8 cursor-pointer rounded"
                       />
                       <Button
+                        type="text"
                         danger
                         icon={<Trash2 size={16} />}
                         onClick={() => removeColor(i)}
@@ -232,7 +288,11 @@ export default function ProductTable({
                     </div>
                   ))}
 
-                  <Button icon={<Plus size={16} />} onClick={addColor}>
+                  <Button
+                    type="dashed"
+                    icon={<Plus size={16} />}
+                    onClick={addColor}
+                  >
                     Ajouter
                   </Button>
                 </div>
@@ -242,9 +302,9 @@ export default function ProductTable({
                 type="primary"
                 htmlType="submit"
                 block
-                className="mt-4"
+                className="mt-6 h-11 rounded-full text-sm"
               >
-                Mettre à jour
+                Enregistrer les modifications
               </Button>
             </Form>
           </motion.div>
