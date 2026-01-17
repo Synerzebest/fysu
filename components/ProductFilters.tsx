@@ -1,6 +1,6 @@
 "use client"
 
-import { Slider, Select } from "antd"
+import { Select } from "antd"
 import { motion } from "framer-motion"
 
 const { Option } = Select
@@ -27,38 +27,6 @@ export default function ProductFilters({
         lg:items-start
       "
     >
-      {/* PRICE */}
-      <div className="w-full lg:w-64">
-        <div className="flex items-baseline justify-between mb-1">
-          <p className="text-xs uppercase text-neutral-500">Prix</p>
-          <motion.span
-            key={`${filters.price[0]}-${filters.price[1]}`}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18 }}
-            className="text-xs text-neutral-700 tabular-nums"
-          >
-            {filters.price[0]} EUR – {filters.price[1]} EUR
-          </motion.span>
-        </div>
-
-        <Slider
-          range
-          min={0}
-          max={1000}
-          value={filters.price}
-          tooltip={{ open: false }}
-          onChange={(value) =>
-            setFilters({ ...filters, price: value })
-          }
-        />
-
-        <div className="flex justify-between text-[11px] text-neutral-400 tabular-nums -mt-2">
-          <span>0 EUR</span>
-          <span>1000 EUR</span>
-        </div>
-      </div>
-
       {/* GENDER */}
       <div className="w-full lg:w-40">
         <p className="text-xs uppercase text-neutral-500 mb-1">

@@ -16,7 +16,6 @@ export default function CollectionPage() {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
-    price: [0, 1000] as [number, number],
     gender: "all",
     sort: "default",
   })
@@ -49,8 +48,6 @@ export default function CollectionPage() {
 
   const filteredProducts = products
   .filter((p) => {
-    if (p.price < filters.price[0]) return false
-    if (p.price > filters.price[1]) return false
     if (filters.gender !== "all" && p.gender !== filters.gender)
       return false
     return true
