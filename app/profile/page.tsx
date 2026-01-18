@@ -18,13 +18,13 @@ export default function ProfilePage() {
 
   // 🔐 Protection côté client
   if (!user) {
-    router.push("/login");
+    router.push("/auth/signin");
     return null;
   }
 
   const handleLogout = async () => {
     await supabaseClient.auth.signOut();
-    router.push("/login");
+    router.push("/auth/signin");
   };
 
   return (

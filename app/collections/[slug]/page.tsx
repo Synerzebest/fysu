@@ -12,6 +12,7 @@ export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
 
+  const isFlowersBloomCollection = slug === "when-the-flowers-bloom"
   const [page, setPage] = useState<any>(null)
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -22,19 +23,27 @@ export default function CollectionPage() {
   
   useEffect(() => {
     if (!slug) return
-
+  
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/collections/${slug}`)
-
-        if (!res.ok) {
-          throw new Error("Collection not found")
+  
+        const fetchPromise = fetch(`/api/collections/${slug}`).then(
+          async (res) => {
+            if (!res.ok) throw new Error("Collection not found")
+            const data = await res.json()
+            setPage(data.page)
+            setProducts(data.products ?? [])
+          }
+        )
+  
+        if (isFlowersBloomCollection) {
+          await Promise.all([
+            fetchPromise,
+            new Promise((resolve) => setTimeout(resolve, 2400)),
+          ])
+        } else {
+          await fetchPromise
         }
-
-        const data = await res.json()
-        setPage(data.page)
-        console.log(data.products)
-        setProducts(data.products ?? [])
       } catch (err) {
         console.error(err)
         router.replace("/404")
@@ -42,9 +51,9 @@ export default function CollectionPage() {
         setLoading(false)
       }
     }
-
+  
     fetchData()
-  }, [slug, router])
+  }, [slug, router]) 
 
   const filteredProducts = products
   .filter((p) => {
@@ -67,15 +76,30 @@ export default function CollectionPage() {
 
   if (loading) {
     return (
-      <>
+      <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="h-[100vh] w-[100vw] font-pagetitle flex items-center justify-center text-center text-neutral-500 text-4xl">
-          Fysu
+  
+        <div className="w-screen h-screen flex items-center justify-center">
+          {isFlowersBloomCollection ? (
+            <video
+              src="/videos/flowers_bloom_loader.MOV"
+              autoPlay
+              muted
+              playsInline
+              preload="auto"
+              className="w-full"
+            />
+          ) : (
+            <div className="font-pagetitle text-neutral-500 text-4xl">
+              Fysu
+            </div>
+          )}
         </div>
+  
         <Footer />
-      </>
+      </div>
     )
-  }
+  }  
 
   if (!page) {
     return (
@@ -92,7 +116,18 @@ export default function CollectionPage() {
   const hasHero = Boolean(page.hero_image)
 
   return (
-    <>
+    <div
+      className="min-h-screen"
+      style={
+        isFlowersBloomCollection
+          ? {
+              backgroundImage: "url('/images/flowers_bloom_bg.jpeg')",
+              backgroundRepeat: "repeat",
+              backgroundSize: "auto",
+            }
+          : undefined
+      }
+    >
       <Navbar />
 
       {/* HERO */}
@@ -137,6 +172,6 @@ export default function CollectionPage() {
       </div>
 
       <Footer />
-    </>
+    </div>
   )
 }
