@@ -76,10 +76,10 @@ export default function CollectionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-[100vh] flex flex-col items-between">
         <Navbar />
   
-        <div className="w-screen h-screen flex items-center justify-center">
+        <div className="w-screen h-[100vh] relative sm:top-0 top-36 flex items-center justify-center">
           {isFlowersBloomCollection ? (
             <video
               src="/videos/flowers_bloom_loader.MOV"
@@ -116,19 +116,20 @@ export default function CollectionPage() {
   const hasHero = Boolean(page.hero_image)
 
   return (
-    <div
-      className="min-h-screen"
-      style={
-        isFlowersBloomCollection
-          ? {
-              backgroundImage: "url('/images/flowers_bloom_bg.jpeg')",
-              backgroundRepeat: "repeat",
-              backgroundSize: "auto",
-            }
-          : undefined
-      }
-    >
+    <div>
       <Navbar />
+
+      {isFlowersBloomCollection && (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage: "url('/images/flowers_bloom_bg.jpeg')",
+            backgroundRepeat: "repeat",
+            backgroundSize: "800px 800px",
+            backgroundPosition: "top left",
+          }}
+        />
+      )}
 
       {/* HERO */}
       {hasHero && (
