@@ -189,12 +189,12 @@ export default function Navbar() {
       {/* DESKTOP NAVBAR */}
       <nav className="hidden md:block fixed top-2 left-1/2 -translate-x-1/2 z-50 bg-neutral-800/60 backdrop-blur-sm text-white px-6 rounded-xl w-fit">
         <div className="inline-flex items-center justify-between py-[4px] gap-4">
-          <Link href="/">
+          <Link href="/" className="shrink-0">
             <Image src={logoImage} alt="FYSU Logo" width={25} height={25} />
           </Link>
 
-          <div className="flex items-center gap-8 uppercase text-sm tracking-wider">
-            <ul className="flex gap-8">
+          <div className="flex items-center gap-8 uppercase text-sm tracking-wider flex-nowrap whitespace-nowrap">
+            <ul className="flex flex-nowrap gap-8 whitespace-nowrap">
               {links.map((link) =>
                 link.label === "COLLECTIONS" ? (
                   <li key="collections-desktop" className="relative">
