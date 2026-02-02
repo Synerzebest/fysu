@@ -5,6 +5,7 @@ import { Form, Input, InputNumber, Upload, Button, message, Select, Space } from
 import { UploadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabaseClient } from '@/lib/supabaseClient';
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 const { Option } = Select;
 
@@ -125,117 +126,218 @@ export default function ProductForm() {
   });
 
   return (
-    <div className="relative top-24 w-[98%] max-w-8xl mx-auto flex flex-col items-center p-8 my-4 rounded-lg shadow-[0px_0px_3px_0px_rgba(100,_100,_111,_0.2)]">
-      <p className="text-2xl text-gray-800 mb-4">Ajouter un produit</p>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className="relative top-24 mx-auto w-[98%] max-w-6xl"
+    >
+      {/* MAIN CARD */}
+      <motion.div
+        initial={{ scale: 0.98 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="rounded-3xl border border-gray-200 bg-white/70 backdrop-blur-xl shadow-sm p-10"
+      >
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-10"
+        >
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+            Ajouter un produit
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Informations générales et variantes
+          </p>
+        </motion.div>
 
-      <Form layout="vertical" onFinish={handleSubmit} className="w-full">
-        <Form.Item label="Nom" required>
-          <Input name="name" value={formState.name} onChange={handleChange} />
-        </Form.Item>
+        <Form layout="vertical" onFinish={handleSubmit} className="space-y-8">
 
-        <Form.Item label="Description">
-          <Input.TextArea
-            name="description"
-            value={formState.description}
-            onChange={handleChange}
-            rows={3}
-          />
-        </Form.Item>
-
-        <div className="flex items-center gap-4">
-          <Form.Item label="Prix" required className="w-1/2">
-            <InputNumber
-              value={formState.price}
-              onChange={(value) =>
-                setFormState({ ...formState, price: value ?? 0 })
-              }
-              style={{ width: '100%' }}
-              min={0}
-            />
-          </Form.Item>
-
-          <Form.Item label="Genre" required className="w-1/2">
-            <Select
-              placeholder="Choisir un genre"
-              value={formState.gender || undefined}
-              onChange={(value) => handleSelectChange(value, 'gender')}
-            >
-              <Option value="him">Homme</Option>
-              <Option value="her">Femme</Option>
-              <Option value="unisex">Unisexe</Option>
-            </Select>
-          </Form.Item>
-        </div>
-
-        <Form.Item label="Catégorie" required>
-          <Select
-            placeholder="Choisir une catégorie"
-            value={formState.category || undefined}
-            onChange={(value) => handleSelectChange(value, 'category')}
-            disabled={!formState.gender}
+          {/* NOM */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
           >
-            {filteredCategories.map((cat) => (
-              <Option key={cat.value} value={cat.value}>
-                {cat.label}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <Form.Item label="Nom" required>
+              <Input
+                name="name"
+                value={formState.name}
+                onChange={handleChange}
+                placeholder="Nom du produit"
+                className="rounded-xl"
+              />
+            </Form.Item>
+          </motion.div>
 
-        <div className="border p-4 rounded-lg mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <p className="font-medium text-gray-700">Variantes de couleur</p>
-            <Button
-              type="dashed"
-              icon={<PlusOutlined />}
-              onClick={addColor}
-            >
-              Ajouter une couleur
-            </Button>
-          </div>
+          {/* DESCRIPTION */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Form.Item label="Description">
+              <Input.TextArea
+                name="description"
+                value={formState.description}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Description du produit"
+                className="rounded-xl"
+              />
+            </Form.Item>
+          </motion.div>
 
-          {colorSets.map((set, index) => (
-            <div
-              key={index}
-              className="border rounded-md p-3 mb-3 bg-gray-50 flex flex-col gap-2"
-            >
-              <Space align="center" className="flex justify-between">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={set.color}
-                    onChange={(e) => handleColorChange(index, e.target.value)}
-                    className="w-8 h-8 cursor-pointer"
-                  />
-                  <span className="text-gray-600">{set.color}</span>
-                </div>
+          {/* PRIX + GENRE */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            <Form.Item label="Prix" required>
+              <InputNumber
+                value={formState.price}
+                onChange={(value) =>
+                  setFormState({ ...formState, price: value ?? 0 })
+                }
+                min={0}
+                className="w-full rounded-xl"
+              />
+            </Form.Item>
 
-                <Button
-                  danger
-                  size="small"
-                  icon={<DeleteOutlined />}
-                  onClick={() => removeColor(index)}
-                />
-              </Space>
-
-              <Upload
-                multiple
-                beforeUpload={() => false}
-                showUploadList={{ showRemoveIcon: true }}
-                onChange={(info) => handleFileUpload(index, info)}
+            <Form.Item label="Genre" required>
+              <Select
+                placeholder="Choisir un genre"
+                value={formState.gender || undefined}
+                onChange={(value) => handleSelectChange(value, "gender")}
+                className="rounded-xl"
               >
-                <Button icon={<UploadOutlined />}>Choisir des images</Button>
-              </Upload>
-            </div>
-          ))}
-        </div>
+                <Option value="him">Homme</Option>
+                <Option value="her">Femme</Option>
+                <Option value="unisex">Unisexe</Option>
+              </Select>
+            </Form.Item>
+          </motion.div>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block>
-            Ajouter le produit
-          </Button>
-        </Form.Item>
-      </Form>
-    </div>
+          {/* CATÉGORIE */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Form.Item label="Catégorie" required>
+              <Select
+                placeholder="Choisir une catégorie"
+                value={formState.category || undefined}
+                onChange={(value) => handleSelectChange(value, "category")}
+                disabled={!formState.gender}
+                className="rounded-xl"
+              >
+                {filteredCategories.map((cat) => (
+                  <Option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </motion.div>
+
+          {/* VARIANTES */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="rounded-2xl border border-gray-200 bg-white/60 p-6 space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-gray-700">
+                Variantes de couleur
+              </p>
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={addColor}
+                className="rounded-xl"
+              >
+                Ajouter une couleur
+              </Button>
+            </div>
+
+            <AnimatePresence>
+              {colorSets.map((set, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.25 }}
+                  className="rounded-xl border border-gray-200 bg-white p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={set.color}
+                        onChange={(e) =>
+                          handleColorChange(index, e.target.value)
+                        }
+                        className="h-8 w-8 rounded-full border cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-500">
+                        {set.color}
+                      </span>
+                    </div>
+
+                    <Button
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => removeColor(index)}
+                    />
+                  </div>
+
+                  <Upload
+                    multiple
+                    beforeUpload={() => false}
+                    showUploadList={{ showRemoveIcon: true }}
+                    onChange={(info) => handleFileUpload(index, info)}
+                  >
+                    <Button
+                      icon={<UploadOutlined />}
+                      className="rounded-xl"
+                    >
+                      Choisir des images
+                    </Button>
+                  </Upload>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+          >
+            <Form.Item className="pt-4">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                block
+                className="h-11 rounded-xl text-base"
+              >
+                Ajouter le produit
+              </Button>
+            </Form.Item>
+          </motion.div>
+        </Form>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -49,7 +49,7 @@ export default function ProductTable({
   };
 
   return (
-    <div className="relative top-24 px-4 sm:px-6 pb-24 max-w-7xl mx-auto">
+    <div className="relative top-36 px-4 sm:px-6 pb-24 max-w-7xl mx-auto">
       {/* HEADER */}
       <div className="mb-10">
         <h1 className="text-3xl font-semibold tracking-tight">
