@@ -25,9 +25,23 @@ export default function RootLayout({
   return (
     <html lang="en" className={libreBaskerville.variable}>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const theme = localStorage.getItem('theme');
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              })();
+            `,
+          }}
+        />
         <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body>
+      <body className="bg-background text-foreground transition-colors duration-400">
         {/* <AuthProvider> */}
           <CartProvider>
             {children}
