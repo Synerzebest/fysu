@@ -6,10 +6,9 @@ const Origin = () => {
       className="
         sm:w-[90%] sm:rounded-xl 
         mx-auto w-full 
-        bg-background text-foreground 
+        bg-transparent text-foreground 
         px-6 py-20 md:py-40 lg:py-60 
         font-serif relative
-        transition-colors duration-400
       "
     >
       <div className="max-w-4xl mx-auto text-center">

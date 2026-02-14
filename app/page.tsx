@@ -9,8 +9,8 @@ export default function Home() {
     <>
       <Navbar />
       <HomeHero />
-      <Origin />
       <ThemeToggle />
+      <Origin />
       <Footer />
     </>
   );

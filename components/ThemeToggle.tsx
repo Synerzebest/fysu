@@ -21,7 +21,7 @@ export default function ThemeToggle() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center py-10">
+    <div className="w-full relative top-24 flex flex-col items-center justify-center py-10">
       <button
         type="button"
         onClick={toggle}

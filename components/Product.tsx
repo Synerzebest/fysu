@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { Heart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { ProductType } from "@/types/product"
+import { motion, useMotionValue, animate } from "framer-motion"
 
 const Product = ({ product }: { product: ProductType }) => {
   const [liked, setLiked] = useState(false)
@@ -43,7 +44,7 @@ const Product = ({ product }: { product: ProductType }) => {
     }
   }
 
-  // 🟣 Extraire les couleurs uniques depuis les images
+  // Extraire les couleurs uniques depuis les images
   const uniqueColors = useMemo(() => {
     const colors = (product.product_images || [])
       .map((img) => img.color)
@@ -53,6 +54,29 @@ const Product = ({ product }: { product: ProductType }) => {
 
   const displayedColors = uniqueColors.slice(0, 4)
   const extraCount = uniqueColors.length - displayedColors.length
+
+  const images = product.product_images?.length
+  ? product.product_images.map((i) => i.url)
+  : ["/placeholder.png"]
+
+  const trackRef = useRef<HTMLDivElement | null>(null)
+  const x = useMotionValue(0)
+
+  const [trackWidth, setTrackWidth] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (!trackRef.current) return
+      setTrackWidth(trackRef.current.offsetWidth)
+    }
+  
+    updateWidth()
+    window.addEventListener("resize", updateWidth)
+  
+    return () => window.removeEventListener("resize", updateWidth)
+  }, [])
+  
 
   return (
     <div className="relative text-center max-w-[350px] group">
@@ -78,24 +102,78 @@ const Product = ({ product }: { product: ProductType }) => {
       </button>
 
       {/* Image + infos */}
-      <Link href={`/product/${product.slug}`} className="block">
-        <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100">
-          <Image
-            src={product.product_images?.[0]?.url ?? "/placeholder.png"}
-            alt={product.name}
-            width={400}
-            height={600}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
+      <div
+        ref={trackRef}
+        className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100"
+      >
+        <motion.div
+          className="flex h-full w-full"
+          style={{ x }}
+          drag="x"
+          dragConstraints={{
+            right: 0,
+            left: -(trackWidth * (images.length - 1)),
+          }}
+          dragElastic={0.05}
+          onDragEnd={() => {
+            if (!trackWidth) return
 
+            const movedBy = -x.get()
+            const index = Math.round(movedBy / trackWidth)
+
+            const clampedIndex = Math.min(
+              images.length - 1,
+              Math.max(0, index)
+            )
+
+            setCurrentIndex(clampedIndex)
+
+            animate(x, -clampedIndex * trackWidth, {
+              type: "spring",
+              stiffness: 400,
+              damping: 40,
+            })
+          }}
+        >
+          {images.map((src, index) => (
+            <div key={index} className="relative flex-shrink-0 w-full h-full">
+              <Image
+                src={src}
+                alt={`${product.name}-${index}`}
+                fill
+                draggable={false}
+                className="object-cover"
+                sizes="(max-width: 768px) 90vw, 350px"
+              />
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Indicateurs */}
+        {images.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+            {images.map((_, i) => (
+              <div
+                key={i}
+                className={`w-1.5 h-1.5 rounded-full transition ${
+                  i === currentIndex
+                    ? "bg-black"
+                    : "bg-black/40"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Link href={`/product/${product.slug}`} className="block">
         <div className="space-y-0.5 mt-2">
           <p className="text-sm font-semibold uppercase tracking-wide group-hover:underline transition">
             {product.name}
           </p>
           <p className="text-sm font-light">{product.price} EUR</p>
 
-          {/* 🎨 Boules de couleur */}
+          {/* Boules de couleur */}
           {uniqueColors.length > 0 ? (
             <div className="flex justify-center gap-1 mt-1">
               {displayedColors.map((color) => (

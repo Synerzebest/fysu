@@ -217,7 +217,7 @@ export default function ProductClient() {
                 Add to bag
               </Button>
 
-              <Collapse items={items} bordered={false} ghost expandIconPosition="end" />
+              <Collapse items={items} bordered={false} ghost expandIconPlacement="end" />
             </div>
           </div>
         </div>

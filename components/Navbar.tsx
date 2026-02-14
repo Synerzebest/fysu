@@ -35,7 +35,7 @@ function MobileMenu({
     setMounted(true);
   }, []);
   return (
-    <div className="md:hidden fixed top-2 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-3xl">
+     <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-3xl">
       {/* Barre mobile */}
       <div className="flex items-center gap-3">
         <div className="bg-neutral-800/60 backdrop-blur-sm w-[70%] rounded-4xl flex justify-center">
@@ -186,70 +186,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* DESKTOP NAVBAR */}
-      <nav className="hidden md:block fixed top-2 left-1/2 -translate-x-1/2 z-50 bg-neutral-800/60 backdrop-blur-sm text-white px-6 rounded-xl w-fit">
-        <div className="inline-flex items-center justify-between py-[4px] gap-4">
-          <Link href="/" className="shrink-0">
-            <Image src={logoImage} alt="FYSU Logo" width={25} height={25} />
-          </Link>
-
-          <div className="flex items-center gap-8 uppercase text-sm tracking-wider flex-nowrap whitespace-nowrap">
-            <ul className="flex flex-nowrap gap-8 whitespace-nowrap">
-              {links.map((link) =>
-                link.label === "COLLECTIONS" ? (
-                  <li key="collections-desktop" className="relative">
-                    <button
-                      onClick={() => setCollectionOpen((prev) => !prev)}
-                      className="flex items-center gap-1 hover:underline"
-                    >
-                      COLLECTIONS
-                      <ChevronDown
-                        size={14}
-                        className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
-                      />
-                    </button>
-
-                    <AnimatePresence>
-                      {collectionOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -5 }}
-                          className="absolute top-8 left-0 bg-neutral-800/60 backdrop-blur-md rounded shadow-lg min-w-[220px]"
-                        >
-                          {collections.map((col) => (
-                            <Link
-                              href={col.href}
-                              key={col.href}
-                              className="block px-4 py-2 hover:bg-neutral-900/60"
-                              onClick={() => setCollectionOpen(false)}
-                            >
-                              {col.label}
-                            </Link>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </li>
-                ) : (
-                  <li key={link.href}>
-                    <Link href={link.href} className="hover:underline">
-                      {link.label}
-                    </Link>
-                  </li>
-                )
-              )}
-            </ul>
-
-            <CartDrawer />
-            <Link href="/profile">
-              <UserRound size={20} />
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* MOBILE NAV */}
       <MobileMenu
         isOpen={isOpen}
         setIsOpen={setIsOpen}
