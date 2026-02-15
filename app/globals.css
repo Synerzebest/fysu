@@ -3,11 +3,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --toggle-button-bg: #ffffff;
+  --toggle-button-btn: #ffffff;
 }
 
 .dark {
-  --background: #292929;
+  --background: #4d4d4d;
   --foreground: #ffffff;
+  --toggle-button-bg: #070707;
+  --toggle-button-btn: #1a1a1a;
 }
 
 

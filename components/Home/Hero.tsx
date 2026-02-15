@@ -46,12 +46,19 @@ const HomeHero = () => {
             <div className="absolute inset-0 flex items-end justify-start px-4">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
 
-              <div className="relative text-center text-white space-y-4 pb-6">
-                <Link href="/collections/artisanal-27-28">
-                  <button className="mb-4 rounded-lg uppercase text-sm text-white underline cursor-pointer">
+              <div className="relative text-white space-y-2 pb-6">
+
+                <div>
+                  <p className="font-serif text-[1.1rem]">When the flowers bloom</p>
+                  <p className="font-serif text-sm">the newest spring collection</p>
+                </div>
+
+                <Link href="/collections/artisanal-27-28" >
+                  <button className="mb-4 bg-white px-4 py-4 rounded-lg uppercase text-sm text-black cursor-pointer">
                     Explore the collection
                   </button>
                 </Link>
+
               </div>
             </div>
           </div>

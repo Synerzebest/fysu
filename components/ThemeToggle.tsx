@@ -32,7 +32,7 @@ export default function ThemeToggle() {
         {/* Plaque (simple, blanche) */}
         <div
           className="
-            absolute inset-0 rounded-2xl bg-white
+            absolute inset-0 rounded-2xl toggle-button-bg
             border border-black/20
             shadow-[0_8px_18px_rgba(0,0,0,0.18)]
           "
@@ -50,13 +50,13 @@ export default function ThemeToggle() {
             transition={{ type: "spring", stiffness: 260, damping: 22 }}
             whileTap={{ scale: 0.98 }}
             className="
-              absolute left-0 right-0 top-0 h-20 rounded-xl bg-white
+              absolute left-0 right-0 top-0 h-20 rounded-xl toggle-button-btn
               border border-black/10
               shadow-[0_10px_16px_rgba(0,0,0,0.18)]
             "
           >
             {/* petit reflet */}
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white to-transparent opacity-70" />
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-white to-transparent opacity-30" />
           </motion.div>
         </div>
       </button>
