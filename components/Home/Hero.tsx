@@ -53,7 +53,7 @@ const HomeHero = () => {
                   <p className="font-serif text-sm">the newest spring collection</p>
                 </div>
 
-                <Link href="/collections/artisanal-27-28" >
+                <Link href="/collections/when-the-flowers-bloom" >
                   <button className="mb-4 bg-white px-4 py-4 rounded-lg uppercase text-sm text-black cursor-pointer">
                     Explore the collection
                   </button>
