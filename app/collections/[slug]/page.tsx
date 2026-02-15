@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Product from "@/components/Product"
 import ProductFilters from "@/components/ProductFilters"
+import ThemeToggle from "@/components/ThemeToggle"
 
 export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -119,21 +120,9 @@ export default function CollectionPage() {
     <div>
       <Navbar />
 
-      {isFlowersBloomCollection && (
-        <div
-          className="fixed inset-0 z-0 pointer-events-none"
-          style={{
-            backgroundImage: "url('/images/flowers_bloom_bg.jpeg')",
-            backgroundRepeat: "repeat",
-            backgroundSize: "800px 800px",
-            backgroundPosition: "top left",
-          }}
-        />
-      )}
-
       {/* HERO */}
       {hasHero && (
-        <div className="relative top-0 h-[90vh] min-h-[600px]">
+        <div className="relative top-0 h-[100vh] sm:h-[90vh] min-h-[600px]">
           <Image
             src={page.hero_image}
             alt={page.title}
@@ -151,9 +140,11 @@ export default function CollectionPage() {
 
       {/* CONTENT */}
       <div
-        className={`relative px-6 pb-44 ${
-          hasHero ? "top-28" : "top-24"
-        }`}
+        className={`
+          collection-bg
+          relative px-6 pt-12 pb-44
+          ${hasHero ? "top-0" : "top-24"}
+        `}
       >
         {products.length === 0 ? (
           <p className="text-neutral-500">
@@ -171,6 +162,8 @@ export default function CollectionPage() {
           </>
         )}
       </div>
+
+      <ThemeToggle />
 
       <Footer />
     </div>
