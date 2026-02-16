@@ -24,10 +24,10 @@ export default function FlyingBird() {
         <Image
           src={bird}
           alt="Bird"
-          width={64}
-          height={64}
+          width={74}
+          height={74}
           draggable={false}
-          className="select-none"
+          className="select-none scale-x-[-1]"
           priority
         />
       </motion.div>

@@ -1,4 +1,7 @@
 import React from 'react';
+import Image from "next/image";
+
+const logo = "/images/footer_logo.png"
 
 const Footer: React.FC = () => {
   return (
@@ -28,7 +31,14 @@ const Footer: React.FC = () => {
 
         {/* Logo */}
         <div className="flex justify-start md:justify-center items-center md:items-start">
-          <h1 className="text-5xl font-serif tracking-widest">FYSU</h1>
+          <Image
+            src={logo}
+            width={150}
+            height={150}
+            alt="logo"
+            className="object-contain"
+            priority
+          />
         </div>
       </div>
 
