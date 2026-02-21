@@ -95,6 +95,48 @@ export default function StoryEditor({
     fetchPages();
   }, []);
 
+  useEffect(() => {
+    if (!editingStory) {
+      form.resetFields();
+      setItems([]);
+      setTargets([]);
+      setCoverUrl(null);
+      return;
+    }
+  
+    form.setFieldsValue({
+      title: editingStory.title,
+      is_active: editingStory.is_active,
+    });
+  
+    setCoverUrl(editingStory.cover_url);
+    setItems(editingStory.story_items || []);
+  
+    const fetchLinks = async () => {
+      const { data } = await supabase
+        .from("story_page_links")
+        .select("*")
+        .eq("story_id", editingStory.id);
+  
+      if (!data) return;
+  
+      const formatted = data.map((link) => {
+        if (link.page_id) {
+          return { type: "page", id: link.page_id };
+        }
+        if (link.collection_page_id) {
+          return { type: "collection", id: link.collection_page_id };
+        }
+        return null;
+      }).filter(Boolean);
+  
+      setTargets(formatted as PageTarget[]);
+    };
+  
+    fetchLinks();
+  
+  }, [editingStory]);
+
   /* -------------------------------------------------- */
   /* LOAD EDIT MODE */
   /* -------------------------------------------------- */
@@ -389,6 +431,25 @@ export default function StoryEditor({
         >
           Add Slide
         </Button>
+
+        <Divider />
+
+        <Title level={4}>Afficher sur</Title>
+
+        <Select
+          mode="multiple"
+          placeholder="Choisir les pages"
+          className="w-full mb-6"
+          options={pageOptions}
+          value={targets.map((t) => `${t.type}:${t.id}`)}
+          onChange={(values) => {
+            const mapped = values.map((v: string) => {
+              const [type, id] = v.split(":");
+              return { type, id } as PageTarget;
+            });
+            setTargets(mapped);
+          }}
+        />
 
         <Button
           type="primary"
