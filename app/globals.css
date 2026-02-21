@@ -26,6 +26,10 @@
   font-family: var(--font-libre-baskerville), serif;
 }
 
+.font-dior {
+  font-family: var(--font-playfair), serif;
+}
+
 .font-pagetitle {
   font-family: var(--font-libre-baskerville), serif;
   font-weight: 0;

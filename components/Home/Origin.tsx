@@ -6,11 +6,11 @@ const Origin = () => {
         mx-auto w-full 
         bg-transparent text-foreground 
         px-6 py-20 md:py-40 lg:py-60 
-        font-serif relative
+        font-dior relative
       "
     >
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-lg md:text-3xl font-normal tracking-widest uppercase">
+        <h2 className="text-lg md:text-3xl font-dior tracking-widest uppercase">
           CHAPTER 1
         </h2>
 
@@ -20,7 +20,7 @@ const Origin = () => {
           tracking-widest uppercase
           text-[#9B2E31] 
           dark:text-[#d65c60]
-          transition-colors duration-300
+          transition-colors duration-300 font-dior
         ">
           THE PRELUDE
         </p>
@@ -31,7 +31,7 @@ const Origin = () => {
         mt-40 md:mt-60 lg:mt-80 
         text-sm md:text-base 
         leading-relaxed tracking-wide 
-        text-foreground text-left
+        text-foreground text-left font-dior
       ">
         <p>
           This prelude stands as an echo, a quiet overture before the true exchange begins.

@@ -49,8 +49,8 @@ const HomeHero = () => {
               <div className="relative text-white space-y-2 pb-6">
 
                 <div>
-                  <p className="font-serif text-[1.1rem]">When the flowers bloom</p>
-                  <p className="font-serif text-sm">the newest spring collection</p>
+                  <p className="font-dior text-[1.1rem]">When the flowers bloom</p>
+                  <p className="font-dior text-sm">the newest spring collection</p>
                 </div>
 
                 <Link href="/collections/when-the-flowers-bloom" >

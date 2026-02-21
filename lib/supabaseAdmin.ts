@@ -8,5 +8,10 @@ export const supabaseAdmin = createClient(
       persistSession: false,
       autoRefreshToken: false,
     },
+    global: {
+      headers: {
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      },
+    },
   }
 );

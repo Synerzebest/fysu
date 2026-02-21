@@ -3,6 +3,13 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { CartProvider } from "@/context/CartContext";
 import { Libre_Baskerville } from "next/font/google"
+import { Playfair_Display } from 'next/font/google';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '700'], // Specify needed weights
+  variable: '--font-playfair', // CSS variable name
+});
 
 const libreBaskerville = Libre_Baskerville({
   subsets: ["latin"],
@@ -23,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={libreBaskerville.variable}>
+    <html lang="en" className={`${libreBaskerville.variable} ${playfair.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{

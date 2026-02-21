@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import Product from "@/components/Product"
 import ProductFilters from "@/components/ProductFilters"
+import StoryBar from "@/components/Stories/StoryBar"
 
 export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -112,6 +113,9 @@ export default function CollectionPage() {
           </div>
         </div>
       )}
+
+      {/* STORY */}
+      <StoryBar pageSlug={slug} />
 
       {/* CONTENT */}
       <div

@@ -11,6 +11,7 @@ import {
   Users,
   Images,
   Layers,
+  Clapperboard
 } from "lucide-react";
 
 export default function AdminHome() {
@@ -50,6 +51,12 @@ export default function AdminHome() {
       description: "Gérez les pages du site.",
       href: "/admin/pages",
       icon: <Layers className="w-6 h-6 text-gray-800" />
+    },
+    {
+      title: "Story",
+      description: "Gérez les stories du site.",
+      href: "/admin/stories",
+      icon: <Clapperboard className="w-6 h-6 text-blue-800" />
     }
   ];
 

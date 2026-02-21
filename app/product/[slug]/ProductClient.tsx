@@ -156,7 +156,7 @@ export default function ProductClient() {
         {/* INFOS PRODUIT */}
         <div className="space-y-6 sticky top-24 p-4 sm:p-0">
           <div className="sm:space-y-2 space-y-0">
-            <h1 className="text-md sm:text-4xl font-medium tracking-wide text-neutral-900">
+            <h1 className="text-md sm:text-4xl font-medium font-dior tracking-wide text-neutral-900">
               {product.name}
             </h1>
             <p className="text-lg text-neutral-700 font-extrabold">
@@ -165,7 +165,7 @@ export default function ProductClient() {
           </div>
 
           {product.description && (
-            <p className="text-sm leading-relaxed text-neutral-600">
+            <p className="text-sm leading-relaxed text-neutral-600 font-dior">
               {product.description}
             </p>
           )}
@@ -214,7 +214,7 @@ export default function ProductClient() {
                 onClick={() => addToCart(product)}
                 className="!bg-black !rounded-none !py-5 text-sm font-medium tracking-wide hover:!bg-neutral-800 transition"
               >
-                Add to bag
+                Add to basket
               </Button>
 
               <Collapse items={items} bordered={false} ghost expandIconPlacement="end" />

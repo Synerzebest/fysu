@@ -48,21 +48,21 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-[101] shadow-lg p-6 flex flex-col"
+            className="fixed top-0 right-0 h-full w-full max-w-3xl bg-neutral-800/60 backdrop-blur-sm z-[101] shadow-lg p-6 flex flex-col"
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-black font-sans">Mon panier</h2>
-              <button className="text-black cursor-pointer" onClick={() => setIsOpen(false)}>
+              <h2 className="text-xl font-semibold text-white font-dior">Mon panier</h2>
+              <button className="text-white cursor-pointer" onClick={() => setIsOpen(false)}>
                 <X size={22} />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-4">
               {cart.length === 0 ? (
-                <p className="text-neutral-500">Votre panier est vide.</p>
+                <p className="text-gray-100 font-dior">Votre panier est vide.</p>
               ) : (
                 cart.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between gap-4 border-b pb-2">
+                    <div key={item.id} className="flex items-center justify-between gap-4 border-b border-gray-400 pb-4">
                       {/* Image + Infos */}
                       <div className="flex items-center gap-4">
                         <div className="relative w-16 h-20 bg-neutral-100 rounded overflow-hidden shrink-0">
@@ -75,31 +75,31 @@ export default function CartDrawer() {
                           />
                         </div>
                         <div className="text-left">
-                          <p className="font-medium text-sm text-gray-700 font-sans">{item.name}</p>
-                          <p className="text-xs text-gray-500 mt-1 font-sans">€{(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="font-medium text-sm text-white font-sans">{item.name}</p>
+                          <p className="text-xs text-white mt-1 font-sans">€{(item.price * item.quantity).toFixed(2)}</p>
                         </div>
                       </div>
                   
                       {/* Actions */}
                       <div className="flex gap-4">
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-2">
                           <button
                             onClick={() => decreaseQuantity(item.id)}
-                            className="p-[3px] bg-gray-100 rounded-full text-gray-600 cursor-pointer hover:bg-gray-200 text-sm duration-300"
+                            className="p-[3px] rounded-full bg-gray-100/30 text-white  cursor-pointer hover:bg-gray-100/50 text-sm duration-300"
                           >
                             <Minus size={16} />
                           </button>
-                          <span className="text-sm font-sans">{item.quantity}</span>
+                          <span className="text-sm font-sans text-white">{item.quantity}</span>
                           <button
                             onClick={() => increaseQuantity(item.id)}
-                            className="p-[3px] rounded-full bg-gray-100 text-gray-600 text-sm cursor-pointer hover:bg-gray-200 duration-300"
+                            className="p-[3px] rounded-full bg-gray-100/30 text-white text-sm cursor-pointer hover:bg-gray-100/50 duration-300"
                           >
                             <Plus size={16} />
                           </button>
                         </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="cursor-pointer text-gray-400 hover:text-gray-600 "
+                          className="cursor-pointer text-gray-100/30 hover:text-gray-200 duration-300"
                           aria-label={`Supprimer ${item.name}`}
                         >
                           <Trash2 size={16} />
@@ -112,17 +112,18 @@ export default function CartDrawer() {
             </div>
 
             {cart.length > 0 && (
-              <div className="pt-4 border-t mt-4 space-y-3">
-                <div className="flex justify-between text-sm font-medium text-black font-sans">
+              <div className="pt-4 border-t border-gray-400 mt-4 space-y-3">
+                <div className="flex justify-between text-sm font-medium text-white font-sans">
                   <span>Total</span>
                   <span>€{total.toFixed(2)}</span>
                 </div>
                 <Link
                   href="/checkout"
                   onClick={() => setIsOpen(false)}
-                  className="block text-center bg-black text-white py-2 rounded-md text-sm font-medium hover:bg-neutral-800 transition font-sans"
                 >
-                  Checkout
+                  <button className="text-white text-center w-full bg-black/60 py-2 rounded-md cursor-pointer hover:bg-black/80 duration-300">
+                    Passer au paiement
+                  </button>
                 </Link>
               </div>
             )}

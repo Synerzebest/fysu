@@ -8,6 +8,7 @@ import Footer from "@/components/Footer"
 import Product from "@/components/Product"
 import ProductFilters from "@/components/ProductFilters"
 import ThemeToggle from "@/components/ThemeToggle"
+import StoryBar from "@/components/Stories/StoryBar"
 
 export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -138,6 +139,9 @@ export default function CollectionPage() {
         </div>
       )}
 
+      {/* STORY */}
+      <StoryBar collectionSlug={slug} />
+
       {/* CONTENT */}
       <div
         className={`
@@ -147,7 +151,7 @@ export default function CollectionPage() {
         `}
       >
         {products.length === 0 ? (
-          <p className="text-neutral-500">
+          <p className="text-neutral-500 font-dior">
             Aucun produit dans cette collection.
           </p>
         ) : (
