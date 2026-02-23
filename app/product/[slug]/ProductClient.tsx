@@ -165,7 +165,7 @@ export default function ProductClient() {
           </div>
 
           {product.description && (
-            <p className="text-sm leading-relaxed text-neutral-600 font-dior">
+            <p className="text-sm leading-relaxed text-neutral-600">
               {product.description}
             </p>
           )}

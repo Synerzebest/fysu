@@ -168,7 +168,7 @@ const Product = ({ product }: { product: ProductType }) => {
 
       <Link href={`/product/${product.slug}`} className="block">
         <div className="space-y-0.5 mt-2">
-          <p className="text-sm font-dior uppercase tracking-wide group-hover:underline transition">
+          <p className="text-sm uppercase tracking-wide group-hover:underline transition">
             {product.name}
           </p>
           <p className="text-sm font-light">{product.price} EUR</p>

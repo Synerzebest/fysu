@@ -12,9 +12,11 @@ export async function supabaseServer() {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set() {
+        set(name: string, value: string, options) {
+          cookieStore.set({ name, value, ...options });
         },
-        remove() {
+        remove(name: string, options) {
+          cookieStore.set({ name, value: "", ...options });
         },
       },
     }

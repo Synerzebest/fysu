@@ -66,5 +66,7 @@ export function useCurrentUser() {
     };
   }, []);
 
+  console.log(user)
+
   return { user, profile, loading };
 }

@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { supabaseClient } from "@/lib/supabaseClient";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
+import UserOders from "@/components/Profile/UserOrders";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -28,38 +31,22 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-20 space-y-6">
-      <h1 className="text-3xl font-bold">Mon profil</h1>
-
-      <div className="border rounded-lg p-4 space-y-2">
-        <p>
-          <strong>Email :</strong> {user.email}
-        </p>
-
-        <p>
-          <strong>ID :</strong> {user.id}
-        </p>
-
-        <p>
-          <strong>Nom :</strong> {profile?.name ?? "—"}
-        </p>
-
-        <p>
-          <strong>Rôle :</strong> {profile?.role ?? "user"}
-        </p>
-
-        <p>
-          <strong>Créé le :</strong>{" "}
-          {new Date(user.created_at).toLocaleDateString()}
-        </p>
-      </div>
+    <>
+    <Navbar />
+    <div className="w-full max-w-7xl relative top-24 flex justify-between items-end mx-auto">
+      <h1 className="text-3xl font-dior">Bonjour {user.user_metadata.name}</h1>
 
       <button
         onClick={handleLogout}
-        className="w-full bg-black text-white py-2 rounded"
+        className="w-fit text-foreground/40 rounded cursor-pointer underline underline-offset-1"
       >
         Se déconnecter
       </button>
     </div>
+
+    <UserOders />
+
+    <Footer />
+    </>
   );
 }

@@ -7,11 +7,9 @@ import { Menu, X, ChevronDown, UserRound } from "lucide-react";
 import Image from "next/image";
 import CartDrawer from "./CartDrawer";
 
-const logoImage = "/images/logo.png";
+const logoWhite = "/images/fysu-light.png";
+const logoBlack = "/images/fysu-dark.png";
 
-// --------------------
-// MOBILE MENU SUBCOMPONENT
-// --------------------
 function MobileMenu({
   isOpen,
   setIsOpen,
@@ -29,6 +27,25 @@ function MobileMenu({
   links: { label: string; href: string }[];
   collections: { label: string; href: string }[];
 }) {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const update = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+
+    update();
+
+    const observer = new MutationObserver(update);
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -38,18 +55,25 @@ function MobileMenu({
      <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-3xl">
       {/* Barre mobile */}
       <div className="flex items-center gap-3">
-        <div className="bg-neutral-800/60 backdrop-blur-sm w-[70%] rounded-4xl flex justify-center">
-          <Link href="/">
-            <div className="w-[1.5rem] h-auto py-[4px]">
-              <Image src={logoImage} alt="FYSU Logo" width={30} height={30} priority />
-            </div>
-          </Link>
+        <div className="bg-[var(--navbar-bg)]/60 backdrop-blur-sm w-[70%] rounded-4xl flex justify-start">
+        <Link href="/" className="w-full flex items-center justify-start">
+          <div className="relative h-[24px] w-[160px] my-[.52rem]">
+            <Image
+              src={isDark ? logoBlack : logoWhite}
+              alt="FYSU Logo"
+              fill
+              priority
+              sizes="160px"
+              className="object-contain"
+            />
+          </div>
+        </Link>
         </div>
 
-        <div className="bg-neutral-800/60 backdrop-blur-sm w-[30%] rounded-4xl flex gap-3 justify-center items-center text-white h-[42px]">
+        <div className="bg-[var(--navbar-bg)]/60 backdrop-blur-sm w-[30%] rounded-4xl flex gap-3 justify-center items-center text-[var(--menu)] h-[42px]">
           {mounted && <CartDrawer />}
 
-          <button onClick={() => setIsOpen(!isOpen)}>
+          <button onClick={() => setIsOpen(!isOpen)} className="text-[var(--menu)]" >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -59,7 +83,7 @@ function MobileMenu({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="absolute top-full mt-2 w-full overflow-hidden text-white rounded-xl bg-neutral-800/60 backdrop-blur-sm"
+            className="absolute top-full mt-2 w-full overflow-hidden text-[var(--menu)] rounded-xl bg-[var(--navbar-bg)]/60 backdrop-blur-sm"
             initial={{ height: 0 }}
             animate={{ height: "auto" }}
             exit={{ height: 0 }}

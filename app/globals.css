@@ -1,17 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #FAF9F7;
   --foreground: #171717;
+  --menu: #FAF9F7;
+
   --toggle-button-bg: #ffffff;
   --toggle-button-btn: #ffffff;
+  --navbar-bg: #262626;
 }
 
 .dark {
   --background: #212121;
   --foreground: #ffffff;
+  --menu: #171717;
+
   --toggle-button-bg: #070707;
   --toggle-button-btn: #1a1a1a;
+  --navbar-bg: #ffff;
 }
 
 
@@ -28,6 +34,7 @@
 
 .font-dior {
   font-family: var(--font-playfair), serif;
+  letter-spacing: .5px;
 }
 
 .font-pagetitle {
