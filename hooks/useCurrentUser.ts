@@ -16,57 +16,84 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
+    let active = true;
 
     const fetchProfile = async (userId: string) => {
-      const { data } = await supabaseClient
+      // maybeSingle évite de throw si rien
+      const { data, error } = await supabaseClient
         .from("profiles")
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
-      if (!cancelled) setProfile((data as Profile) ?? null);
+      if (!active) return;
+
+      if (error) {
+        console.error("fetchProfile error:", error);
+        setProfile(null);
+        return;
+      }
+
+      setProfile((data as Profile) ?? null);
     };
 
     const init = async () => {
-      const { data } = await supabaseClient.auth.getSession();
-      const sessionUser = data.session?.user ?? null;
+      setLoading(true);
 
-      if (cancelled) return;
+      try {
+        // plus fiable que getSession côté client
+        const { data, error } = await supabaseClient.auth.getUser();
 
-      setUser(sessionUser);
+        if (!active) return;
 
-      if (sessionUser) {
-        await fetchProfile(sessionUser.id);
-      } else {
+        if (error) {
+          console.error("getUser error:", error);
+          setUser(null);
+          setProfile(null);
+          return;
+        }
+
+        const sessionUser = data.user ?? null;
+        setUser(sessionUser);
+
+        if (sessionUser) {
+          await fetchProfile(sessionUser.id);
+        } else {
+          setProfile(null);
+        }
+      } catch (e) {
+        console.error("useCurrentUser init crash:", e);
+        if (!active) return;
+        setUser(null);
         setProfile(null);
+      } finally {
+        if (!active) return;
+        setLoading(false); 
       }
-
-      setLoading(false);
     };
 
     init();
 
-    const { data: sub } = supabaseClient.auth.onAuthStateChange(
-      async (_event, session) => {
-        const nextUser = session?.user ?? null;
-        setUser(nextUser);
+    const {
+      data: { subscription },
+    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      if (!active) return;
 
-        if (nextUser) {
-          await fetchProfile(nextUser.id);
-        } else {
-          setProfile(null);
-        }
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+
+      if (nextUser) {
+        await fetchProfile(nextUser.id);
+      } else {
+        setProfile(null);
       }
-    );
+    });
 
     return () => {
-      cancelled = true;
-      sub.subscription.unsubscribe();
+      active = false;
+      subscription.unsubscribe();
     };
   }, []);
-
-  console.log(user)
 
   return { user, profile, loading };
 }

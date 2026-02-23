@@ -66,8 +66,9 @@ export default function UserOrders() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="w-full mx-auto py-10 relative top-36"
+      className="w-11/12 max-w-7xl mx-auto py-10 relative top-44"
     >
+        <h1 className="text-2xl mb-6 font-dior">Mes commandes</h1>
       {loading ? (
         <div className="flex justify-center py-20">
           <Spin size="large" />
@@ -75,7 +76,7 @@ export default function UserOrders() {
       ) : error ? (
         <Empty description={error} />
       ) : orders.length === 0 ? (
-        <Empty description="Aucune commande trouvée" />
+          <p>Aucune commande trouvée</p>
       ) : (
         <div className="flex sm:flex-row flex-col gap-4">
           {orders.map((order, idx) => {

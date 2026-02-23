@@ -1,21 +1,28 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ productId: string }> }
-) {
-  const { productId } = await context.params;
+type Params = { productId: string };
 
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<Params> }
+) {
   try {
+    const { productId } = await params;
+
+    if (!productId) {
+      return NextResponse.json({ liked: false });
+    }
+
     const supabase = await supabaseServer();
 
+    // récupérer user connecté via session Supabase
     const {
       data: { user },
-      error: authError,
+      error: userError,
     } = await supabase.auth.getUser();
 
-    if (!user || authError) {
+    if (userError || !user) {
       return NextResponse.json({ liked: false });
     }
 
@@ -23,7 +30,7 @@ export async function GET(
       .from("wishlist")
       .select("id")
       .eq("user_id", user.id)
-      .eq("product_id", productId)
+      .eq("product_id", Number(productId))
       .maybeSingle();
 
     if (error) {
@@ -33,7 +40,7 @@ export async function GET(
 
     return NextResponse.json({ liked: !!data });
   } catch (err) {
-    console.error("Crash liked API:", err);
+    console.error("Crash GET /api/wishlist/[productId]:", err);
     return NextResponse.json({ liked: false });
   }
 }
