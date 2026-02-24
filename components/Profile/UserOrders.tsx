@@ -4,13 +4,26 @@ import { useEffect, useState } from "react";
 import { Tag, Spin, Empty } from "antd";
 import { motion } from "framer-motion";
 
+type OrderItem = {
+  product_id?: number;
+  quantity?: number;
+  product?: {
+    id: number;
+    name: string;
+    price: number;
+    category: string;
+    gender: string;
+    product_images?: { url: string }[];
+  } | null;
+  description?: string;
+};
+
 type Order = {
   id: string;
   status: string;
-  total: number;
-  created_at?: string; // supabase default
-  createdAt?: string;  // au cas où ton API renomme
-  items: string | any[];
+  total: number; // cents
+  createdAt?: string;
+  items: OrderItem[] | string;
 };
 
 export default function UserOrders() {
@@ -89,7 +102,7 @@ export default function UserOrders() {
               items = [];
             }
 
-            const created = order.created_at ?? order.createdAt ?? "";
+            const created = order.createdAt ?? "";
             const createdLabel = created
               ? new Date(created).toLocaleDateString()
               : "";
@@ -115,7 +128,7 @@ export default function UserOrders() {
 
                   <div className="mt-2 flex items-center gap-3">
                     <p className="text-base font-semibold">
-                      €{Number(order.total ?? 0).toFixed(2)}
+                      €{((order.total ?? 0) / 100).toFixed(2)}
                     </p>
                     {statusTag(order.status)}
                   </div>
@@ -123,33 +136,43 @@ export default function UserOrders() {
 
                 {/* Liste des items */}
                 <div className="flex gap-4 overflow-x-auto py-2">
-                  {items.map((item, i) => (
+                {items.map((item, i) => {
+                  const p = item?.product;
+
+                  const imgUrl = p?.product_images?.[0]?.url ?? "/placeholder.png";
+                  const name = p?.name ?? item?.description ?? "Produit";
+                  const category = p?.category ?? "—";
+                  const gender = p?.gender ?? "—";
+                  const price = p?.price ?? null; // price stocké en double (EUR)
+                  const qty = item?.quantity ?? 1;
+
+                  return (
                     <motion.div
-                      key={item?.id ?? `${order.id}-${i}`}
+                      key={`${order.id}-${item?.product_id ?? item?.id ?? i}`}
                       className="min-w-[180px] rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-sm"
                     >
                       <img
-                        src={item?.product_images?.[0]?.url ?? "/placeholder.png"}
-                        alt={item?.name ?? "Produit"}
+                        src={imgUrl}
+                        alt={name}
                         className="h-40 w-full object-cover"
                         loading="lazy"
                       />
                       <div className="p-3 space-y-1">
-                        <p className="font-medium text-sm truncate">
-                          {item?.name ?? "Produit"}
-                        </p>
+                        <p className="font-medium text-sm truncate">{name}</p>
+
                         <p className="text-xs text-gray-500">
-                          {item?.category ?? "—"} • {item?.gender ?? "—"}
+                          {category} • {gender}
                         </p>
+
                         <p className="text-sm font-semibold">
-                          €{Number(item?.price ?? 0).toFixed(2)}
+                          {price != null ? `€${Number(price).toFixed(2)}` : "—"}
                         </p>
-                        <p className="text-xs text-gray-400">
-                          Qté: {item?.quantity ?? 1}
-                        </p>
+
+                        <p className="text-xs text-gray-400">Qté: {qty}</p>
                       </div>
                     </motion.div>
-                  ))}
+                  );
+                })}
                 </div>
               </motion.div>
             );

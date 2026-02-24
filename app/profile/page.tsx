@@ -20,7 +20,11 @@ export default function ProfilePage() {
   }, [loading, user, router]);
 
   if (!user) {
-    return <div className="flex justify-center mt-20">Chargement...</div>;
+    return (
+      <div className="w-screen h-[90vh] flex items-center justify-center">
+        <h1 className="text-gray-500 text-4xl text-center">FYSU</h1>
+      </div>
+    )
   }
 
   const handleLogout = async () => {

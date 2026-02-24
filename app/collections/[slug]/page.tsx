@@ -123,7 +123,7 @@ export default function CollectionPage() {
 
       {/* HERO */}
       {hasHero && (
-        <div className="relative top-0 h-[100vh] sm:h-[90vh] min-h-[600px]">
+        <div className="relative sm:top-0 top-24 sm:w-full w-[90%] mx-auto h-[100vh] sm:h-[90vh] min-h-[600px]">
           <Image
             src={page.hero_image}
             alt={page.title}

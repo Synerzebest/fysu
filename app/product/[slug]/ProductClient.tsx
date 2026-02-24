@@ -8,7 +8,8 @@ import Image from "next/image"
 import { Button, Select, Collapse, Row, Col } from "antd"
 import type { CollapseProps } from "antd"
 import Link from "next/link"
-const { Option } = Select
+const { Option } = Select;
+import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default function ProductClient() {
   const { slug } = useParams() as { slug: string }
@@ -101,10 +102,16 @@ export default function ProductClient() {
     <div className="px-0 sm:px-8 py-0 sm:py-12 max-w-6xl mx-auto relative sm:top-12 top-0">
       <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-12 items-start">
         {/* IMAGES */}
-        <div className="space-y-6 sm:h-auto h-[66vh] overflow-y-scroll">
+        <div className="space-y-6 sm:space-y-8 sm:h-auto h-[66vh] overflow-y-scroll sm:overflow-visible">
           {/* Grande image principale */}
           {mainImage && (
-            <div className="relative w-full max-h-[70vh] aspect-[3/4] sm:rounded-3xl overflow-hidden sm:shadow-sm">
+            <div
+              className="
+                relative w-full h-auto aspect-[3/4] overflow-hidden
+                rounded-3xl sm:rounded-none
+                sm:shadow-none sm:bg-transparent
+              "
+            >
               <Image
                 src={mainImage}
                 alt={product.name}
@@ -114,7 +121,7 @@ export default function ProductClient() {
               />
             </div>
           )}
-
+  
           {/* Autres images */}
           {otherImages.length > 0 && (
             <div>
@@ -122,7 +129,10 @@ export default function ProductClient() {
                 {otherImages.map((img) => (
                   <div
                     key={img.id}
-                    className="relative aspect-[3/4] rounded-xl overflow-hidden sm:shadow-sm"
+                    className="
+                      relative aspect-[3/4] overflow-hidden
+                      sm:rounded-none sm:shadow-none sm:bg-transparent
+                    "
                   >
                     <Image
                       src={img.url}
@@ -133,18 +143,19 @@ export default function ProductClient() {
                   </div>
                 ))}
               </div>
-
+  
+              {/* MOBILE */}
               <div className="sm:hidden flex flex-col gap-3">
                 {otherImages.map((img) => (
                   <div
                     key={img.id}
-                    className="relative h-92 w-full bg-neutral-100 overflow-hidden shadow-sm"
+                    className="relative aspect-[3/4] overflow-hidden"
                   >
                     <Image
                       src={img.url}
                       alt={product.name}
                       fill
-                      className="object-cover"
+                      className="object-contain"
                     />
                   </div>
                 ))}
@@ -152,7 +163,7 @@ export default function ProductClient() {
             </div>
           )}
         </div>
-
+  
         {/* INFOS PRODUIT */}
         <div className="space-y-6 sticky top-24 p-4 sm:p-0">
           <div className="sm:space-y-2 space-y-0">
@@ -163,13 +174,13 @@ export default function ProductClient() {
               {product.price} EUR
             </p>
           </div>
-
+  
           {product.description && (
             <p className="text-sm leading-relaxed text-neutral-600">
               {product.description}
             </p>
           )}
-
+  
           {/* 🟣 Boules de couleur */}
           {availableColors.length > 0 && (
             <div className="flex items-center gap-3 py-3">
@@ -188,7 +199,7 @@ export default function ProductClient() {
               ))}
             </div>
           )}
-
+  
           <div className="pt-6">
             <div className="bg-gray-100 rounded-xl p-6 space-y-4">
               <Row justify="space-between" align="middle">
@@ -201,27 +212,22 @@ export default function ProductClient() {
                   </Select>
                 </Col>
                 <Col>
-                  <Link href="#" className="text-sm underline !text-gray-600 !hover:text-black">
+                  <Link
+                    href="#"
+                    className="text-sm underline !text-gray-600 !hover:text-black"
+                  >
                     Size guide
                   </Link>
                 </Col>
               </Row>
-
-              <Button
-                type="primary"
-                block
-                size="large"
-                onClick={() => addToCart(product)}
-                className="!bg-black !rounded-none !py-5 text-sm font-medium tracking-wide hover:!bg-neutral-800 transition"
-              >
-                Add to basket
-              </Button>
-
+  
+              <AddToCartButton product={product} />
+  
               <Collapse items={items} bordered={false} ghost expandIconPlacement="end" />
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

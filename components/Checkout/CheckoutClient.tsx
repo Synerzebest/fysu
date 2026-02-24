@@ -2,7 +2,7 @@
 
 import { useCart } from "@/context/CartContext";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -53,7 +53,7 @@ export default function CheckoutClient() {
 
   if (userLoading) {
     return (
-      <div className="max-w-3xl mx-auto py-8 px-4 relative top-24 text-center">
+      <div className="max-w-4xl mx-auto py-8 px-4 relative top-24 text-center">
         Chargement...
       </div>
     );
@@ -61,80 +61,43 @@ export default function CheckoutClient() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-3xl mx-auto py-8 px-4 relative top-24"
+      className="max-w-6xl mx-auto py-12 px-4 relative top-24"
     >
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Résumé de votre commande
-      </h1>
+      {/* ORDER SUMMARY */}
+      <div>
+        <h2 className="text-2xl font-semibold mb-6">
+          Résumé de commande
+        </h2>
 
-      <AnimatePresence>
-        {cart.length > 0 ? (
-          <motion.ul
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { staggerChildren: 0.1 },
-              },
-            }}
-            className="divide-y rounded-lg shadow-sm bg-white"
-          >
-            {cart.map((item) => (
-              <motion.li
-                key={item.id}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-                className="py-4 px-3 flex items-center justify-between gap-4"
-              >
-                <div className="relative w-16 h-20 flex-shrink-0 bg-neutral-100 rounded-md overflow-hidden">
-                  <Image
-                    src={item.product_images?.[0]?.url ?? "/placeholder.png"}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+        <div className="divide-y rounded-lg border bg-white">
+          {cart.map((item) => (
+            <div key={item.id} className="flex items-center gap-4 p-4">
+              <div className="relative w-16 h-20 bg-neutral-100 rounded-md overflow-hidden">
+                <Image
+                  src={item.product_images?.[0]?.url ?? "/placeholder.png"}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
-                <div className="flex-1">
-                  <p className="font-medium">{item.name}</p>
-                  <p className="text-sm text-neutral-500">
-                    Quantité : {item.quantity}
-                  </p>
-                </div>
+              <div className="flex-1">
+                <p className="font-medium">{item.name}</p>
+                <p className="text-sm text-neutral-500">
+                  Quantité : {item.quantity}
+                </p>
+              </div>
 
-                <span className="font-semibold whitespace-nowrap">
-                  €{(item.price * item.quantity).toFixed(2)}
-                </span>
-              </motion.li>
-            ))}
-          </motion.ul>
-        ) : (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center text-neutral-600"
-          >
-            Votre panier est vide.
-          </motion.p>
-        )}
-      </AnimatePresence>
+              <span className="font-semibold">
+                €{(item.price * item.quantity).toFixed(2)}
+              </span>
+            </div>
+          ))}
+        </div>
 
-      {cart.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 bg-neutral-50 p-4 rounded-lg shadow-inner"
-        >
+        <div className="mt-6 border-t pt-4">
           <div className="flex justify-between text-lg font-semibold mb-4">
             <span>Total</span>
             <span>€{total.toFixed(2)}</span>
@@ -147,16 +110,16 @@ export default function CheckoutClient() {
           <button
             onClick={handleCheckout}
             disabled={loading || !user}
-            className="w-full bg-black text-white py-3 rounded-md text-sm font-medium tracking-wide hover:bg-neutral-800 transition disabled:opacity-60"
+            className="w-full bg-black text-white py-4 text-sm font-medium tracking-wide hover:bg-neutral-800 transition disabled:opacity-60"
           >
             {loading
-              ? "Redirection en cours..."
+              ? "Redirection..."
               : user
               ? "Procéder au paiement"
               : "Connexion requise"}
           </button>
-        </motion.div>
-      )}
+        </div>
+      </div>
     </motion.div>
   );
 }

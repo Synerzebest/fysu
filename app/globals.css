@@ -60,3 +60,7 @@
   background-image: url("/images/flowers_bloom_bg_dark.jpeg");
   background-color: #0f0f0f;
 }
+
+.input {
+  @apply w-full border border-neutral-300 px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-black transition;
+}

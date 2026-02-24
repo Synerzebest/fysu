@@ -28,7 +28,7 @@ export default function ProductFilters({
     <>
       {/* TOP BAR */}
       <div className="flex items-center justify-between mb-10">
-        <h2 className="text-lg tracking-[0.2em] uppercase font-light">
+        <h2 className="text-xl font-dior font-light">
           Collection
         </h2>
 

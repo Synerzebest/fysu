@@ -8,6 +8,7 @@ import Footer from "@/components/Footer"
 import Product from "@/components/Product"
 import ProductFilters from "@/components/ProductFilters"
 import StoryBar from "@/components/Stories/StoryBar"
+import ThemeToggle from "@/components/ThemeToggle"
 
 export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -139,6 +140,8 @@ export default function CollectionPage() {
           </>
         )}
       </div>
+
+      <ThemeToggle />
 
       <Footer />
     </>
