@@ -6,64 +6,65 @@ import Image from "next/image"
 import { useState } from "react"
 import ReactDOM from "react-dom"
 
-export default function CartDrawer() {
+export default function CartDrawer({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (v: boolean) => void;
+}) {
   const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart()
-  const [isOpen, setIsOpen] = useState(false)
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
 
-  // Le bouton panier reste à sa place
-  const button = (
-    <button onClick={() => setIsOpen(true)} className="relative cursor-pointer">
-      <ShoppingCart size={20} />
-      {totalItems > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-          {totalItems}
-        </span>
-      )}
-    </button>
-  )
-
-  // Si on est côté serveur (SSR), on n'affiche rien
-  if (typeof window === "undefined") return button
-
-  // Le contenu du drawer est déplacé dans le body
-  const drawer = ReactDOM.createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Overlay */}
+  return (
+    <div className="relative">
+      {/* DRAWER STYLE NAVBAR */}
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/50 z-[100]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsOpen(false)}
-          />
+          className="
+            fixed
+            top-12
+            left-1/2
+            -translate-x-1/2
+            w-full
+            max-w-3xl
+            overflow-hidden
+            text-[var(--menu)]
+            rounded-xl
+            bg-[var(--navbar-bg)]/60
+            backdrop-blur-sm
+            shadow-xl
+            z-[60]
+          "
+          initial={{ height: 0 }}
+          animate={{ height: "auto" }}
+          exit={{ height: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+            <div className="p-6 flex flex-col max-h-[70vh]">
 
-          {/* Drawer */}
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 h-full w-full max-w-3xl bg-neutral-800/60 backdrop-blur-sm z-[101] shadow-lg p-6 flex flex-col"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-white font-dior">Mon panier</h2>
-              <button className="text-white cursor-pointer" onClick={() => setIsOpen(false)}>
-                <X size={22} />
-              </button>
-            </div>
+              {/* HEADER */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold font-dior">Mon panier</h2>
+                <button onClick={() => setIsOpen(false)}>
+                  <X size={20} />
+                </button>
+              </div>
 
-            <div className="flex-1 overflow-y-auto space-y-4">
-              {cart.length === 0 ? (
-                <p className="text-gray-100 font-dior">Votre panier est vide.</p>
-              ) : (
-                cart.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between gap-4 border-b border-gray-400 pb-4">
-                      {/* Image + Infos */}
+              {/* CONTENT */}
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+                {cart.length === 0 ? (
+                  <p className="text-sm font-dior">Votre panier est vide.</p>
+                ) : (
+                  cart.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between gap-4 border-b border-white/20 pb-4"
+                    >
+                      {/* IMAGE + INFOS */}
                       <div className="flex items-center gap-4">
                         <div className="relative w-16 h-20 bg-neutral-100 rounded overflow-hidden shrink-0">
                           <Image
@@ -74,70 +75,70 @@ export default function CartDrawer() {
                             sizes="64px"
                           />
                         </div>
+
                         <div className="text-left">
-                          <p className="font-medium text-sm text-white font-sans">{item.name}</p>
-                          <p className="text-xs text-white mt-1 font-sans">€{(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="font-medium text-sm font-sans">
+                            {item.name}
+                          </p>
+                          <p className="text-xs mt-1 font-sans">
+                            €{(item.price * item.quantity).toFixed(2)}
+                          </p>
                         </div>
                       </div>
-                  
-                      {/* Actions */}
+
+                      {/* ACTIONS */}
                       <div className="flex gap-4">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => decreaseQuantity(item.id)}
-                            className="p-[3px] rounded-full bg-gray-100/30 text-white  cursor-pointer hover:bg-gray-100/50 text-sm duration-300"
+                            className="p-[3px] rounded-full bg-white/10 hover:bg-white/20 duration-300"
                           >
-                            <Minus size={16} />
+                            <Minus size={14} />
                           </button>
-                          <span className="text-sm font-sans text-white">{item.quantity}</span>
+
+                          <span className="text-sm font-sans">
+                            {item.quantity}
+                          </span>
+
                           <button
                             onClick={() => increaseQuantity(item.id)}
-                            className="p-[3px] rounded-full bg-gray-100/30 text-white text-sm cursor-pointer hover:bg-gray-100/50 duration-300"
+                            className="p-[3px] rounded-full bg-white/10 hover:bg-white/20 duration-300"
                           >
-                            <Plus size={16} />
+                            <Plus size={14} />
                           </button>
                         </div>
+
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="cursor-pointer text-gray-100/30 hover:text-gray-200 duration-300"
-                          aria-label={`Supprimer ${item.name}`}
+                          className="opacity-40 hover:opacity-100 duration-300"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
-                ))
-                  
+                  ))
+                )}
+              </div>
+
+              {/* FOOTER */}
+              {cart.length > 0 && (
+                <div className="pt-4 mt-4 space-y-3">
+                  <div className="flex justify-between text-sm font-medium">
+                    <span>Total</span>
+                    <span>€{total.toFixed(2)}</span>
+                  </div>
+
+                  <Link href="/checkout" onClick={() => setIsOpen(false)}>
+                    <button className="w-full bg-black/60 py-2 rounded-md hover:bg-black/80 duration-300">
+                      Passer au paiement
+                    </button>
+                  </Link>
+                </div>
               )}
             </div>
-
-            {cart.length > 0 && (
-              <div className="pt-4 border-t border-gray-400 mt-4 space-y-3">
-                <div className="flex justify-between text-sm font-medium text-white font-sans">
-                  <span>Total</span>
-                  <span>€{total.toFixed(2)}</span>
-                </div>
-                <Link
-                  href="/checkout"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <button className="text-white text-center w-full bg-black/60 py-2 rounded-md cursor-pointer hover:bg-black/80 duration-300">
-                    Passer au paiement
-                  </button>
-                </Link>
-              </div>
-            )}
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>,
-    document.body
-  )
-
-  return (
-    <>
-      {button}
-      {drawer}
-    </>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
