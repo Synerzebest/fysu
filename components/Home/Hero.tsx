@@ -54,7 +54,7 @@ const HomeHero = () => {
                 </div>
 
                 <Link href="/collections/when-the-flowers-bloom" >
-                  <button className="mb-4 bg-white px-4 py-4 rounded-lg uppercase text-sm text-black cursor-pointer">
+                  <button className="text-sm mb-4 bg-transparent rounded-lg mt-2 text-white underline cursor-pointer">
                     Explore the collection
                   </button>
                 </Link>
