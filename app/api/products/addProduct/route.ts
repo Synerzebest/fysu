@@ -15,13 +15,13 @@ async function generateUniqueSlug(baseName: string) {
   let counter = 1;
 
   while (true) {
-    const { error } = await supabase
+    const { data } = await supabase
       .from("products")
       .select("id")
       .eq("slug", slug)
-      .single();
+      .maybeSingle();
 
-    if (error) break;
+    if (!data) break;
 
     slug = `${baseSlug}-${counter++}`;
   }
@@ -30,7 +30,7 @@ async function generateUniqueSlug(baseName: string) {
 }
 
 export async function POST(req: Request) {
-  const supabase = await supabaseServer(); 
+  const supabase = await supabaseServer();
 
   try {
     const body = await req.json();
@@ -40,17 +40,18 @@ export async function POST(req: Request) {
       description,
       price,
       gender,
-      category,
+      category_id,   // ✅ CHANGÉ
       colors,
       details,
       size_fit,
     } = body;
 
+    // ✅ Validation mise à jour
     if (
       !name ||
       !price ||
       !gender ||
-      !category ||
+      !category_id ||
       !Array.isArray(colors) ||
       colors.length === 0
     ) {
@@ -70,7 +71,7 @@ export async function POST(req: Request) {
         price: parseFloat(price),
         slug,
         gender,
-        category,
+        category_id,   // ✅ ICI
         details,
         size_fit,
         colors: colors.length,
@@ -86,7 +87,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Préparation des images
     const allImages: { productId: string; url: string; color: string }[] = [];
 
     for (const set of colors) {

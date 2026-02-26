@@ -8,19 +8,33 @@ import Footer from "@/components/Footer"
 import Product from "@/components/Product"
 import ProductFilters from "@/components/ProductFilters"
 import StoryBar from "@/components/Stories/StoryBar"
+import { ProductType } from "@/types/product"
 import ThemeToggle from "@/components/ThemeToggle"
+
+type SectionType = {
+  id: string
+  title: string
+  display_order: number
+  section_products: {
+    display_order: number
+    product: ProductType
+  }[]
+}
 
 export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
 
   const [page, setPage] = useState<any>(null)
-  const [products, setProducts] = useState<any[]>([])
+  const [sections, setSections] = useState<SectionType[]>([])
   const [loading, setLoading] = useState(true)
+
   const [filters, setFilters] = useState({
     gender: "all",
     sort: "default",
   })
+
+  /* FETCH DATA */
 
   useEffect(() => {
     if (!slug) return
@@ -29,14 +43,12 @@ export default function CollectionPage() {
       try {
         const res = await fetch(`/api/pages/${slug}`)
 
-        if (!res.ok) {
-          throw new Error("Collection not found")
-        }
+        if (!res.ok) throw new Error("Page not found")
 
         const data = await res.json()
+
         setPage(data.page)
-        console.log(data.products)
-        setProducts(data.products ?? [])
+        setSections(data.sections ?? [])
       } catch (err) {
         console.error(err)
         router.replace("/404")
@@ -48,30 +60,35 @@ export default function CollectionPage() {
     fetchData()
   }, [slug, router])
 
-  const filteredProducts = products
-  .filter((p) => {
-    if (filters.gender !== "all" && p.gender !== filters.gender)
-      return false
-    return true
-  })
-  .sort((a, b) => {
-    if (filters.sort === "price-asc") return a.price - b.price
-    if (filters.sort === "price-desc") return b.price - a.price
-    if (filters.sort === "newest") {
-      return (
-        new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime()
-      )
-    }
-    return 0
-  })
+  /* FILTER + SORT */
 
+  const applyFilters = (products: ProductType[]) => {
+    return products
+      .filter((p) => {
+        if (filters.gender !== "all" && p.gender !== filters.gender)
+          return false
+        return true
+      })
+      .sort((a, b) => {
+        if (filters.sort === "price-asc") return a.price - b.price
+        if (filters.sort === "price-desc") return b.price - a.price
+        if (filters.sort === "newest") {
+          return (
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
+          )
+        }
+        return 0
+      })
+  }
+
+  /* LOADING */
 
   if (loading) {
     return (
       <>
         <Navbar />
-        <div className="h-[100vh] w-[100vw] font-pagetitle flex items-center justify-center text-center text-neutral-500 text-4xl">
+        <div className="h-[100vh] w-[100vw] font-pagetitle flex items-center justify-center text-neutral-500 text-4xl">
           Fysu
         </div>
         <Footer />
@@ -92,6 +109,7 @@ export default function CollectionPage() {
   }
 
   const hasHero = Boolean(page.hero_image)
+
 
   return (
     <>
@@ -115,7 +133,7 @@ export default function CollectionPage() {
         </div>
       )}
 
-      {/* STORY */}
+      {/* STORIES */}
       <StoryBar pageSlug={slug} />
 
       {/* CONTENT */}
@@ -124,25 +142,55 @@ export default function CollectionPage() {
           hasHero ? "top-28" : "top-24"
         }`}
       >
-        {products.length === 0 ? (
+        {sections.length === 0 ? (
           <p className="text-neutral-500">
-            Aucun produit dans cette collection.
+            Aucun contenu dans cette page.
           </p>
         ) : (
           <>
             <ProductFilters filters={filters} setFilters={setFilters} />
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
-              {filteredProducts.map((product) => (
-                <Product key={product.id} product={product} />
-              ))}
-            </div>
+            {sections
+              .sort((a, b) => a.display_order - b.display_order)
+              .map((section) => {
+                const products = section.section_products
+                  ?.sort(
+                    (a, b) =>
+                      a.display_order - b.display_order
+                  )
+                  .map((sp) => sp.product)
+
+                const filteredProducts = applyFilters(
+                  products ?? []
+                )
+
+                if (filteredProducts.length === 0) return null
+
+                return (
+                  <div key={section.id} className="mb-20">
+
+                    {/* SECTION TITLE */}
+                    <h2 className="text-xl font-pagetitle mb-6">
+                      {section.title}
+                    </h2>
+
+                    {/* PRODUCTS GRID */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
+                      {filteredProducts.map((product) => (
+                        <Product
+                          key={product.id}
+                          product={product}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
           </>
         )}
       </div>
 
       <ThemeToggle />
-
       <Footer />
     </>
   )

@@ -9,7 +9,7 @@ export async function GET(
 ) {
   const { slug } = await params
 
-  // 1️⃣ Charger la page
+  // Charger la page
   const { data: pages, error: pageError } = await supabaseAdmin
     .from("pages")
     .select("*")
@@ -26,45 +26,70 @@ export async function GET(
 
   const page = pages[0]
 
-  // 2️⃣ Aucun produit
-  if (!Array.isArray(page.products) || page.products.length === 0) {
-    return NextResponse.json({ page, products: [] })
-  }
+  // Charger les sections liées à cette page
 
-  // 3️⃣ Produits + images
-  const { data: products, error: productsError } = await supabaseAdmin
-    .from("products")
+  const { data: sectionLinks, error: sectionError } = await supabaseAdmin
+    .from("section_pages")
     .select(`
-      *,
-      product_images (
+      section:sections (
         id,
-        url,
-        color,
-        productId
+        title,
+        display_order,
+        is_active,
+        section_products (
+          display_order,
+          product:products (
+            id,
+            name,
+            slug,
+            price,
+            gender,
+            createdAt,
+            product_images (
+              id,
+              url,
+              color
+            )
+          )
+        )
       )
     `)
-    .in("id", page.products)
+    .eq("page_id", page.id)
 
-  if (productsError) {
-    console.error(productsError)
+  if (sectionError) {
+    console.error(sectionError)
     return NextResponse.json(
-      { error: "Failed to load products" },
+      { error: "Failed to load sections" },
       { status: 500 }
     )
   }
 
-  // 4️⃣ Respecter l’ordre + choisir une image principale
-  const orderedProducts = page.products
-    .map((id: number) => products.find(p => p.id === id))
-    .filter(Boolean)
-    .map((product: any) => ({
-      ...product,
-      main_image:
-        product.product_images?.[0]?.url ?? null,
-    }))
+  // Formatter proprement 
+
+  const sections =
+    sectionLinks
+      ?.map((link: any) => link.section)
+      .filter((section: any) => section?.is_active)
+      .sort((a: any, b: any) => a.display_order - b.display_order)
+      .map((section: any) => ({
+        ...section,
+        section_products: section.section_products
+          ?.sort(
+            (a: any, b: any) => a.display_order - b.display_order
+          )
+          .map((sp: any) => ({
+            ...sp,
+            product: {
+              ...sp.product,
+              main_image:
+                sp.product?.product_images?.[0]?.url ?? null,
+            },
+          })),
+      })) ?? []
+
 
   return NextResponse.json({
     page,
-    products: orderedProducts,
+    sections,
   })
 }

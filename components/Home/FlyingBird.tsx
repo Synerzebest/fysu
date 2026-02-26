@@ -23,14 +23,14 @@ export default function FlyingBird() {
       >
         {/* Bubble */}
         <motion.div
-          className="absolute -top-12 right-2 whitespace-nowrap rounded-full bg-background text-foreground text-xs px-3 py-1 shadow-xl"
+          className="absolute -top-12 right-2 whitespace-nowrap rounded-full bg-white text-black text-xs px-3 py-1 shadow-xl"
           initial={{ opacity: 0, y: 6, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.45, ease: "easeOut", delay: 0.2 }}
         >
           Help me find the flowers
           {/* Tail */}
-          <span className="absolute -bottom-1 right-4 h-2 w-2 rotate-45 bg-background" />
+          <span className="absolute -bottom-1 right-4 h-2 w-2 rotate-45 bg-white" />
         </motion.div>
 
         <Image

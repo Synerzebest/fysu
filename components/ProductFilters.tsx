@@ -27,11 +27,7 @@ export default function ProductFilters({
   return (
     <>
       {/* TOP BAR */}
-      <div className="flex items-center justify-between mb-10">
-        <h2 className="text-xl font-dior font-light">
-          Collection
-        </h2>
-
+      <div className="flex items-center justify-end">
         <button
           onClick={() => setOpen(true)}
           className="

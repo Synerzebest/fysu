@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, Input, InputNumber, Upload, Button, message, Select, Space } from 'antd';
 import { UploadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { supabaseClient } from '@/lib/supabaseClient';
@@ -9,29 +9,20 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const { Option } = Select;
 
-export const categories = [
-  { value: "new-in", label: "New In" },
-  { value: "coats-and-jackets", label: "Coats and Jackets", sex: "her" },
-  { value: "dresses-and-suits", label: "Dresses and Suits", sex: "her" },
-  { value: "trousers-and-skirts", label: "Trousers and Skirts", sex: "her" },
-  { value: "tops-her", label: "Tops", sex: "her" },
-  { value: "shoes-her", label: "Shoes", sex: "her" },
-  { value: "accessories-her", label: "Accessories", sex: "her" },
-  { value: "coats", label: "Coats", sex: "him" },
-  { value: "jackets", label: "Jackets", sex: "him" },
-  { value: "trousers", label: "Trousers", sex: "him" },
-  { value: "tops-him", label: "Tops", sex: "him" },
-  { value: "shoes-him", label: "Shoes", sex: "him" },
-  { value: "accessories-him", label: "Accessories", sex: "him" },
-];
+type Category = {
+  id: number;
+  name: string;
+  slug: string;
+};
 
 export default function ProductForm() {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [formState, setFormState] = useState({
     name: '',
     description: '',
     price: 0,
     gender: '',
-    category: '',
+    category_id: undefined as number | undefined,
     details: '',
     size_fit: ''
   });
@@ -39,6 +30,20 @@ export default function ProductForm() {
   const [colorSets, setColorSets] = useState<
     { color: string; files: File[] }[]
   >([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/admin/categories");
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        toast.error("Erreur chargement catégories");
+      }
+    }
+  
+    fetchCategories();
+  }, []);
 
   const [loading, setLoading] = useState(false);
 
@@ -112,7 +117,15 @@ export default function ProductForm() {
 
     if (res.ok) {
       toast.success('Produit ajouté');
-      setFormState({ name: '', description: '', price: 0, gender: '', category: '', details: '', size_fit: '' });
+      setFormState({
+        name: '',
+        description: '',
+        price: 0,
+        gender: '',
+        category_id: undefined,
+        details: '',
+        size_fit: ''
+      });
       setColorSets([]);
     } else {
       toast.error("Erreur lors de l'ajout du produit.");
@@ -120,10 +133,6 @@ export default function ProductForm() {
 
     setLoading(false);
   };
-
-  const filteredCategories = categories.filter((cat) => {
-    return !cat.sex || cat.sex === formState.gender
-  });
 
   return (
     <motion.div
@@ -229,19 +238,20 @@ export default function ProductForm() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Form.Item label="Catégorie" required>
+            <Form.Item label="Catégorie">
               <Select
                 placeholder="Choisir une catégorie"
-                value={formState.category || undefined}
-                onChange={(value) => handleSelectChange(value, "category")}
-                disabled={!formState.gender}
-                className="rounded-xl"
+                value={formState.category_id || undefined}
+                onChange={(value) =>
+                  setFormState({ ...formState, category_id: value })
+                }
               >
-                {filteredCategories.map((cat) => (
-                  <Option key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </Option>
-                ))}
+                {categories
+                  .map((cat) => (
+                    <Option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </Option>
+                  ))}
               </Select>
             </Form.Item>
           </motion.div>
