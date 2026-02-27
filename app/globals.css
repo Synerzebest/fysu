@@ -64,3 +64,12 @@
 .input {
   @apply w-full border border-neutral-300 px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-black transition;
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}

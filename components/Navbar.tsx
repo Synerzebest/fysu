@@ -202,6 +202,15 @@ function MobileMenu({
                   </li>
                 )
               )}
+              <li>
+                <Link
+                  href="/about"
+                  onClick={handleMobileLinkClick}
+                  className="block py-2 border-b border-white/20"
+                >
+                  About
+                </Link>
+              </li>
               <li className="mt-24">
                 <Link href="/profile" className="flex items-center gap-2">
                   <UserRound size={20} /> My Fysu

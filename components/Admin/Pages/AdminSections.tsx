@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2 } from "lucide-react";
-import { Select, Input, Button, Switch } from "antd";
+import { Select, Input, Switch } from "antd";
 import toast from "react-hot-toast";
 
 const { Option } = Select;
@@ -21,14 +21,17 @@ type Page = {
 };
 
 type Section = {
-  id: string;
-  title: string;
-  slug: string;
-  is_active: boolean;
-  section_pages?: {
-    pages: Page;
-  }[];
-};
+    id: string;
+    title: string;
+    slug: string;
+    is_active: boolean;
+    section_products?: {
+      product: Product;
+    }[];
+    section_pages?: {
+      pages: Page;
+    }[];
+  };
 
 export default function AdminSections() {
   const [sections, setSections] = useState<Section[]>([]);
@@ -40,6 +43,8 @@ export default function AdminSections() {
   const [isActive, setIsActive] = useState(true);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [selectedPages, setSelectedPages] = useState<string[]>([]);
+
+  const [editingSection, setEditingSection] = useState<Section | null>(null);
 
   /* ---------------- FETCH DATA ---------------- */
 
@@ -67,33 +72,47 @@ export default function AdminSections() {
     setPages(data);
   }
 
-  /* ---------------- CREATE ---------------- */
+  /* ---------------- Save ---------------- */
 
-  async function handleCreate() {
+  async function handleSave() {
     if (!title) return toast.error("Titre requis");
-
+  
+    const method = editingSection ? "PUT" : "POST";
+  
+    const payload = {
+      id: editingSection?.id,
+      title,
+      slug,
+      is_active: isActive,
+      product_ids: selectedProducts,
+      page_ids: selectedPages,
+    };
+  
     const res = await fetch("/api/admin/sections", {
-      method: "POST",
+      method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        slug,
-        is_active: isActive,
-        product_ids: selectedProducts,
-        page_ids: selectedPages,
-      }),
+      body: JSON.stringify(payload),
     });
-
+  
     if (res.ok) {
-      toast.success("Section créée");
-      setTitle("");
-      setSlug("");
-      setSelectedProducts([]);
-      setSelectedPages([]);
+      toast.success(
+        editingSection ? "Section modifiée" : "Section créée"
+      );
+  
+      resetForm();
       fetchSections();
     } else {
-      toast.error("Erreur création section");
+      toast.error("Erreur sauvegarde section");
     }
+  }
+
+  function resetForm() {
+    setEditingSection(null);
+    setTitle("");
+    setSlug("");
+    setIsActive(true);
+    setSelectedProducts([]);
+    setSelectedPages([]);
   }
 
   /* ---------------- DELETE ---------------- */
@@ -109,6 +128,24 @@ export default function AdminSections() {
 
     toast.success("Section supprimée");
     fetchSections();
+  }
+
+  /* EDIT */
+  function handleEdit(section: any) {
+    setEditingSection(section);
+    setTitle(section.title);
+    setSlug(section.slug ?? "");
+    setIsActive(section.is_active);
+  
+    // récupérer produits liés
+    const productIds =
+      section.section_products?.map((sp: any) => sp.product.id) ?? [];
+    setSelectedProducts(productIds);
+  
+    // récupérer pages liées
+    const pageIds =
+      section.section_pages?.map((sp: any) => sp.pages.id) ?? [];
+    setSelectedPages(pageIds);
   }
 
   /* ---------------- UI ---------------- */
@@ -208,13 +245,21 @@ export default function AdminSections() {
             ))}
           </Select>
 
-          <button
-            onClick={handleCreate}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-black text-white px-5 py-3 text-sm font-medium hover:bg-gray-900 transition cursor-pointer text-center"
-          >
-            <Plus size={16} />
-            Créer section
-          </button>
+            <button
+                onClick={handleSave}
+                className="flex items-center justify-center gap-2 rounded-2xl bg-black text-white px-5 py-3 text-sm font-medium hover:bg-gray-900 transition cursor-pointer text-center"
+            >
+                {editingSection ? (
+                    <>
+                        Modifier section
+                    </>
+                ) : (
+                    <>
+                        <Plus size={16} />
+                        Créer section
+                    </>
+                )}
+            </button>
         </div>
 
         {/* SECTIONS LIST */}
@@ -236,12 +281,21 @@ export default function AdminSections() {
                   </p>
                 </div>
 
-                <button
-                  onClick={() => handleDelete(section.id)}
-                  className="text-gray-400 hover:text-red-500 transition"
-                >
-                  <Trash2 size={18} />
-                </button>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => handleEdit(section)}
+                        className="text-gray-400 hover:text-black transition"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        onClick={() => handleDelete(section.id)}
+                        className="text-gray-400 hover:text-red-500 transition"
+                    >
+                        <Trash2 size={18} />
+                    </button>
+                </div>
               </motion.li>
             ))}
           </AnimatePresence>

@@ -174,14 +174,26 @@ export default function CollectionPage() {
                       {section.title}
                     </h2>
 
-                    {/* PRODUCTS GRID */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
-                      {filteredProducts.map((product) => (
-                        <Product
-                          key={product.id}
-                          product={product}
-                        />
-                      ))}
+                    {/* PRODUCTS HORIZONTAL SCROLL */}
+                    <div className="relative">
+                      <div className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-2">
+
+                        {filteredProducts.map((product) => (
+                          <div
+                            key={product.id}
+                            className="
+                              min-w-[220px] 
+                              sm:min-w-[260px] 
+                              md:min-w-[300px] 
+                              snap-start
+                              flex-shrink-0
+                            "
+                          >
+                            <Product product={product} />
+                          </div>
+                        ))}
+
+                      </div>
                     </div>
                   </div>
                 )

@@ -17,6 +17,8 @@ import {
 import { PictureOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import AdminSections from "@/components/Admin/Pages/AdminSections";
 
 const { Title, Text } = Typography;
 
@@ -287,11 +289,12 @@ export default function AdminPages() {
     <>
     <Navbar />
     <div className="p-6 flex flex-col gap-10 relative top-20">
+      <AdminSections />
       {/* --------------------- */}
       {/* PAGES NORMALES */}
       {/* --------------------- */}
 
-      <div>
+      <div className="relative top-36">
         <div className="flex justify-between">
           <h1 className="text-2xl font-bold mb-4">Pages</h1>
 
@@ -315,7 +318,7 @@ export default function AdminPages() {
       {/* PAGES COLLECTION */}
       {/* --------------------- */}
 
-      <div>
+      <div className="relative top-36">
         <div className="flex justify-between">
           <h1 className="text-2xl font-bold mb-4">Pages collections</h1>
 
@@ -522,6 +525,10 @@ export default function AdminPages() {
           ))}
         </Checkbox.Group>
       </Modal>
+    </div>
+
+    <div className="relative top-36">
+      <Footer />
     </div>
     </>
   );

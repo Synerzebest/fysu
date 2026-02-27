@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import ProductForm from "@/components/Admin/Catalog/ProductForm";
 import ProductTable from "@/components/Admin/Catalog/ProductTable";
 import AdminCategories from "@/components/Admin/Catalog/AdminCategories";
-import AdminSections from "@/components/Admin/Catalog/AdminSections";
 import { ProductType } from "@/types/product";
 import toast from "react-hot-toast";
 
@@ -97,7 +96,6 @@ export default function AdminCatalogue() {
 
       <div className="w-screen flex flex-col gap-4 relative">
         <AdminCategories />
-        <AdminSections />
         <ProductForm />
       </div>
 
