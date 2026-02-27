@@ -1,7 +1,7 @@
-import { supabaseServer } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabaseAdmin"
 
 async function generateUniqueSlug(baseName: string) {
-  const supabase = await supabaseServer();
+  const supabase = supabaseAdmin;
 
   const baseSlug = baseName
     .normalize("NFD")
@@ -30,7 +30,7 @@ async function generateUniqueSlug(baseName: string) {
 }
 
 export async function POST(req: Request) {
-  const supabase = await supabaseServer();
+  const supabase = supabaseAdmin;
 
   try {
     const body = await req.json();
@@ -40,13 +40,12 @@ export async function POST(req: Request) {
       description,
       price,
       gender,
-      category_id,   // ✅ CHANGÉ
+      category_id,  
       colors,
       details,
       size_fit,
     } = body;
 
-    // ✅ Validation mise à jour
     if (
       !name ||
       !price ||

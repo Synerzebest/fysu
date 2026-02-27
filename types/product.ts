@@ -11,5 +11,6 @@ export type ProductType = {
     product_images: { id: number; url: string, color: string }[];
     details: string;
     size_fit: string;
+    category_id?: string;
   };
   

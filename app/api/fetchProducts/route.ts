@@ -5,17 +5,12 @@ export async function GET() {
 
   try {
     const { data, error } = await supabase
-    .from("products")
-    .select(`
-      id,
-      name,
-      price,
-      product_images (
-        id,
-        url,
-        color
-      )
-    `);
+      .from("products")
+      .select(`
+        *,
+        product_images (*)
+      `)
+      .order("createdAt", { ascending: false });
 
     if (error) {
       console.error("Erreur Supabase :", error);
@@ -32,9 +27,15 @@ export async function GET() {
     const formatted = data.map((product: any) => ({
       id: product.id,
       name: product.name,
+      description: product.description,
+      details: product.details,
+      size_fit: product.size_fit,
+      slug: product.slug,
+      category: product.category,
+      gender: product.gender,
       price: product.price,
-      thumbnail_url:
-        product.product_images?.[0]?.url ?? null,
+      createdAt: product.createdAt,
+      product_images: product.product_images ?? [],
     }));
 
     return new Response(JSON.stringify(formatted), { status: 200 });

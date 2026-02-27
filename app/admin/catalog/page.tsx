@@ -13,6 +13,18 @@ export default function AdminCatalogue() {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<ProductType | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  async function fetchCategories() {
+    const res = await fetch("/api/admin/categories");
+    const data = await res.json();
+    setCategories(data);
+  }
+  
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
 
   async function fetchProducts() {
     try {
@@ -101,6 +113,7 @@ export default function AdminCatalogue() {
 
       <ProductTable
         products={products}
+        categories={categories}
         loading={loading}
         editing={editing}
         setEditing={setEditing}

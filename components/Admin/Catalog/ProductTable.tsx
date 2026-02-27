@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Modal, Input, InputNumber, Button, Form, Divider } from "antd";
+import { useEffect, useState } from "react";
+import { Modal, Input, InputNumber, Button, Form, Divider, Select } from "antd";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductType } from "@/types/product";
 
 type ProductTableProps = {
   products: ProductType[];
+  categories: { id: number; name: string }[];
   loading: boolean;
   editing: ProductType | null;
   setEditing: (p: ProductType | null) => void;
@@ -17,6 +18,7 @@ type ProductTableProps = {
 
 export default function ProductTable({
   products,
+  categories,
   loading,
   editing,
   setEditing,
@@ -24,9 +26,13 @@ export default function ProductTable({
   handleUpdate,
 }: ProductTableProps) {
   const [colors, setColors] = useState<{ id?: number; color: string }[]>([]);
+  const [form] = Form.useForm();
+
+  /* ================= EDIT OPEN ================= */
 
   const handleOpenEdit = (product: ProductType) => {
     setEditing(product);
+
     const existingColors = Array.from(
       new Map(
         (product.product_images || [])
@@ -34,19 +40,50 @@ export default function ProductTable({
           .map((img) => [img.color, { id: img.id, color: img.color }])
       ).values()
     );
+
     setColors(existingColors);
   };
 
+  /* ================= FORM SYNC ================= */
+
+  useEffect(() => {
+    if (editing) {
+      form.setFieldsValue({
+        ...editing,
+        category_id: editing.category_id,
+        price: Number(editing.price),
+      });
+    }
+  }, [editing, form]);
+
+  /* ================= COLORS ================= */
+
   const addColor = () => setColors([...colors, { color: "#000000" }]);
+
   const updateColor = (i: number, color: string) =>
     setColors(colors.map((c, idx) => (idx === i ? { ...c, color } : c)));
+
   const removeColor = (i: number) =>
     setColors(colors.filter((_, idx) => idx !== i));
 
+  /* ================= SUBMIT ================= */
+
   const handleSubmit = (values: any) => {
-    handleUpdate({ ...editing, ...values, colors });
+    if (!editing) return;
+
+    handleUpdate({
+      ...editing,
+      ...values,
+      price: Number(values.price),
+      colors,
+    });
+
     setEditing(null);
+    form.resetFields();
   };
+
+
+  /* ========================================================= */
 
   return (
     <div className="relative top-36 px-4 sm:px-6 pb-24 max-w-7xl mx-auto">
@@ -70,25 +107,25 @@ export default function ProductTable({
               <table className="w-full text-sm">
                 <thead className="bg-neutral-50 text-neutral-500">
                   <tr>
-                    <th className="px-5 py-4 font-medium">Produit</th>
-                    <th className="px-5 py-4 font-medium">Catégorie</th>
-                    <th className="px-5 py-4 font-medium">Genre</th>
-                    <th className="px-5 py-4 font-medium text-right">Prix</th>
-                    <th className="px-5 py-4 font-medium">Ajouté le</th>
+                    <th className="px-5 py-4 font-medium text-start">Produit</th>
+                    <th className="px-5 py-4 font-medium text-start">Description</th>
+                    <th className="px-5 py-4 font-medium text-start">Prix</th>
+                    <th className="px-5 py-4 font-medium text-start">Ajouté le</th>
                     <th className="px-5 py-4"></th>
                   </tr>
                 </thead>
 
                 <tbody className="divide-y divide-neutral-100">
                   {products.map((p) => (
-                    <tr
-                      key={p.id}
-                      className="hover:bg-neutral-50 transition"
-                    >
+                    <tr key={p.id} className="hover:bg-neutral-50 transition">
+                      {/* PRODUCT */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-4">
                           <img
-                            src={p.product_images?.[0]?.url}
+                            src={
+                              p.product_images?.[0]?.url ||
+                              "/placeholder.png"
+                            }
                             alt={p.name}
                             className="w-12 h-16 object-cover rounded-lg bg-neutral-100"
                           />
@@ -103,22 +140,24 @@ export default function ProductTable({
                         </div>
                       </td>
 
-                      <td className="px-5 py-4 text-neutral-600">
-                        {p.category}
-                      </td>
-
-                      <td className="px-5 py-4 text-neutral-600">
-                        {p.gender}
-                      </td>
-
+                      {/* DESCRIPTION */}
                       <td className="px-5 py-4 text-right font-medium">
-                        {p.price.toFixed(2)} €
+                        {p.description}
                       </td>
 
+                      {/* PRICE */}
+                      <td className="px-5 py-4 text-right font-medium">
+                        {Number(p.price).toFixed(2)} €
+                      </td>
+
+                      {/* DATE */}
                       <td className="px-5 py-4 text-neutral-500">
-                        {new Date(p.createdAt).toLocaleDateString()}
+                        {p.createdAt
+                          ? new Date(p.createdAt).toLocaleDateString()
+                          : "—"}
                       </td>
 
+                      {/* ACTIONS */}
                       <td className="px-5 py-4">
                         <div className="flex justify-end gap-2 opacity-60 hover:opacity-100 transition">
                           <Button
@@ -141,7 +180,7 @@ export default function ProductTable({
             </div>
           </div>
 
-          {/* ================= MOBILE CARDS ================= */}
+          {/* ================= MOBILE ================= */}
           <div className="md:hidden space-y-4">
             {products.map((p) => (
               <motion.div
@@ -152,7 +191,9 @@ export default function ProductTable({
                 className="rounded-2xl border border-neutral-200/70 bg-white p-4 flex gap-4 shadow-sm"
               >
                 <img
-                  src={p.product_images?.[0]?.url}
+                  src={
+                    p.product_images?.[0]?.url || "/placeholder.png"
+                  }
                   alt={p.name}
                   className="w-16 h-20 object-cover rounded-lg bg-neutral-100"
                 />
@@ -160,10 +201,10 @@ export default function ProductTable({
                 <div className="flex-1">
                   <p className="font-medium">{p.name}</p>
                   <p className="text-xs text-neutral-500 mt-0.5">
-                    {p.category} • {p.gender}
+                    {p.category || "—"} • {p.gender || "—"}
                   </p>
                   <p className="mt-2 font-medium">
-                    {p.price.toFixed(2)} €
+                    {Number(p.price).toFixed(2)} €
                   </p>
                 </div>
 
@@ -189,21 +230,12 @@ export default function ProductTable({
       {/* ================= MODAL ================= */}
       <Modal
         open={!!editing}
-        onCancel={() => setEditing(null)}
+        onCancel={() => {
+          setEditing(null);
+          form.resetFields();
+        }}
         footer={null}
         centered
-        styles={{
-          body: {
-            padding: 24,
-          },
-          header: {
-            padding: 0,
-            borderBottom: "none",
-          },
-          footer: {
-            borderTop: "none",
-          },
-        }}
         className="[&_.ant-modal-content]:rounded-2xl"
       >
         {editing && (
@@ -222,8 +254,8 @@ export default function ProductTable({
             </div>
 
             <Form
+              form={form}
               layout="vertical"
-              initialValues={editing}
               onFinish={handleSubmit}
             >
               <Form.Item label="Nom" name="name">
@@ -257,8 +289,18 @@ export default function ProductTable({
                 />
               </Form.Item>
 
-              <Form.Item label="Catégorie" name="category">
-                <Input />
+              <Form.Item
+                label="Catégorie"
+                name="category_id"
+                rules={[{ required: true, message: "Catégorie obligatoire" }]}
+              >
+                <Select
+                  placeholder="Choisir une catégorie"
+                  options={categories.map((cat) => ({
+                    value: cat.id,
+                    label: cat.name,
+                  }))}
+                />
               </Form.Item>
 
               <Form.Item label="Genre" name="gender">

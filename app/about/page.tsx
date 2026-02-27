@@ -1,6 +1,7 @@
 import { getAboutBlocks } from "@/lib/db/about"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
+import ThemeToggle from "@/components/ThemeToggle"
 
 export default async function AboutPage() {
   const blocks = await getAboutBlocks()
@@ -72,6 +73,8 @@ export default async function AboutPage() {
             })}
         </div>
         </main>
+
+        <ThemeToggle />
 
         <Footer />
     </>
