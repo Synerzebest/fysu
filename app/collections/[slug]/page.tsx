@@ -183,22 +183,20 @@ export default function CollectionPage() {
           ) : (
             <>
               <ProductFilters filters={filters} setFilters={setFilters} />
-    
-              <div
-                className="
-                  relative top-12
-                  grid
-                  grid-cols-1
-                  min-[420px]:grid-cols-2
-                  lg:grid-cols-4
-                  gap-y-10
-                  gap-x-6
-                  justify-items-center
-                "
-              >
-                {filteredProducts.map((product) => (
-                  <Product key={product.id} product={product} />
-                ))}
+              <div className="relative top-12">
+  <div
+    className="
+      grid
+      grid-cols-2
+      gap-x-4 gap-y-8
+      md:grid-cols-3
+      lg:grid-cols-4
+    "
+  >
+                  {filteredProducts.map((product) => (
+                    <Product key={product.id} product={product} />
+                  ))}
+                </div>
               </div>
             </>
           )}

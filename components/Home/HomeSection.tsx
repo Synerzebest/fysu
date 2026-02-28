@@ -23,9 +23,31 @@ export default function HomeSection({ slug }: { slug: string }) {
     <section className="relative top-56 w-11/12 mx-auto">
       <h2 className="text-xl sm:text-2xl font-bold mb-8 font-dior">{title}</h2>
 
-      <div className="flex gap-6 w-full overflow-x-scroll">
-        {products.map(product => (
-          <Product key={product.id} product={product} />
+      <div
+        className="
+          flex
+          gap-6
+          overflow-x-auto
+          scroll-smooth
+          snap-x snap-mandatory
+          no-scrollbar
+          pb-2
+        "
+      >
+        {products.map((product) => (
+          <div
+            key={product.id}
+            className="
+              snap-start
+              flex-shrink-0
+              w-[220px]
+              sm:w-[260px]
+              md:w-[300px]
+              lg:w-[320px]
+            "
+          >
+            <Product product={product} />
+          </div>
         ))}
       </div>
     </section>
