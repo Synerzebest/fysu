@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import UserOders from "@/components/Profile/UserOrders";
 import UserWishlist from "@/components/Profile/UserWishlist";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -52,6 +53,9 @@ export default function ProfilePage() {
       <UserWishlist />
       <UserOders />
 
+      <div className="relative top-36">
+        <ThemeToggle />
+      </div>
       <Footer />
     </>
   );

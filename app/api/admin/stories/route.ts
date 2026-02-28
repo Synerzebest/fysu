@@ -9,7 +9,6 @@ export async function GET() {
   const { data, error } = await supabaseAdmin
     .from("stories")
     .select("*, story_items(*), story_page_links(*)")
-    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("GET stories error:", error);

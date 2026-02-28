@@ -45,25 +45,27 @@ export default function StoryManager({ onEdit, refreshKey }: Props) {
 
   const fetchStories = async () => {
     setLoading(true);
-
-    const { data, error } = await supabase
-      .from("stories")
-      .select("*, story_items(*)")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      message.error("Erreur chargement stories");
-      console.error(error);
-    } else {
+  
+    try {
+      const res = await fetch("/api/admin/stories", { cache: "no-store" });
+      const data = await res.json();
+  
+      if (!res.ok) {
+        throw new Error(data?.error || "Erreur chargement stories");
+      }
+  
       setStories(data || []);
+    } catch (err) {
+      console.error(err);
+      message.error("Erreur chargement stories");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
-
+  
   useEffect(() => {
     fetchStories();
-  }, [refreshKey]); // 🔥 refresh si parent change refreshKey
+  }, [refreshKey]);
 
   /* -------------------------------------------------- */
   /* DELETE */
@@ -123,7 +125,7 @@ export default function StoryManager({ onEdit, refreshKey }: Props) {
           <Spin />
         </div>
       ) : (
-        <Space direction="vertical" className="w-full">
+        <Space orientation="vertical" className="w-full">
           <AnimatePresence>
             {stories.map((story) => (
               <motion.div

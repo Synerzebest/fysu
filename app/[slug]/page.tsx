@@ -115,26 +115,58 @@ export default function CollectionPage() {
     <>
       <Navbar />
 
-      {/* HERO */}
-      {hasHero && (
-        <div className="relative w-full h-[90vh] min-h-[600px]">
-          <Image
-            src={page.hero_image}
-            alt={page.title}
-            fill
-            priority
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-            <h1 className="text-lg font-pagetitle font-thin text-white">
-              {page.title}
-            </h1>
-          </div>
-        </div>
-      )}
+      {/* ================= MOBILE / TABLETTE ================= */}
+      <div className="lg:hidden">
 
-      {/* STORIES */}
-      <StoryBar pageSlug={slug} />
+        {/* STORIES */}
+        <StoryBar pageSlug={slug} />
+
+        {/* TITLE */}
+        <div className="px-6 pt-24">
+          <h1 className="text-2xl font-pagetitle font-thin text-center">
+            {page.title}
+          </h1>
+        </div>
+
+        {/* IMAGE */}
+        {hasHero && (
+          <div className="relative w-full h-[55vh] mt-6">
+            <Image
+              src={page.hero_image}
+              alt={page.title}
+              fill
+              priority
+              className="object-contain"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* ================= DESKTOP ================= */}
+      <div className="hidden lg:block">
+
+        {/* HERO */}
+        {hasHero && (
+          <div className="relative w-full h-[90vh] min-h-[600px]">
+            <Image
+              src={page.hero_image}
+              alt={page.title}
+              fill
+              priority
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <h1 className="text-lg font-pagetitle font-thin text-white">
+                {page.title}
+              </h1>
+            </div>
+          </div>
+        )}
+
+        {/* STORIES */}
+        <StoryBar pageSlug={slug} />
+
+      </div>
 
       {/* CONTENT */}
       <div
