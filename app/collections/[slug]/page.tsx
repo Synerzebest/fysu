@@ -145,7 +145,7 @@ export default function CollectionPage() {
       {/* CONTENT */}
       <div
         className={`
-          collection-bg
+          bg-transparent
           relative px-6 pt-12 pb-44
           ${hasHero ? "top-0" : "top-24"}
         `}
@@ -158,7 +158,7 @@ export default function CollectionPage() {
           <>
             <ProductFilters filters={filters} setFilters={setFilters} />
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
+            <div className="relative top-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
               {filteredProducts.map((product) => (
                 <Product key={product.id} product={product} />
               ))}

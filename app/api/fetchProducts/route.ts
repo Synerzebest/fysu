@@ -32,10 +32,12 @@ export async function GET() {
       details: product.details,
       size_fit: product.size_fit,
       slug: product.slug,
-      category: product.category,
       gender: product.gender,
       price: product.price,
       createdAt: product.createdAt,
+    
+      thumbnail_url: product.product_images?.[0]?.url ?? null,
+    
       product_images: product.product_images ?? [],
     }));
 

@@ -79,7 +79,7 @@ const Product = ({ product }: { product: ProductType }) => {
   
 
   return (
-    <div className="relative text-center max-w-[350px] group">
+    <div className="relative text-center w-[280px] md:w-[320px] lg:w-[350px] shrink-0 group">
       {/* Catégorie */}
       <div className="absolute left-2 top-2 bg-white/70 rounded-md px-2 py-0.5">
         <p className="uppercase tracking-wide text-xs text-gray-600">
@@ -148,17 +148,17 @@ const Product = ({ product }: { product: ProductType }) => {
             </div>
           ))}
         </motion.div>
-
-        {/* Indicateurs */}
+        
+        {/* Indicateurs (barres luxe) */}
         {images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
             {images.map((_, i) => (
               <div
                 key={i}
-                className={`w-1.5 h-1.5 rounded-full transition ${
+                className={`h-[2px] rounded-full transition-all duration-200 ${
                   i === currentIndex
-                    ? "bg-black"
-                    : "bg-black/40"
+                    ? "w-8 bg-black"
+                    : "w-5 bg-black/30"
                 }`}
               />
             ))}

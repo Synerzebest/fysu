@@ -175,16 +175,16 @@ export default function ProductClient() {
         {/* INFOS PRODUIT */}
         <div className="space-y-6 sticky top-24 p-4 sm:p-0">
           <div className="sm:space-y-2 space-y-0">
-            <h1 className="text-md sm:text-4xl font-medium font-dior tracking-wide text-neutral-900">
+            <h1 className="text-md sm:text-4xl font-medium tracking-wide text-foreground">
               {product.name}
             </h1>
-            <p className="text-lg text-neutral-700 font-extrabold">
+            <p className="text-lg text-foreground/90 font-extrabold">
               {product.price} EUR
             </p>
           </div>
   
           {product.description && (
-            <p className="text-sm leading-relaxed text-neutral-600">
+            <p className="text-sm leading-relaxed text-foreground">
               {product.description}
             </p>
           )}
@@ -207,38 +207,58 @@ export default function ProductClient() {
               ))}
             </div>
           )}
-  
-          <div className="pt-6">
-            <div className="bg-gray-100 rounded-xl p-6 space-y-4">
+
+          {/* Sizes */}
+          {availableSizes.length > 0 && (
+            <div className="space-y-3">
               <Row justify="space-between" align="middle">
                 <Col>
-                  <Select
-                    placeholder="Please select a size"
-                    className="w-40"
-                    value={selectedSizeId ?? undefined}
-                    onChange={(value) => {
-                      const selected = availableSizes.find((s) => s.id === value);
-                      setSelectedSizeId(value);
-                      setSelectedSizeLabel(selected?.size ?? null);
-                    }}
-                  >
-                    {availableSizes.map((s) => (
-                      <Select.Option key={s.id} value={s.id}>
-                        {s.size}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                  <p className="text-sm font-medium">Size</p>
                 </Col>
                 <Col>
                   <Link
                     href="#"
-                    className="text-sm underline !text-gray-600 !hover:text-black"
+                    className="text-sm underline !text-gray-600 hover:!text-black"
                   >
                     Size guide
                   </Link>
                 </Col>
               </Row>
+
+              <div className="flex flex-wrap gap-3">
+                {availableSizes.map((s) => {
+                  const isSelected = selectedSizeId === s.id
+
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => {
+                        setSelectedSizeId(s.id)
+                        setSelectedSizeLabel(s.size)
+                      }}
+                      className={`
+                        min-w-[48px]
+                        px-4 py-2
+                        text-sm tracking-wide
+                        border rounded-md
+                        transition-all duration-200
+                        ${
+                          isSelected
+                            ? "border-black bg-black text-white"
+                            : "border-neutral-300 text-foreground hover:border-black"
+                        }
+                      `}
+                    >
+                      {s.size}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
   
+          <div className="pt-6">
+            <div className="bg-gray-100 rounded-xl p-6 space-y-4">
               <AddToCartButton
                 product={product}
                 selectedSizeId={selectedSizeId}

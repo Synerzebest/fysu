@@ -35,7 +35,7 @@ export default function ProductFilters({
             border border-neutral-300
             px-5 py-2
             text-xs uppercase tracking-[0.25em]
-            bg-background hover:bg-background/90 cursor-pointer
+            bg-transparent cursor-pointer
             transition-all duration-300
           "
         >
@@ -95,7 +95,7 @@ export default function ProductFilters({
                     onChange={(value) =>
                       setFilters({ ...filters, gender: value })
                     }
-                    bordered={false}
+                    variant="borderless"
                     className="w-full luxury-select"
                   >
                     <Option className="text-foreground" value="all">Tous</Option>

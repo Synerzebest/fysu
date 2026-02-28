@@ -50,12 +50,6 @@
   padding-left: 0 !important;
 }
 
-.collection-bg {
-  background-image: url("/images/flowers_bloom_bg.jpeg");
-  background-repeat: repeat;
-  background-color: #ffffff;
-}
-
 .dark .collection-bg {
   background-image: url("/images/flowers_bloom_bg_dark.jpeg");
   background-color: #0f0f0f;
