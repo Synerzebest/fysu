@@ -190,7 +190,6 @@ export default function CollectionPage() {
                   grid
                   grid-cols-1
                   min-[420px]:grid-cols-2
-                  md:grid-cols-3
                   lg:grid-cols-4
                   gap-y-10
                   gap-x-6
