@@ -117,59 +117,97 @@ export default function CollectionPage() {
 
   const hasHero = Boolean(page.hero_image)
 
-  return (
-    <div>
-      <Navbar />
-
-      {/* HERO */}
-      {hasHero && (
-        <div className="relative sm:top-0 top-24 sm:w-full w-[90%] mx-auto h-[100vh] sm:h-[90vh] min-h-[600px]">
-          <Image
-            src={page.hero_image}
-            alt={page.title}
-            fill
-            priority
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-            <h1 className="text-lg font-pagetitle font-thin text-white text-center">
+    return (
+      <>
+        <Navbar />
+    
+        {/* ================= MOBILE / TABLETTE ================= */}
+        <div className="lg:hidden">
+    
+          {/* STORIES */}
+          <StoryBar collectionSlug={slug} />
+    
+          {/* TITLE */}
+          <div className="px-6 pt-24">
+            <h1 className="text-2xl font-pagetitle font-thin text-center">
               {page.title}
             </h1>
           </div>
-        </div>
-      )}
-
-      {/* STORY */}
-      <StoryBar collectionSlug={slug} />
-
-      {/* CONTENT */}
-      <div
-        className={`
-          bg-transparent
-          relative px-6 pt-12 pb-44
-          ${hasHero ? "top-0" : "top-24"}
-        `}
-      >
-        {products.length === 0 ? (
-          <p className="text-neutral-500 font-dior">
-            Aucun produit dans cette collection.
-          </p>
-        ) : (
-          <>
-            <ProductFilters filters={filters} setFilters={setFilters} />
-
-            <div className="relative top-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
-              {filteredProducts.map((product) => (
-                <Product key={product.id} product={product} />
-              ))}
+    
+          {/* IMAGE */}
+          {hasHero && (
+            <div className="relative w-full h-[55vh] mt-6">
+              <Image
+                src={page.hero_image}
+                alt={page.title}
+                fill
+                priority
+                className="object-contain"
+              />
             </div>
-          </>
-        )}
-      </div>
-
-      <ThemeToggle />
-
-      <Footer />
-    </div>
-  )
+          )}
+        </div>
+    
+        {/* ================= DESKTOP ================= */}
+        <div className="hidden lg:block">
+    
+          {/* HERO */}
+          {hasHero && (
+            <div className="relative w-full h-[90vh] min-h-[600px]">
+              <Image
+                src={page.hero_image}
+                alt={page.title}
+                fill
+                priority
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                <h1 className="text-lg font-pagetitle font-thin text-white">
+                  {page.title}
+                </h1>
+              </div>
+            </div>
+          )}
+    
+          {/* STORIES */}
+          <StoryBar collectionSlug={slug} />
+    
+        </div>
+    
+        {/* CONTENT */}
+        <div className="relative px-6 pt-12 pb-44">
+          {products.length === 0 ? (
+            <p className="text-neutral-500 font-dior">
+              Aucun produit dans cette collection.
+            </p>
+          ) : (
+            <>
+              <ProductFilters filters={filters} setFilters={setFilters} />
+    
+              <div
+                className="
+                  relative top-12
+                  grid
+                  grid-cols-1
+                  min-[420px]:grid-cols-2
+                  md:grid-cols-3
+                  lg:grid-cols-4
+                  gap-y-10
+                  gap-x-6
+                  justify-items-center
+                "
+              >
+                {filteredProducts.map((product) => (
+                  <Product key={product.id} product={product} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+    
+        <ThemeToggle />
+        <Footer />
+      </>
+    )
+  
 }

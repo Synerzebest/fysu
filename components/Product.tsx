@@ -79,7 +79,7 @@ const Product = ({ product }: { product: ProductType }) => {
   
 
   return (
-    <div className="relative text-center w-[280px] md:w-[320px] lg:w-[350px] shrink-0 group">
+    <div className="relative text-center w-full max-w-[280px] md:w-[320px] lg:w-[350px] group">
       {/* Catégorie */}
       <div className="absolute left-2 top-2 bg-white/70 rounded-md px-2 py-0.5">
         <p className="uppercase tracking-wide text-xs text-gray-600">
