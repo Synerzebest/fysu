@@ -16,82 +16,74 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let active = true;
+    let mounted = true;
 
-    const fetchProfile = async (userId: string) => {
-      // maybeSingle évite de throw si rien
-      const { data, error } = await supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (!active) return;
-
-      if (error) {
-        console.error("fetchProfile error:", error);
-        setProfile(null);
-        return;
-      }
-
-      setProfile((data as Profile) ?? null);
-    };
-
-    const init = async () => {
-      setLoading(true);
-
+    const loadInitialSession = async () => {
       try {
-        // plus fiable que getSession côté client
-        const { data, error } = await supabaseClient.auth.getUser();
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
 
-        if (!active) return;
+        if (!mounted) return;
 
-        if (error) {
-          console.error("getUser error:", error);
-          setUser(null);
-          setProfile(null);
-          return;
-        }
-
-        const sessionUser = data.user ?? null;
+        const sessionUser = session?.user ?? null;
         setUser(sessionUser);
 
         if (sessionUser) {
-          await fetchProfile(sessionUser.id);
-        } else {
-          setProfile(null);
+          const { data: profileData } = await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", sessionUser.id)
+            .maybeSingle();
+
+          if (!mounted) return;
+          setProfile(profileData ?? null);
         }
-      } catch (e) {
-        console.error("useCurrentUser init crash:", e);
-        if (!active) return;
-        setUser(null);
-        setProfile(null);
+      } catch (err) {
+        console.error("Auth error:", err);
       } finally {
-        if (!active) return;
-        setLoading(false); 
+        if (!mounted) return;
+        setLoading(false);
       }
     };
 
-    init();
+    loadInitialSession();
 
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      if (!active) return;
+    } = supabaseClient.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (!mounted) return;
 
-      const nextUser = session?.user ?? null;
-      setUser(nextUser);
+        const nextUser = session?.user ?? null;
+        setUser(nextUser);
 
-      if (nextUser) {
-        await fetchProfile(nextUser.id);
-      } else {
-        setProfile(null);
+        if (nextUser) {
+          const { data: profileData } = await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", nextUser.id)
+            .maybeSingle();
+
+          if (!mounted) return;
+          setProfile(profileData ?? null);
+        } else {
+          setProfile(null);
+        }
       }
-    });
+    );
+
+    // Sécurité : si pour une raison X ça bloque, on débloque après 3s
+    const safetyTimeout = setTimeout(() => {
+      if (mounted) {
+        setLoading(false);
+      }
+    }, 1500);
 
     return () => {
-      active = false;
+      mounted = false;
       subscription.unsubscribe();
+      clearTimeout(safetyTimeout);
     };
   }, []);
 

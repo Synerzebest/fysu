@@ -19,6 +19,8 @@ type Product = {
 type OrderItem = {
   product_id?: number;
   quantity?: number;
+  size_id?: string;
+  size_label?: string;
   product?: Product | null;
 };
 
@@ -196,7 +198,7 @@ ${s.phone ? `Tel: ${s.phone}` : ""}`;
     printWindow.document.write(`
       <html>
         <head>
-          <title>Étiquette</title>
+          <title>Label</title>
           <style>
             body { font-family: Arial; padding: 40px; }
             .label { border: 2px solid black; padding: 20px; width: 300px; }
@@ -219,7 +221,7 @@ ${s.phone ? `Tel: ${s.phone}` : ""}`;
       animate={{ opacity: 1 }}
       className="w-11/12 max-w-7xl mx-auto py-10 relative top-24"
     >
-      <h1 className="text-2xl font-dior mb-6">Commandes</h1>
+      <h1 className="text-2xl font-dior mb-6">Orders</h1>
 
       {loading ? (
         <div className="py-24 flex justify-center">
@@ -246,7 +248,7 @@ ${s.phone ? `Tel: ${s.phone}` : ""}`;
                 {/* SHIPPING */}
                 <div className="border rounded-xl p-4 bg-neutral-50">
                   <h3 className="font-semibold mb-2">
-                    Adresse de livraison
+                    Shipping Address
                   </h3>
 
                   <pre className="text-sm text-neutral-700 whitespace-pre-wrap">
@@ -255,11 +257,11 @@ ${s.phone ? `Tel: ${s.phone}` : ""}`;
 
                   <div className="flex gap-3 mt-4">
                     <Button onClick={() => copyAddress(order)}>
-                      Copier adresse
+                      Copy address
                     </Button>
 
                     <Button onClick={() => printLabel(order)}>
-                      Imprimer étiquette
+                      Print label
                     </Button>
                   </div>
                 </div>
@@ -283,8 +285,17 @@ ${s.phone ? `Tel: ${s.phone}` : ""}`;
                           <div className="font-medium">
                             {p?.name ?? "Produit"}
                           </div>
-                          <div className="text-neutral-500">
-                            Qté: {it.quantity}
+
+                          {it.size_label && (
+                            <div className="text-xs mt-1">
+                              <span className="inline-block px-2 py-0.5 bg-neutral-100 rounded text-[10px] tracking-wide">
+                                Size : {it.size_label}
+                              </span>
+                            </div>
+                          )}
+
+                          <div className="text-neutral-500 mt-1">
+                            Qty: {it.quantity}
                           </div>
                         </div>
                       </div>

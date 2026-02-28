@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       category_id,
       gender,
       colors,
+      sizes
     } = body;
 
     if (!id) {
@@ -48,6 +49,27 @@ export async function POST(req: Request) {
         { error: error.message },
         { status: 500 }
       );
+    }
+
+    // Gestion tailles
+    if (Array.isArray(sizes)) {
+      await supabase
+        .from("product_sizes")
+        .delete()
+        .eq("product_id", id);
+
+      const formatted = sizes.map((s: any) => ({
+        product_id: id,
+        size: s.size,
+        stock: Number(s.stock),
+        is_active: s.is_active,
+      }));
+
+      if (formatted.length > 0) {
+        await supabase
+          .from("product_sizes")
+          .insert(formatted);
+      }
     }
 
     // Gestion des couleurs

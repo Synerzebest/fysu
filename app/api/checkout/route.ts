@@ -21,7 +21,7 @@ export async function POST(req: Request) {
       price_data: {
         currency: "eur",
         product_data: {
-          name: item.name,
+          name: `${item.name} - size ${item.selectedSizeLabel}`,
         },
         unit_amount: Math.round(item.price * 100),
       },
@@ -31,6 +31,8 @@ export async function POST(req: Request) {
     // 🔹 Cart simplifié pour metadata (pour webhook)
     const simplifiedCart = cart.map((item: any) => ({
       productId: item.id,
+      sizeId: item.selectedSizeId,
+      sizeLabel: item.selectedSizeLabel,
       quantity: item.quantity,
     }));
 
@@ -42,7 +44,6 @@ export async function POST(req: Request) {
 
       line_items,
 
-      // ✅ Stripe collecte l'adresse
       shipping_address_collection: {
         allowed_countries: ["BE", "FR", "NL", "DE"],
       },

@@ -24,6 +24,12 @@ export async function GET(
         id,
         url,
         color
+      ),
+      product_sizes (
+        id,
+        size,
+        stock,
+        is_active
       )
     `)
     .eq("slug", slug)

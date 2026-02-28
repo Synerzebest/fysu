@@ -101,7 +101,7 @@ export async function GET(req: Request) {
         name,
         price,
         slug,
-        category,
+        category_id,
         gender,
         product_images (
           id,

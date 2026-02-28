@@ -8,7 +8,8 @@ export async function GET() {
       .from("products")
       .select(`
         *,
-        product_images (*)
+        product_images (*),
+        product_sizes (*)
       `)
       .order("createdAt", { ascending: false });
 

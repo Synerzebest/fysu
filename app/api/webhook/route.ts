@@ -33,27 +33,32 @@ export async function POST(req: Request) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-
+  
     if (session.payment_status !== "paid") {
       return NextResponse.json({ received: true });
     }
-
+  
     const supabase = supabaseAdmin;
-
+  
     // 🔒 Anti-duplicate
     const { data: existing } = await supabase
       .from("orders")
       .select("id")
       .eq("stripe_session_id", session.id)
       .maybeSingle();
-
+  
     if (existing) {
       return NextResponse.json({ received: true });
     }
-
-    // 🔹 Récupération cart depuis metadata
-    let cartFromMetadata: Array<{ productId: string; quantity: number }> = [];
-
+  
+    // 🔹 Parse cart metadata (avec tailles)
+    let cartFromMetadata: Array<{
+      productId: string;
+      sizeId: string;
+      sizeLabel: string;
+      quantity: number;
+    }> = [];
+  
     try {
       if (session.metadata?.cart) {
         cartFromMetadata = JSON.parse(session.metadata.cart);
@@ -61,33 +66,61 @@ export async function POST(req: Request) {
     } catch (e) {
       console.error("Invalid metadata.cart JSON:", e);
     }
-
-    const items = cartFromMetadata.map((i) => ({
-      product_id: Number(i.productId),
-      quantity: i.quantity,
-    }));
-
+  
     // ⚠️ Sécurité : userId obligatoire
     if (!session.metadata?.userId) {
       console.error("Missing userId in metadata");
       return NextResponse.json({ error: "Missing userId" }, { status: 400 });
     }
-
+  
+    // 🔥 Décrémentation du stock par taille
+    for (const item of cartFromMetadata) {
+      const { data: sizeRow, error: fetchError } = await supabase
+        .from("product_sizes")
+        .select("stock")
+        .eq("id", item.sizeId)
+        .single();
+  
+      if (fetchError || !sizeRow) {
+        console.error("Size not found:", item.sizeId);
+        continue;
+      }
+  
+      const newStock = sizeRow.stock - item.quantity;
+  
+      if (newStock < 0) {
+        console.error("Stock négatif détecté pour size:", item.sizeId);
+        continue;
+      }
+  
+      await supabase
+        .from("product_sizes")
+        .update({ stock: newStock })
+        .eq("id", item.sizeId);
+    }
+  
     const shipping = session.customer_details;
-
+  
+    const items = cartFromMetadata.map((i) => ({
+      product_id: Number(i.productId),
+      size_id: i.sizeId,
+      size_label: i.sizeLabel,
+      quantity: i.quantity,
+    }));
+  
     const { error } = await supabase.from("orders").insert({
       id: crypto.randomUUID(),
       user_id: session.metadata.userId,
       stripe_session_id: session.id,
       stripe_payment_intent: session.payment_intent,
       email: shipping?.email ?? session.customer_email,
-      total: session.amount_total, // cents
+      total: session.amount_total,
       currency: session.currency,
       status: "paid",
-      shipping_data: shipping, // ✅ adresse complète Stripe
+      shipping_data: shipping,
       items,
     });
-
+  
     if (error) {
       console.error("Supabase insert error:", error);
       return NextResponse.json({ error: "Database error" }, { status: 500 });

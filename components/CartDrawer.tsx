@@ -80,6 +80,11 @@ export default function CartDrawer({
                           <p className="font-medium text-sm font-sans">
                             {item.name}
                           </p>
+                          <p className="text-xs mt-1">
+                            <span className="inline-block px-2 py-0.5 bg-white/10 rounded text-[10px] tracking-wide">
+                              {item.selectedSizeLabel}
+                            </span>
+                          </p>
                           <p className="text-xs mt-1 font-sans">
                             €{(item.price * item.quantity).toFixed(2)}
                           </p>
@@ -90,7 +95,7 @@ export default function CartDrawer({
                       <div className="flex gap-4">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => decreaseQuantity(item.id)}
+                            onClick={() => decreaseQuantity(item.id, item.selectedSizeId)}
                             className="p-[3px] rounded-full bg-white/10 hover:bg-white/20 duration-300"
                           >
                             <Minus size={14} />
@@ -101,7 +106,7 @@ export default function CartDrawer({
                           </span>
 
                           <button
-                            onClick={() => increaseQuantity(item.id)}
+                            onClick={() => increaseQuantity(item.id, item.selectedSizeId)}
                             className="p-[3px] rounded-full bg-white/10 hover:bg-white/20 duration-300"
                           >
                             <Plus size={14} />
@@ -109,7 +114,7 @@ export default function CartDrawer({
                         </div>
 
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.id, item.selectedSizeId)}
                           className="opacity-40 hover:opacity-100 duration-300"
                         >
                           <Trash2 size={14} />

@@ -7,18 +7,43 @@ import { Check } from "lucide-react";
 
 type Props = {
   product: ProductType;
+  selectedSizeId: string | null;
+  selectedSizeLabel: string | null;
   className?: string;
 };
 
-export default function AddToCartButton({ product, className }: Props) {
+export default function AddToCartButton({
+  product,
+  selectedSizeId,
+  selectedSizeLabel,
+  className,
+}: Props) {
   const { addToCartWithFeedback, justAdded } = useCart();
-  const isAdded = !!justAdded[product.id];
+
+  // clé unique produit + taille
+  const key = selectedSizeId
+    ? `${product.id}-${selectedSizeId}`
+    : `${product.id}`;
+
+  const isAdded = !!justAdded[key];
 
   return (
     <motion.button
       type="button"
       disabled={isAdded}
-      onClick={() => addToCartWithFeedback(product, 1500)}
+      onClick={() => {
+        if (!selectedSizeId || !selectedSizeLabel) {
+          alert("Please select a size");
+          return;
+        }
+
+        addToCartWithFeedback(
+          product,
+          selectedSizeId,
+          selectedSizeLabel,
+          1500
+        );
+      }}
       className={`
         w-full
         bg-black

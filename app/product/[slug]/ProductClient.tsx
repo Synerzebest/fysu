@@ -2,23 +2,23 @@
 
 import { useParams, notFound, useSearchParams, useRouter } from "next/navigation"
 import { useEffect, useState, useMemo } from "react"
-import { useCart } from "@/context/CartContext"
 import { ProductType } from "@/types/product"
 import Image from "next/image"
-import { Button, Select, Collapse, Row, Col } from "antd"
+import { Select, Collapse, Row, Col } from "antd"
 import type { CollapseProps } from "antd"
 import Link from "next/link"
 const { Option } = Select;
 import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default function ProductClient() {
-  const { slug } = useParams() as { slug: string }
-  const searchParams = useSearchParams()
-  const router = useRouter()
+  const { slug } = useParams() as { slug: string };
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const [product, setProduct] = useState<ProductType | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { addToCart } = useCart()
+  const [product, setProduct] = useState<ProductType | null>(null);
+  const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null)
+  const [selectedSizeLabel, setSelectedSizeLabel] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true);
 
   const selectedColor = searchParams?.get("color")
 
@@ -67,6 +67,14 @@ export default function ProductClient() {
       new Set(product.product_images.map((img) => img.color).filter(Boolean))
     )
     return uniqueColors
+  }, [product])
+
+  const availableSizes = useMemo(() => {
+    if (!product?.product_sizes) return []
+  
+    return product.product_sizes
+      .filter((s) => s.is_active && s.stock > 0)
+      .sort((a, b) => a.size.localeCompare(b.size))
   }, [product])
 
   const handleColorClick = (color: string) => {
@@ -204,11 +212,21 @@ export default function ProductClient() {
             <div className="bg-gray-100 rounded-xl p-6 space-y-4">
               <Row justify="space-between" align="middle">
                 <Col>
-                  <Select placeholder="Please select a size" className="w-40">
-                    <Option value="s">S</Option>
-                    <Option value="m">M</Option>
-                    <Option value="l">L</Option>
-                    <Option value="xl">XL</Option>
+                  <Select
+                    placeholder="Please select a size"
+                    className="w-40"
+                    value={selectedSizeId ?? undefined}
+                    onChange={(value) => {
+                      const selected = availableSizes.find((s) => s.id === value);
+                      setSelectedSizeId(value);
+                      setSelectedSizeLabel(selected?.size ?? null);
+                    }}
+                  >
+                    {availableSizes.map((s) => (
+                      <Select.Option key={s.id} value={s.id}>
+                        {s.size}
+                      </Select.Option>
+                    ))}
                   </Select>
                 </Col>
                 <Col>
@@ -221,7 +239,11 @@ export default function ProductClient() {
                 </Col>
               </Row>
   
-              <AddToCartButton product={product} />
+              <AddToCartButton
+                product={product}
+                selectedSizeId={selectedSizeId}
+                selectedSizeLabel={selectedSizeLabel}
+              />
   
               <Collapse items={items} bordered={false} ghost expandIconPlacement="end" />
             </div>

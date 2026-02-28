@@ -46,28 +46,28 @@ export async function GET() {
     const idsSet = new Set<number>();
 
     for (const o of safeOrders) {
-      const items = Array.isArray(o.items)
-        ? o.items
-        : typeof o.items === "string"
-          ? (() => {
-              try {
-                return JSON.parse(o.items);
-              } catch {
-                return [];
-              }
-            })()
-          : o.items ?? [];
-
-      if (Array.isArray(items)) {
-        for (const it of items) {
-          const pid = it?.product_id;
-          if (pid !== undefined && pid !== null) {
-            const asNumber = Number(pid);
-            if (!Number.isNaN(asNumber)) idsSet.add(asNumber);
-          }
+      let rawItems: any[] = [];
+    
+      if (typeof o.items === "string") {
+        try {
+          rawItems = JSON.parse(o.items);
+        } catch {
+          rawItems = [];
+        }
+      } else if (Array.isArray(o.items)) {
+        rawItems = o.items;
+      } else if (o.items && typeof o.items === "object") {
+        rawItems = o.items as any[];
+      }
+    
+      for (const it of rawItems) {
+        const pid = Number(it?.product_id);
+        if (!Number.isNaN(pid)) {
+          idsSet.add(pid);
         }
       }
     }
+    
 
     const ids = Array.from(idsSet);
 
@@ -83,7 +83,7 @@ export async function GET() {
           name,
           price,
           slug,
-          category,
+          category_id,
           gender,
           product_images (
             id,

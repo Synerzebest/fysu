@@ -53,8 +53,15 @@ export default function CheckoutClient() {
 
   if (userLoading) {
     return (
-      <div className="max-w-4xl mx-auto py-8 px-4 relative top-24 text-center">
-        Chargement...
+      <div className="fixed inset-0 flex items-center justify-center bg-white">
+        <video
+          src="/videos/fysu_loader.mov"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-[70vw] max-w-[520px] h-auto object-contain"
+        />
       </div>
     );
   }
@@ -73,7 +80,7 @@ export default function CheckoutClient() {
 
         <div className="divide-y rounded-lg border bg-white">
           {cart.map((item) => (
-            <div key={item.id} className="flex items-center gap-4 p-4">
+            <div key={`${item.id}-${item.selectedSizeId}`} className="flex items-center gap-4 p-4">
               <div className="relative w-16 h-20 bg-neutral-100 rounded-md overflow-hidden">
                 <Image
                   src={item.product_images?.[0]?.url ?? "/placeholder.png"}
@@ -85,7 +92,12 @@ export default function CheckoutClient() {
 
               <div className="flex-1">
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-neutral-500">
+
+                <p className="text-xs text-neutral-500 mt-1">
+                  Taille : {item.selectedSizeLabel}
+                </p>
+
+                <p className="text-sm text-neutral-500 mt-1">
                   Quantité : {item.quantity}
                 </p>
               </div>

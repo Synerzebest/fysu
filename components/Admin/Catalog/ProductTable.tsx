@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Modal, Input, InputNumber, Button, Form, Divider, Select } from "antd";
+import { Modal, Input, InputNumber, Button, Form, Divider, Select, Switch } from "antd";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductType } from "@/types/product";
@@ -26,6 +26,7 @@ export default function ProductTable({
   handleUpdate,
 }: ProductTableProps) {
   const [colors, setColors] = useState<{ id?: number; color: string }[]>([]);
+  const [sizes, setSizes] = useState<{ id?: string; size: string; stock: number; is_active: boolean }[]>([]);
   const [form] = Form.useForm();
 
   /* ================= EDIT OPEN ================= */
@@ -40,7 +41,7 @@ export default function ProductTable({
           .map((img) => [img.color, { id: img.id, color: img.color }])
       ).values()
     );
-
+    setSizes(product.product_sizes || []);
     setColors(existingColors);
   };
 
@@ -76,10 +77,37 @@ export default function ProductTable({
       ...values,
       price: Number(values.price),
       colors,
+      sizes
     });
 
     setEditing(null);
     form.resetFields();
+  };
+
+  const addSize = () => {
+    setSizes([...sizes, { size: "", stock: 0, is_active: true }]);
+  };
+  
+  const updateSize = (i: number, value: string) => {
+    setSizes(sizes.map((s, idx) =>
+      idx === i ? { ...s, size: value } : s
+    ));
+  };
+  
+  const updateStock = (i: number, value: number | null) => {
+    setSizes(sizes.map((s, idx) =>
+      idx === i ? { ...s, stock: value ?? 0 } : s
+    ));
+  };
+  
+  const updateActive = (i: number, value: boolean) => {
+    setSizes(sizes.map((s, idx) =>
+      idx === i ? { ...s, is_active: value } : s
+    ));
+  };
+  
+  const removeSize = (i: number) => {
+    setSizes(sizes.filter((_, idx) => idx !== i));
   };
 
 
@@ -272,6 +300,37 @@ export default function ProductTable({
 
               <Form.Item label="Size fit" name="size_fit">
                 <Input />
+              </Form.Item>
+
+              <Form.Item label="Tailles disponibles">
+                {sizes.map((s, i) => (
+                  <div key={i} className="flex items-center gap-3 mb-2">
+                    
+                    <Input
+                      value={s.size}
+                      onChange={(e) => updateSize(i, e.target.value)}
+                      placeholder="S / M / L"
+                    />
+
+                    <InputNumber
+                      min={0}
+                      value={s.stock}
+                      onChange={(v) => updateStock(i, v)}
+                      placeholder="Stock"
+                    />
+
+                    <Switch
+                      checked={s.is_active}
+                      onChange={(v) => updateActive(i, v)}
+                    />
+
+                    <Button danger onClick={() => removeSize(i)}>
+                      Supprimer
+                    </Button>
+                  </div>
+                ))}
+
+                <Button onClick={addSize}>Ajouter taille</Button>
               </Form.Item>
 
               <Form.Item

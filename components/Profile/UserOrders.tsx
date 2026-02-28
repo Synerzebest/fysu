@@ -101,6 +101,7 @@ export default function UserOrders() {
             } catch {
               items = [];
             }
+            
 
             const created = order.createdAt ?? "";
             const createdLabel = created
@@ -138,6 +139,9 @@ export default function UserOrders() {
                 <div className="flex gap-4 overflow-x-auto py-2">
                 {items.map((item, i) => {
                   const p = item?.product;
+
+                  console.log("ITEM:", item);
+console.log("PRODUCT:", item?.product);
 
                   const imgUrl = p?.product_images?.[0]?.url ?? "/placeholder.png";
                   const name = p?.name ?? item?.description ?? "Produit";
