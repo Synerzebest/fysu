@@ -16,7 +16,10 @@ export async function POST(req: Request) {
       category_id,
       gender,
       colors,
-      sizes
+      sizes,
+      decoration_image_url,
+      decoration_text,
+      suggested_product_ids
     } = body;
 
     if (!id) {
@@ -38,6 +41,8 @@ export async function POST(req: Request) {
       price: Number(price),
       category_id: category_id ? Number(category_id) : null,
       gender,
+      decoration_image_url,
+      decoration_text,
     })
     .eq("id", id)
     .select();
@@ -49,6 +54,38 @@ export async function POST(req: Request) {
         { error: error.message },
         { status: 500 }
       );
+    }
+
+    /* ================== SUGGESTED PRODUCTS ================== */
+
+    if (Array.isArray(suggested_product_ids)) {
+      // Supprimer anciennes suggestions
+      await supabase
+        .from("product_suggestions")
+        .delete()
+        .eq("product_id", id);
+
+      if (suggested_product_ids.length > 0) {
+        const inserts = suggested_product_ids.map(
+          (sid: number, index: number) => ({
+            product_id: id,
+            suggested_product_id: sid,
+            display_order: index,
+          })
+        );
+
+        const { error: insertError } = await supabase
+          .from("product_suggestions")
+          .insert(inserts);
+
+        if (insertError) {
+          console.error("Erreur insert suggestions:", insertError);
+          return NextResponse.json(
+            { error: "Erreur suggestions" },
+            { status: 500 }
+          );
+        }
+      }
     }
 
     // Gestion tailles

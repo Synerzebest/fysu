@@ -30,6 +30,8 @@ export type ProductType = {
   colors: number;
   details?: string | null;
   size_fit?: string | null;
+  decoration_text:string;
+  decoration_image_url: string;
 
   category_id: number | null;  
 
@@ -37,5 +39,7 @@ export type ProductType = {
   categories?: Pick<Category, "id" | "name"> | null;
 
   product_images: ProductImage[];
-  product_sizes?: ProductSize[];
+  product_sizes: ProductSize[];
+
+  product_suggestions: ProductType[];
 };

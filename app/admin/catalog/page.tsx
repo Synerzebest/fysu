@@ -68,12 +68,15 @@ export default function AdminCatalogue() {
 
   async function handleUpdate(payload: any) {
     if (!payload?.id) return;
+    console.log("BODY SENT:", payload);
+
   
     // 🧼 Sécurité : normalisation
     const cleanPayload = {
       ...payload,
       price: Number(payload.price),
     };
+
   
     if (Number.isNaN(cleanPayload.price)) {
       toast.error("Prix invalide");
@@ -115,8 +118,6 @@ export default function AdminCatalogue() {
         products={products}
         categories={categories}
         loading={loading}
-        editing={editing}
-        setEditing={setEditing}
         handleDelete={handleDelete}
         handleUpdate={handleUpdate}
       />

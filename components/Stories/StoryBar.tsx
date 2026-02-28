@@ -39,49 +39,90 @@ export default function StoryBar({ pageSlug, collectionSlug }: Props) {
   useEffect(() => {
     const fetchStories = async () => {
       setLoading(true);
-
+  
       let pageId: string | null = null;
-
+      let collectionPageId: string | null = null;
+  
+      // 1) Resolve target id
       if (pageSlug) {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("pages")
           .select("id")
           .eq("slug", pageSlug)
           .maybeSingle();
-
+  
+        if (error) console.log("pages slug error:", error);
         pageId = data?.id ?? null;
+      } else if (collectionSlug) {
+        const { data, error } = await supabase
+          .from("collectionPages") // <-- IMPORTANT: exact table name from your schema
+          .select("id")
+          .eq("slug", collectionSlug)
+          .maybeSingle();
+  
+        if (error) console.log("collectionPages slug error:", error);
+        collectionPageId = data?.id ?? null;
       }
-
-      if (!pageId) {
+  
+      if (!pageId && !collectionPageId) {
+        setStories([]);
         setLoading(false);
         return;
       }
-
-      const { data: links } = await supabase
+  
+      // 2) Fetch links from the SAME table, filtering on the right column
+      let linksQuery = supabase
         .from("story_page_links")
-        .select("story_id")
-        .match({ page_id: pageId });
-
+        .select("story_id, priority");
+  
+      if (pageId) linksQuery = linksQuery.eq("page_id", pageId);
+      if (collectionPageId)
+        linksQuery = linksQuery.eq("collection_page_id", collectionPageId);
+  
+      const { data: links, error: linksError } = await linksQuery.order("priority", {
+        ascending: false,
+      });
+  
+      if (linksError) console.log("story_page_links error:", linksError);
+  
       if (!links || links.length === 0) {
+        setStories([]);
         setLoading(false);
         return;
       }
-
+  
       const storyIds = links.map((l) => l.story_id);
-
-      const { data: storyData } = await supabase
+  
+      // 3) Fetch stories + items
+      const { data: storyData, error: storyError } = await supabase
         .from("stories")
-        .select("*, story_items(*)")
+        .select(
+          `
+            id, title, cover_url, order_index, is_active,
+            story_items ( id, type, media_url, duration, order_index )
+          `
+        )
         .in("id", storyIds)
         .eq("is_active", true)
         .order("order_index", { ascending: true });
-
-      setStories(storyData || []);
+  
+      if (storyError) console.log("stories error:", storyError);
+  
+      // 4) Sort story_items by order_index (important!)
+      const sorted =
+        (storyData ?? []).map((s) => ({
+          ...s,
+          story_items: [...(s.story_items ?? [])].sort(
+            (a, b) => (a.order_index ?? 0) - (b.order_index ?? 0)
+          ),
+        })) ?? [];
+  
+      setStories(sorted);
       setLoading(false);
     };
-
+  
     fetchStories();
-  }, [pageSlug]);
+  }, [pageSlug, collectionSlug]);
 
   /* -------------------------------------------------- */
   /* AUTOPLAY */
