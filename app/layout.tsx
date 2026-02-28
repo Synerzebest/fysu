@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { CartProvider } from "@/context/CartContext";
 import { Libre_Baskerville } from "next/font/google"
 import { Playfair_Display } from 'next/font/google';
+import CookieBanner from "@/components/CookieBanner";
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -50,6 +51,7 @@ export default function RootLayout({
         {/* <AuthProvider> */}
           <CartProvider>
             {children}
+            <CookieBanner />
           </CartProvider>
         {/* </AuthProvider> */}
         <Toaster />

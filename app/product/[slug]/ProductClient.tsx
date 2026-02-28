@@ -91,7 +91,11 @@ export default function ProductClient() {
 
   /* ================= STATES ================= */
 
-  if (loading) return <div className="p-20">Loading...</div>
+  if (loading) return (
+  <div className="w-screen h-screen bg-background text-foreground text-4xl flex items-center justify-center">
+    FYSU
+  </div>
+  )
   if (!product) return notFound()
 
   const mainImage = filteredImages[0]?.url
@@ -101,12 +105,12 @@ export default function ProductClient() {
     {
       key: "1",
       label: "Product details",
-      children: <p>{product.details ?? "No details available."}</p>,
+      children: <p className="text-foreground">{product.details ?? "No details available."}</p>,
     },
     {
       key: "2",
       label: "Size & fit",
-      children: <p>{product.size_fit ?? "No info available."}</p>,
+      children: <p className="text-foreground">{product.size_fit ?? "No info available."}</p>,
     },
   ]
 
@@ -265,13 +269,15 @@ export default function ProductClient() {
             </div>
           )}
   
-          <AddToCartButton
-            product={product}
-            selectedSizeId={selectedSizeId}
-            selectedSizeLabel={selectedSizeLabel}
-          />
-  
-          <Collapse items={items} bordered={false} ghost />
+          <div className="flex flex-col gap-4 p-4 bg-foreground/10 rounded-lg">
+            <AddToCartButton
+              product={product}
+              selectedSizeId={selectedSizeId}
+              selectedSizeLabel={selectedSizeLabel}
+            />
+    
+            <Collapse items={items} bordered={false} ghost />
+          </div>
   
         </div>
       </div>
