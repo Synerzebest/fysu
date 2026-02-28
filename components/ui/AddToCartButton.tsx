@@ -74,7 +74,7 @@ export default function AddToCartButton({
               className="flex items-center gap-2"
             >
               <Check size={16} />
-              <span>Added to basket</span>
+              <span>Preordered</span>
             </motion.div>
           ) : (
             <motion.div
@@ -84,7 +84,7 @@ export default function AddToCartButton({
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.25 }}
             >
-              Add to basket
+              Preorder
             </motion.div>
           )}
         </AnimatePresence>

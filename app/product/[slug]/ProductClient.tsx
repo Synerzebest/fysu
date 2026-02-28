@@ -113,17 +113,25 @@ export default function ProductClient() {
   /* ================= RENDER ================= */
 
   return (
-    <div className="max-w-6xl mx-auto py-12 relative top-24">
+    <div className="max-w-6xl mx-auto py-12 relative top-0 sm:top-24">
       <div className="grid md:grid-cols-2 gap-12 items-start">
   
         {/* ================= IMAGES ================= */}
-        <div className="space-y-6 sm:space-y-8">
-  
+        <div
+          className="
+            space-y-6 sm:space-y-8
+            sm:h-auto
+            h-[66vh]
+            overflow-y-scroll
+            sm:overflow-visible
+          "
+        >
+
           {/* Grande image principale */}
           {mainImage && (
             <div
               className="
-                relative w-full h-auto aspect-[3/4] overflow-hidden
+                relative w-full aspect-[3/4] overflow-hidden
                 rounded-3xl sm:rounded-none
               "
             >
@@ -136,7 +144,7 @@ export default function ProductClient() {
               />
             </div>
           )}
-  
+
           {/* Autres images */}
           {otherImages.length > 0 && (
             <div>
@@ -156,7 +164,7 @@ export default function ProductClient() {
                   </div>
                 ))}
               </div>
-  
+
               {/* MOBILE */}
               <div className="sm:hidden flex flex-col gap-3">
                 {otherImages.map((img) => (
@@ -178,7 +186,7 @@ export default function ProductClient() {
         </div>
   
         {/* ================= INFO ================= */}
-        <div className="space-y-6 sticky top-24 self-start">
+        <div className="space-y-6 sticky top-24 self-start w-11/12 mx-auto">
   
           <h1 className="text-4xl font-medium">
             {product.name}
@@ -276,12 +284,12 @@ export default function ProductClient() {
       {/* ================= SUGGESTIONS ================= */}
   
       {product.product_suggestions?.length > 0 && (
-        <section className="mt-24 w-full">
+        <section className="mt-24 w-11/12 mx-auto">
           <h2 className="text-2xl font-dior text-start mb-12">
             You may also like
           </h2>
   
-          <div className="flex gap-8 overflow-x-auto">
+          <div className="flex gap-8 overflow-x-auto no-scrollbar">
             {product.product_suggestions.map((p) => (
               <Product key={p.id} product={p} />
             ))}
