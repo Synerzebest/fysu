@@ -149,7 +149,7 @@ export default function AddToCartButton({
                 className="flex items-center gap-2"
               >
                 <Check size={16} />
-                <span>Preordered</span>
+                <span>Added to basket</span>
               </motion.div>
             ) : (
               <motion.div

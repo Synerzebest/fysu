@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo } from "react"
 import type { ProductType, ProductSize } from "@/types/product"
 import Product from "@/components/Product"
 import Image from "next/image"
-import { Collapse } from "antd"
+import { Collapse, Modal } from "antd"
 import type { CollapseProps } from "antd"
 import AddToCartButton from "@/components/ui/AddToCartButton"
 import ProductDecorationSection from "@/components/Product/ProductDecorationSection"
@@ -19,6 +19,7 @@ export default function ProductClient() {
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null)
   const [selectedSizeLabel, setSelectedSizeLabel] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false)
 
   const selectedColor: string | null = searchParams?.get("color")
 
@@ -105,18 +106,45 @@ export default function ProductClient() {
     {
       key: "1",
       label: "Product details",
-      children: <p className="text-foreground">{product.details ?? "No details available."}</p>,
+      children: (
+        <p className="text-foreground">
+          {product.details ?? "No details available."}
+        </p>
+      ),
     },
     {
       key: "2",
       label: "Size & fit",
-      children: <p className="text-foreground">{product.size_fit ?? "No info available."}</p>,
+      children: (
+        <p className="text-foreground">
+          {product.size_fit ?? "No info available."}
+        </p>
+      ),
+    },
+    {
+      key: "3",
+      label: "Care instructions",
+      children: (
+        <p className="text-foreground">
+          {product.care_instructions ?? "No care instructions available."}
+        </p>
+      ),
+    },
+    {
+      key: "4",
+      label: "Shipping",
+      children: (
+        <p className="text-foreground">
+          {product.shipping ?? "Shipping information not available."}
+        </p>
+      ),
     },
   ]
 
   /* ================= RENDER ================= */
 
   return (
+    <>
     <div className="max-w-6xl mx-auto py-12 relative top-0 sm:top-24">
       <div className="grid md:grid-cols-2 gap-12 items-start">
   
@@ -230,6 +258,7 @@ export default function ProductClient() {
 
                 <button
                   type="button"
+                  onClick={() => setSizeGuideOpen(true)}
                   className="text-sm underline text-gray-600 hover:text-black"
                 >
                   Size guide
@@ -303,5 +332,28 @@ export default function ProductClient() {
         </section>
       )}
     </div>
+    <Modal
+      open={sizeGuideOpen}
+      footer={null}
+      onCancel={() => setSizeGuideOpen(false)}
+      centered
+      width={500}
+    >
+
+      {product.size_guide_image_url ? (
+        <div className="relative w-full aspect-[3/4]">
+          <Image
+            src={product.size_guide_image_url}
+            alt="Size guide"
+            fill
+            className="object-contain"
+          />
+        </div>
+      ) : (
+        <p>No size guide available.</p>
+      )}
+
+    </Modal>
+    </>
   )
 }

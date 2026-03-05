@@ -79,14 +79,14 @@ const Product = ({ product }: { product: ProductType }) => {
   
 
   return (
-    <div className="relative text-center w-full group">
+    <div className="relative w-full group">
       {/* Catégorie */}
-      <div className="absolute left-2 top-2 bg-white/70 rounded-md px-2 py-0.5">
+      <div className="absolute left-2 top-2 bg-white/70 rounded-md px-2 py-0.5 z-10">
         <p className="uppercase tracking-wide text-xs text-gray-600">
           {product.category}
         </p>
       </div>
-
+  
       {/* Bouton like */}
       <button
         onClick={toggleLike}
@@ -100,14 +100,14 @@ const Product = ({ product }: { product: ProductType }) => {
           strokeWidth={1.5}
         />
       </button>
-
-      {/* Image + infos */}
+  
+      {/* Image */}
       <div
         ref={trackRef}
-        className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100"
+        className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100 mb-4"
       >
         <motion.div
-          className="flex h-full w-full"
+          className="flex h-full w-full cursor-grab active:cursor-grabbing"
           style={{ x }}
           drag="x"
           dragConstraints={{
@@ -117,17 +117,17 @@ const Product = ({ product }: { product: ProductType }) => {
           dragElastic={0.05}
           onDragEnd={() => {
             if (!trackWidth) return
-
+  
             const movedBy = -x.get()
             const index = Math.round(movedBy / trackWidth)
-
+  
             const clampedIndex = Math.min(
               images.length - 1,
               Math.max(0, index)
             )
-
+  
             setCurrentIndex(clampedIndex)
-
+  
             animate(x, -clampedIndex * trackWidth, {
               type: "spring",
               stiffness: 400,
@@ -148,8 +148,8 @@ const Product = ({ product }: { product: ProductType }) => {
             </div>
           ))}
         </motion.div>
-        
-        {/* Indicateurs (barres luxe) */}
+  
+        {/* Indicateurs */}
         {images.length > 1 && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
             {images.map((_, i) => (
@@ -165,34 +165,41 @@ const Product = ({ product }: { product: ProductType }) => {
           </div>
         )}
       </div>
-
-      <Link href={`/product/${product.slug}`} className="block">
-        <div className="space-y-0.5 mt-2">
-          <p className="text-sm uppercase tracking-wide group-hover:underline transition">
-            {product.name}
-          </p>
-          <p className="text-sm font-light">{product.price} EUR</p>
-
-          {/* Boules de couleur */}
-          {uniqueColors.length > 0 ? (
-            <div className="flex justify-center gap-1 mt-1">
-              {displayedColors.map((color) => (
-                <div
-                  key={color}
-                  title={color}
-                  className="w-3.5 h-3.5 rounded-full border border-gray-300"
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-              {extraCount > 0 && (
-                <span className="text-xs text-neutral-500">+{extraCount}</span>
-              )}
-            </div>
-          ) : (
-            <p className="text-xs text-neutral-500">
-              {product.colors} COLOR{product.colors > 1 ? "S" : ""}
+  
+      {/* Infos produit */}
+      <Link href={`/product/${product.slug}`} className="block w-full">
+        <div className="flex justify-between items-start gap-3 mx-2">
+          <div className="flex flex-col items-start">
+            <p className="text-xs uppercase tracking-wide group-hover:underline transition truncate">
+              {product.name}
             </p>
-          )}
+  
+            {/* Couleurs */}
+            {uniqueColors.length > 0 && (
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-foreground/60">Colors</p>
+  
+                {displayedColors.map((color) => (
+                  <div
+                    key={color}
+                    title={color}
+                    className="w-3.5 h-3.5 rounded-full border border-gray-300"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+  
+                {extraCount > 0 && (
+                  <span className="text-xs text-neutral-500">
+                    +{extraCount}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+  
+          <p className="text-xs whitespace-nowrap">
+            {product.price} EUR
+          </p>
         </div>
       </Link>
     </div>

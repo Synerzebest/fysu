@@ -9,7 +9,7 @@ export async function GET(
 ) {
   const { slug } = await params
 
-  // 1️⃣ Charger la page collection
+  // Charger la page collection
   const { data: pages, error: pageError } = await supabaseAdmin
     .from("collectionPages")
     .select("*")
@@ -26,16 +26,21 @@ export async function GET(
 
   const page = pages[0]
 
-  // 2️⃣ Aucun produit
+  // Aucun produit
   if (!Array.isArray(page.products) || page.products.length === 0) {
     return NextResponse.json({ page, products: [] })
   }
 
-  // 3️⃣ Produits + images
+  // Produits + images
   const { data: products, error: productsError } = await supabaseAdmin
     .from("products")
     .select(`
       *,
+      categories (
+        id,
+        name,
+        slug
+      ),
       product_images (
         id,
         url,
@@ -53,12 +58,13 @@ export async function GET(
     )
   }
 
-  // 4️⃣ Respecter l’ordre + choisir une image principale
+  // Respecter l’ordre + choisir une image principale
   const orderedProducts = page.products
     .map((id: number) => products.find(p => p.id === id))
     .filter(Boolean)
     .map((product: any) => ({
       ...product,
+      category: product?.categories?.name ?? null,
       main_image:
         product.product_images?.[0]?.url ?? null,
     }))

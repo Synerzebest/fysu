@@ -1,71 +1,137 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { supabaseClient } from '@/lib/supabaseClient' 
-import { Carousel } from 'antd'
-import Image from 'next/image'
-import Link from 'next/link'
+import { useEffect, useRef, useState } from "react";
+import { supabaseClient } from "@/lib/supabaseClient";
+import { Carousel } from "antd";
+import Image from "next/image";
+import Link from "next/link";
 
-type HeroImage = {
-  image_path: string
-}
+type HeroMedia = {
+  media_path: string;
+  media_type?: "image" | "video";
+};
+
+const SLIDE_DURATION = 6000; // ms
 
 const HomeHero = () => {
-  const [images, setImages] = useState<HeroImage[]>([])
+  const [slides, setSlides] = useState<HeroMedia[]>([]);
+  const [current, setCurrent] = useState(0);
+
+  const carouselRef = useRef<any>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchMedia = async () => {
       const { data, error } = await supabaseClient
-        .from('hero_slider')
-        .select('image_path')
-        .order('order')
+        .from("hero_slider")
+        .select("media_path, media_type")
+        .order("order");
 
       if (error) {
-        console.error('Erreur Supabase:', error)
-        return
+        console.error("Erreur Supabase:", error);
+        return;
       }
 
-      setImages(data || [])
+      setSlides(data || []);
+    };
+
+    fetchMedia();
+  }, []);
+
+  useEffect(() => {
+    // Pas d'autoplay / pas de progress si 0 ou 1 slide
+    if (slides.length <= 1) {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      return;
     }
 
-    fetchImages()
-  }, [])
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    timerRef.current = setTimeout(() => {
+      const next = (current + 1) % slides.length;
+      carouselRef.current?.goTo(next);
+    }, SLIDE_DURATION);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [current, slides.length]);
+
+  const getUrl = (path: string) =>
+    `https://mugpnlsqeqbojnzrfnjf.supabase.co/storage/v1/object/public/hero-images/${path}`;
 
   return (
     <section className="relative w-full h-[100vh] min-h-[600px] overflow-hidden">
-      <Carousel autoplay dots={false} effect="fade" className="h-full">
-        {images.map((item, index) => (
-          <div key={index} className="relative w-full h-[100vh] min-h-[600px]">
-            <Image
-              src={`https://mugpnlsqeqbojnzrfnjf.supabase.co/storage/v1/object/public/hero-images/${item.image_path}`}
-              alt={`Hero image ${index + 1}`}
-              fill
-              className="object-cover object-center"
-              priority={index === 0}
-            />
-            <div className="absolute inset-0 flex items-end justify-start px-4">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
+      <Carousel
+        ref={carouselRef}
+        dots={false}
+        effect="scrollx"
+        beforeChange={(_, next) => setCurrent(next)}
+        className="h-full"
+      >
+        {slides.map((item, index) => {
+          const url = getUrl(item.media_path);
+          const isVideo =
+            item.media_type === "video" ||
+            /\.(mp4|webm|mov)$/i.test(item.media_path);
 
-              <div className="relative text-white space-y-2 pb-6">
+          return (
+            <div
+              key={index}
+              className="relative w-full h-[100vh] min-h-[600px]"
+            >
+              {isVideo ? (
+                <video
+                  src={url}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  muted
+                  autoPlay
+                  loop
+                  playsInline
+                />
+              ) : (
+                <Image
+                  src={url}
+                  alt={`Hero media ${index + 1}`}
+                  fill
+                  className="object-cover object-center"
+                  priority={index === 0}
+                />
+              )}
 
-                <div>
-                  <p className="font-dior text-[1.1rem]">When the flowers bloom</p>
-                  <p className="font-dior text-sm">the newest spring collection</p>
+              <div className="absolute inset-0 flex items-end justify-start px-4">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
+
+                <div className="relative text-white space-y-2 pb-6">
+                  <div>
+                    <p className="font-dior text-[1.1rem]">
+                      When the flowers bloom
+                    </p>
+                    <p className="font-dior text-sm">
+                      the newest spring collection
+                    </p>
+                  </div>
+
+                  <Link href="/collections/when-the-flowers-bloom">
+                    <button className="text-sm mb-4 px-4 py-2 bg-white text-black rounded-lg cursor-pointer">
+                      Explore the collection
+                    </button>
+                  </Link>
                 </div>
-
-                <Link href="/collections/when-the-flowers-bloom" >
-                  <button className="text-sm mb-4 px-4 py-2 bg-transparent rounded-lg mt-2 bg-white text-black cursor-pointer">
-                    Explore the collection
-                  </button>
-                </Link>
-
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </Carousel>
-    </section>
-  )
-}
 
-export default HomeHero
+      {/* Progress bar uniquement si + d'1 slide */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-0 left-0 w-full h-[3px] bg-white/20">
+          <div key={current} className="h-full bg-white animate-progress" />
+        </div>
+      )}
+    </section>
+  );
+};
+
+export default HomeHero;

@@ -24,12 +24,6 @@ export default function AdminHome() {
       icon: <Shirt className="w-6 h-6 text-blue-500" />,
     },
     {
-      title: "Bundles",
-      description: "Créez et gérez des packs de vêtements.",
-      href: "/admin/bundles",
-      icon: <Package className="w-6 h-6 text-purple-500" />,
-    },
-    {
       title: "Commandes",
       description: "Consultez et gérez toutes les commandes.",
       href: "/admin/orders",

@@ -18,8 +18,11 @@ export async function POST(req: Request) {
       colors,
       sizes,
       decoration_image_url,
+      size_guide_image_url,
       decoration_text,
-      suggested_product_ids
+      suggested_product_ids,
+      care_instructions,
+      shipping
     } = body;
 
     if (!id) {
@@ -42,7 +45,10 @@ export async function POST(req: Request) {
       category_id: category_id ? Number(category_id) : null,
       gender,
       decoration_image_url,
+      size_guide_image_url,
       decoration_text,
+      care_instructions,
+      shipping
     })
     .eq("id", id)
     .select();

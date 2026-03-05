@@ -39,6 +39,8 @@ export default function ProductEditModal({
     { id?: string; size: string; stock: number; is_active: boolean }[]
   >([]);
 
+  const [sizeGuideImageUrl, setSizeGuideImageUrl] = useState<string | null>(null);
+
   const [decorationImageUrl, setDecorationImageUrl] =
     useState<string | null>(null);
 
@@ -68,6 +70,7 @@ export default function ProductEditModal({
 
     setColors(uniqueColors);
     setDecorationImageUrl(product.decoration_image_url ?? null);
+    setSizeGuideImageUrl(product.size_guide_image_url ?? null)
 
     setSuggestedProducts(
         Array.from(
@@ -129,6 +132,46 @@ export default function ProductEditModal({
     }
   };
 
+  // Size guide image upload
+  const handleSizeGuideUpload = async (file: File) => {
+    if (!product) return;
+  
+    if (!file.type.startsWith("image/")) {
+      alert("File must be an image");
+      return;
+    }
+  
+    try {
+      setUploading(true);
+  
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("productId", product.id.toString());
+  
+      const res = await fetch(
+        "/api/admin/products/upload-size-guide",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        alert(data.error || "Upload error");
+        return;
+      }
+  
+      setSizeGuideImageUrl(data.url);
+  
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   /* ================= SUBMIT ================= */
 
   const handleFinish = (values: any) => {
@@ -141,6 +184,7 @@ export default function ProductEditModal({
       colors,
       sizes,
       decoration_image_url: decorationImageUrl,
+      size_guide_image_url: sizeGuideImageUrl,
       suggested_product_ids: suggestedProducts,
     });
 
@@ -183,6 +227,40 @@ export default function ProductEditModal({
 
           <Form.Item label="Size fit" name="size_fit">
             <Input />
+          </Form.Item>
+
+          <Form.Item label="Size guide image">
+            <div className="flex flex-col gap-4">
+
+              {sizeGuideImageUrl && (
+                <img
+                  src={sizeGuideImageUrl}
+                  className="w-48 rounded-lg border"
+                />
+              )}
+
+              <label className="cursor-pointer px-4 py-2 border rounded-md w-fit">
+                Upload image
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleSizeGuideUpload(file);
+                  }}
+                />
+              </label>
+
+            </div>
+          </Form.Item>
+
+          <Form.Item label="Care instructions" name="care_instructions">
+            <Input.TextArea rows={4} />
+          </Form.Item>
+
+          <Form.Item label="Shipping" name="shipping">
+            <Input.TextArea rows={4} />
           </Form.Item>
 
           <Form.Item

@@ -45,6 +45,11 @@ export async function GET(
             price,
             gender,
             createdAt,
+            categories (
+              id,
+              name,
+              slug
+            ),
             product_images (
               id,
               url,
@@ -81,6 +86,7 @@ export async function GET(
             ...sp,
             product: {
               ...sp.product,
+              category: sp.product?.categories?.name ?? null,
               main_image:
                 sp.product?.product_images?.[0]?.url ?? null,
             },

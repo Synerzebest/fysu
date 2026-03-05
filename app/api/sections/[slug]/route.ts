@@ -38,7 +38,7 @@ export async function GET(
     });
   }
 
-  // 3️⃣ Récupérer produits
+  // Récupérer produits
   const { data: products, error: productsError } = await supabaseAdmin
     .from("products")
     .select(`
@@ -46,6 +46,9 @@ export async function GET(
       name,
       slug,
       price,
+      categories (
+        name
+      ),
       product_images (
         url
       )
@@ -56,8 +59,14 @@ export async function GET(
     return NextResponse.json({ error: productsError.message }, { status: 500 });
   }
 
+  const formattedProducts = products?.map((product: any) => ({
+    ...product,
+    category: product?.categories?.name ?? null,
+    main_image: product?.product_images?.[0]?.url ?? null,
+  })) ?? [];
+
   return NextResponse.json({
     title: section.title,
-    products,
+    products: formattedProducts,
   });
 }

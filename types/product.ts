@@ -30,8 +30,11 @@ export type ProductType = {
   colors: number;
   details?: string | null;
   size_fit?: string | null;
+  care_instructions: string | null;
+  shipping: string | null;
   decoration_text:string;
   decoration_image_url: string;
+  size_guide_image_url?: string | null
 
   category_id: number | null;  
 
