@@ -114,20 +114,20 @@ const Product = ({
       >
         <motion.div
           className="flex h-full w-full cursor-grab active:cursor-grabbing"
-          style={{ x }}
+          style={{ x, touchAction: "pan-y" }}
           drag="x"
           dragConstraints={{
             right: 0,
             left: -(trackWidth * (images.length - 1)),
           }}
           dragElastic={0.05}
-
+          onTouchStart={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           onDragStart={() => {
             if (scrollRef?.current) {
               scrollRef.current.style.overflowX = "hidden"
             }
           }}
-
           onDragEnd={() => {
             if (scrollRef?.current) {
               scrollRef.current.style.overflowX = "auto"
