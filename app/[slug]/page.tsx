@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import Navbar from "@/components/Navbar"
@@ -109,6 +109,7 @@ export default function CollectionPage() {
   }
 
   const hasHero = Boolean(page.hero_image)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
 
 
   return (
@@ -208,7 +209,9 @@ export default function CollectionPage() {
 
                     {/* PRODUCTS HORIZONTAL SCROLL */}
                     <div className="relative">
-                      <div className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-2">
+                      <div 
+                        ref={scrollRef}
+                        className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-2">
 
                         {filteredProducts.map((product) => (
                           <div
@@ -221,7 +224,7 @@ export default function CollectionPage() {
                               flex-shrink-0
                             "
                           >
-                            <Product product={product} />
+                            <Product product={product} scrollRef={scrollRef} />
                           </div>
                         ))}
 
