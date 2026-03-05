@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Product from "../Product";
 import { ProductType } from "../../types/product"
 
 export default function HomeSection({ slug }: { slug: string }) {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [title, setTitle] = useState("");
+  const scrollRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     fetch(`/api/sections/${slug}`)
@@ -24,6 +25,7 @@ export default function HomeSection({ slug }: { slug: string }) {
       <h2 className="text-xl sm:text-2xl font-bold mb-8 font-dior">{title}</h2>
 
       <div
+        ref={scrollRef}
         className="
           flex
           gap-6
@@ -46,7 +48,7 @@ export default function HomeSection({ slug }: { slug: string }) {
               lg:w-[320px]
             "
           >
-            <Product product={product} />
+            <Product product={product} scrollRef={scrollRef} />
           </div>
         ))}
       </div>

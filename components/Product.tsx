@@ -7,7 +7,13 @@ import Link from "next/link"
 import { ProductType } from "@/types/product"
 import { motion, useMotionValue, animate } from "framer-motion"
 
-const Product = ({ product }: { product: ProductType }) => {
+const Product = ({
+  product,
+  scrollRef,
+}: {
+  product: ProductType
+  scrollRef?: React.RefObject<HTMLDivElement | null>
+}) => {
   const [liked, setLiked] = useState(false)
 
   // Vérifie si ce produit est déjà dans la wishlist
@@ -115,19 +121,30 @@ const Product = ({ product }: { product: ProductType }) => {
             left: -(trackWidth * (images.length - 1)),
           }}
           dragElastic={0.05}
+
+          onDragStart={() => {
+            if (scrollRef?.current) {
+              scrollRef.current.style.overflowX = "hidden"
+            }
+          }}
+
           onDragEnd={() => {
+            if (scrollRef?.current) {
+              scrollRef.current.style.overflowX = "auto"
+            }
+
             if (!trackWidth) return
-  
+
             const movedBy = -x.get()
             const index = Math.round(movedBy / trackWidth)
-  
+
             const clampedIndex = Math.min(
               images.length - 1,
               Math.max(0, index)
             )
-  
+
             setCurrentIndex(clampedIndex)
-  
+
             animate(x, -clampedIndex * trackWidth, {
               type: "spring",
               stiffness: 400,
