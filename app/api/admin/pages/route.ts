@@ -1,7 +1,7 @@
-import { supabaseServer } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export async function GET() {
-  const supabase = await supabaseServer();
+  const supabase = supabaseAdmin;
   try {
     const { data, error } = await supabase
       .from("pages")
@@ -18,7 +18,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const supabase = await supabaseServer();
+  const supabase = supabaseAdmin;
   try {
     const body = await req.json();
 

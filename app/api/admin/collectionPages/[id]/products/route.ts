@@ -1,10 +1,10 @@
-import { supabaseServer } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export async function POST(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const supabase = await supabaseServer();
+  const supabase = supabaseAdmin;
   const { id } = await context.params;
 
   try {
