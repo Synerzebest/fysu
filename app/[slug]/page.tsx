@@ -212,7 +212,18 @@ export default function CollectionPage() {
                     <div className="relative">
                       <div 
                         ref={scrollRef}
-                        className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-2">
+                        className="
+                          flex
+                          gap-6
+                          overflow-x-auto
+                          scroll-smooth
+                          snap-x snap-mandatory
+                          no-scrollbar
+                          pb-2
+                          touch-pan-x
+                          overscroll-x-contain
+                        "
+                      >
 
                         {filteredProducts.map((product) => (
                           <div
