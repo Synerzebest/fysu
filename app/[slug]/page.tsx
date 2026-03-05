@@ -24,6 +24,8 @@ type SectionType = {
 export default function CollectionPage() {
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+
 
   const [page, setPage] = useState<any>(null)
   const [sections, setSections] = useState<SectionType[]>([])
@@ -109,7 +111,6 @@ export default function CollectionPage() {
   }
 
   const hasHero = Boolean(page.hero_image)
-  const scrollRef = useRef<HTMLDivElement | null>(null)
 
 
   return (
