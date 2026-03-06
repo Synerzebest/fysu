@@ -29,37 +29,38 @@ export async function GET(
   // Charger les sections liées à cette page
 
   const { data: sectionLinks, error: sectionError } = await supabaseAdmin
-    .from("section_pages")
-    .select(`
-      section:sections (
-        id,
-        title,
+  .from("section_pages")
+  .select(`
+    section:sections (
+      id,
+      title,
+      display_order,
+      is_active,
+      section_products (
         display_order,
-        is_active,
-        section_products (
-          display_order,
-          product:products (
+        product:products (
+          id,
+          name,
+          slug,
+          price,
+          gender,
+          createdAt,
+          categories (
             id,
             name,
-            slug,
-            price,
-            gender,
-            createdAt,
-            categories (
-              id,
-              name,
-              slug
-            ),
-            product_images (
-              id,
-              url,
-              color
-            )
+            slug
+          ),
+          product_images:product_images!product_images_productId_fkey (
+            id,
+            url,
+            color
           )
         )
       )
-    `)
-    .eq("page_id", page.id)
+    )
+  `)
+  .eq("page_id", page.id)
+
 
   if (sectionError) {
     console.error(sectionError)

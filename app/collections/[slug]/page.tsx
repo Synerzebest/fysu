@@ -81,7 +81,7 @@ export default function CollectionPage() {
       <div className="h-screen flex flex-col">
         <Navbar />
   
-        <div className="w-full h-screen">
+        <div className="w-full h-screen flex items-center justify-center">
           {isFlowersBloomCollection ? (
             <>
               {/* MOBILE ONLY */}
