@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from "next/image";
+import Link from "next/link";
 
 const logo = "/images/footer_logo.png"
 
@@ -43,9 +44,9 @@ const Footer: React.FC = () => {
       {/* Bottom links */}
       <div className="border-t border-white mt-10 pt-6">
         <div className="max-w-6xl mx-auto flex flex-wrap justify-center md:justify-between text-xs md:text-sm gap-4 md:gap-8 text-center">
-          <a href="#" className="hover:underline">LEGAL TERMS</a>
-          <a href="#" className="hover:underline">CONTACT</a>
-          <a href="#" className="hover:underline">PRIVACY POLICY</a>
+          <Link href="#" className="hover:underline">LEGAL TERMS</Link>
+          <Link href="#" className="hover:underline">CONTACT</Link>
+          <Link href="/privacy" className="hover:underline">PRIVACY POLICY</Link>
         </div>
       </div>
     </footer>

@@ -106,7 +106,7 @@ function MobileMenu({
           <ShoppingCart size={20} />
 
           {totalItems > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+            <span className="absolute -top-2 -right-2 bg-green-900 text-white text-xs px-1.5 py-0.5 rounded-full">
               {totalItems}
             </span>
           )}

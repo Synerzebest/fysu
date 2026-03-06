@@ -1,19 +1,20 @@
 "use client"
 
 import { useParams, notFound, useSearchParams, useRouter } from "next/navigation"
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useRef } from "react"
 import type { ProductType, ProductSize } from "@/types/product"
 import Product from "@/components/Product"
 import Image from "next/image"
 import { Collapse, Modal } from "antd"
 import type { CollapseProps } from "antd"
 import AddToCartButton from "@/components/ui/AddToCartButton"
-import ProductDecorationSection from "@/components/Product/ProductDecorationSection"
+import ProductInfoBlocks from "@/components/Product/ProductInfoBlocks"
 
 export default function ProductClient() {
   const { slug } = useParams() as { slug: string }
   const searchParams = useSearchParams()
   const router = useRouter()
+  const scrollRef = useRef<HTMLDivElement | null>(null)
 
   const [product, setProduct] = useState<ProductType | null>(null)
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null)
@@ -70,10 +71,10 @@ export default function ProductClient() {
 
   const availableSizes: ProductSize[] = useMemo(() => {
     if (!product?.product_sizes) return []
-
-    return product.product_sizes
-      .filter((s) => s.is_active && s.stock > 0)
-      .sort((a, b) => a.size.localeCompare(b.size))
+  
+    return product.product_sizes.filter(
+      (s) => s.is_active && s.stock > 0
+    )
   }, [product])
 
   /* ================= HANDLERS ================= */
@@ -94,7 +95,9 @@ export default function ProductClient() {
 
   if (loading) return (
   <div className="w-screen h-screen bg-background text-foreground text-4xl flex items-center justify-center">
-    FYSU
+    <div className="font-pagetitle text-neutral-500 text-4xl">
+      FYSU
+    </div>
   </div>
   )
   if (!product) return notFound()
@@ -107,7 +110,7 @@ export default function ProductClient() {
       key: "1",
       label: "Product details",
       children: (
-        <p className="text-foreground">
+        <p>
           {product.details ?? "No details available."}
         </p>
       ),
@@ -116,7 +119,7 @@ export default function ProductClient() {
       key: "2",
       label: "Size & fit",
       children: (
-        <p className="text-foreground">
+        <p>
           {product.size_fit ?? "No info available."}
         </p>
       ),
@@ -125,7 +128,7 @@ export default function ProductClient() {
       key: "3",
       label: "Care instructions",
       children: (
-        <p className="text-foreground">
+        <p>
           {product.care_instructions ?? "No care instructions available."}
         </p>
       ),
@@ -134,7 +137,7 @@ export default function ProductClient() {
       key: "4",
       label: "Shipping",
       children: (
-        <p className="text-foreground">
+        <p>
           {product.shipping ?? "Shipping information not available."}
         </p>
       ),
@@ -298,7 +301,7 @@ export default function ProductClient() {
             </div>
           )}
   
-          <div className="flex flex-col gap-4 p-4 bg-foreground/10 rounded-lg">
+          <div className="flex flex-col gap-4 p-4 bg-product-frame rounded-lg">
             <AddToCartButton
               product={product}
               selectedSizeId={selectedSizeId}
@@ -311,10 +314,9 @@ export default function ProductClient() {
         </div>
       </div>
 
-      <ProductDecorationSection
-        decorationText={product.decoration_text}
-        decorationImageUrl={product.decoration_image_url}
-      />
+      {product.product_info_blocks?.length > 0 && (
+        <ProductInfoBlocks blocks={product.product_info_blocks} />
+      )}
   
       {/* ================= SUGGESTIONS ================= */}
   
@@ -323,10 +325,12 @@ export default function ProductClient() {
           <h2 className="text-2xl font-dior text-start mb-12">
             You may also like
           </h2>
-  
-          <div className="flex gap-8 overflow-x-auto no-scrollbar">
+
+          <div ref={scrollRef} className="flex gap-8 overflow-x-auto no-scrollbar touch-pan-x overscroll-x-contain">
             {product.product_suggestions.map((p) => (
-              <Product key={p.id} product={p} />
+              <div key={p.id} className="flex-shrink-0 w-[280px]">
+                <Product product={p} scrollRef={scrollRef} />
+              </div>
             ))}
           </div>
         </section>

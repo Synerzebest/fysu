@@ -1,10 +1,8 @@
 import { useCart } from "../context/CartContext"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ShoppingCart, Trash2, Plus, Minus } from "lucide-react"
+import { X, Trash2, Plus, Minus } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { useState } from "react"
-import ReactDOM from "react-dom"
 
 export default function CartDrawer({
   isOpen,
@@ -57,7 +55,7 @@ export default function CartDrawer({
               {/* CONTENT */}
               <div className="flex-1 overflow-y-auto space-y-4 pr-1">
                 {cart.length === 0 ? (
-                  <p className="text-sm font-dior">Votre panier est vide.</p>
+                  <p className="text-sm font-dior">Votre panier est vide 💀</p>
                 ) : (
                   cart.map((item) => (
                     <div

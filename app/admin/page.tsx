@@ -6,13 +6,13 @@ import Footer from "@/components/Footer";
 import { Card, Row, Col } from "antd";
 import {
   Shirt,
-  Package,
   ShoppingCart,
   Users,
   Images,
   Layers,
   Clapperboard,
-  ScrollText
+  ScrollText,
+  Feather
 } from "lucide-react";
 
 export default function AdminHome() {
@@ -58,6 +58,12 @@ export default function AdminHome() {
       description: "Gérez les blocs d'informations de la page About",
       href: "/admin/about",
       icon: <ScrollText className="w-6 h-6 text-orange-600" />
+    },
+    {
+      title: "Légal",
+      description: "Gérez les textes administratifs",
+      href: "/admin/legal",
+      icon: <Feather className="w-6 h-6 text-orange-600" />
     }
   ];
 

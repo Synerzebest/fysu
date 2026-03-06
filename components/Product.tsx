@@ -87,7 +87,7 @@ const Product = ({
   return (
     <div className="relative w-full group">
       {/* Catégorie */}
-      <div className="absolute left-2 top-2 bg-white/70 rounded-md px-2 py-0.5 z-10">
+      <div className="absolute left-2 top-2 rounded-md px-2 py-0.5 z-10">
         <p className="uppercase tracking-wide text-xs text-gray-600">
           {product.category}
         </p>
@@ -101,7 +101,7 @@ const Product = ({
         <Heart
           size={22}
           className={`transition-colors ${
-            liked ? "fill-gray-700 text-gray-700" : "text-gray-700"
+            liked ? "fill-green-900 text-green-900" : "text-gray-700"
           }`}
           strokeWidth={1.5}
         />

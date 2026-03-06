@@ -78,30 +78,39 @@ export default function CollectionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[100vh] flex flex-col items-between">
+      <div className="h-screen flex flex-col">
         <Navbar />
   
-        <div className="w-screen h-[100vh] relative sm:top-0 top-36 flex items-center justify-center">
+        <div className="w-full h-screen">
           {isFlowersBloomCollection ? (
-            <video
-              src="/videos/flowers_bloom_loader.MOV"
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              className="w-full"
-            />
+            <>
+              {/* MOBILE ONLY */}
+              <div className="sm:hidden relative w-screen h-screen">
+                <video
+                  src="/videos/flowers_bloom_loader.MOV"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              </div>
+  
+              {/* DESKTOP ONLY */}
+              <div className="hidden sm:block font-pagetitle text-neutral-500 text-4xl">
+                FYSU
+              </div>
+            </>
           ) : (
             <div className="font-pagetitle text-neutral-500 text-4xl">
-              Fysu
+              FYSU
             </div>
           )}
         </div>
-  
-        <Footer />
       </div>
-    )
-  }  
+    );
+  }
 
   if (!page) {
     return (

@@ -18,6 +18,14 @@ export type Category = {
   slug: string;
 };
 
+export type InfoBloc = {
+  id: string;
+  image_url: string;
+  title: string;
+  subtitle: string;
+  content: string;
+}
+
 export type ProductType = {
   id: number;
   name: string;
@@ -32,17 +40,16 @@ export type ProductType = {
   size_fit?: string | null;
   care_instructions: string | null;
   shipping: string | null;
-  decoration_text:string;
-  decoration_image_url: string;
   size_guide_image_url?: string | null
 
   category_id: number | null;  
 
-  // si tu fais un select avec jointure categories(...)
   categories?: Pick<Category, "id" | "name"> | null;
 
   product_images: ProductImage[];
   product_sizes: ProductSize[];
 
   product_suggestions: ProductType[];
+
+  product_info_blocks: InfoBloc[];
 };

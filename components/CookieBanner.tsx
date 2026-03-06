@@ -84,7 +84,7 @@ export default function CookieBanner() {
             className="
               w-[min(560px,calc(100vw-2.5rem))]
               rounded-3xl
-              bg-white/90
+              bg-white/95
               shadow-2xl
               p-6 md:p-7
             "
@@ -107,7 +107,7 @@ export default function CookieBanner() {
               <button
                 onClick={close}
                 aria-label="Close"
-                className="text-gray-500 hover:text-gray-900 transition text-xl leading-none"
+                className="text-gray-500 hover:text-gray-900 transition text-xl leading-none cursor-pointer"
               >
                 ×
               </button>
@@ -117,23 +117,23 @@ export default function CookieBanner() {
               <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
                 <button
                   onClick={onAcceptAll}
-                  className="bg-black text-white py-3.5 rounded-xl text-xs tracking-wide hover:opacity-90 transition"
+                  className="bg-black text-white py-3.5 rounded-xl text-xs tracking-wide hover:opacity-90 transition cursor-pointer"
                 >
-                  ACCEPT ALL
+                  Yeah... whatever 🙄
                 </button>
 
                 <button
                   onClick={onRejectAll}
-                  className="border border-black/15 bg-white py-3.5 rounded-xl text-xs tracking-wide hover:bg-black/5 transition"
+                  className="border border-black/15 bg-white py-3.5 rounded-xl text-xs tracking-wide hover:bg-black/5 transition cursor-pointer"
                 >
-                  REJECT NON-ESSENTIAL
+                  Reject non-essential
                 </button>
 
                 <button
                   onClick={openPrefs}
-                  className="border border-black/15 bg-white py-3.5 rounded-xl text-xs tracking-wide hover:bg-black/5 transition"
+                  className="border border-black/15 bg-white py-3.5 rounded-xl text-xs tracking-wide hover:bg-black/5 transition cursor-pointer"
                 >
-                  SET PREFERENCES
+                  Set preferences
                 </button>
               </div>
             ) : (

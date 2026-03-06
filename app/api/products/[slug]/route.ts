@@ -7,7 +7,7 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = await params  
+  const { slug } = await params
 
   if (!slug) {
     return NextResponse.json(
@@ -16,7 +16,7 @@ export async function GET(
     )
   }
 
-  const { data: product, error } = await supabaseAdmin
+  const { data, error } = await supabaseAdmin
     .from("products")
     .select(`
       *,
@@ -29,7 +29,16 @@ export async function GET(
         id,
         size,
         stock,
-        is_active
+        is_active,
+        display_order
+      ),
+      product_info_blocks (
+        id,
+        image_url,
+        title,
+        subtitle,
+        content,
+        display_order
       ),
       product_suggestions!product_suggestions_product_id_fkey (
         display_order,
@@ -38,8 +47,6 @@ export async function GET(
           name,
           slug,
           price,
-          decoration_image_url,
-          decoration_text,
           product_images (
             id,
             url,
@@ -51,12 +58,26 @@ export async function GET(
     .eq("slug", slug)
     .single()
 
-  if (error || !product) {
+  if (error || !data) {
     return NextResponse.json(
       { error: "Product not found" },
       { status: 404 }
     )
   }
+
+  const product = data as any
+
+  /* ================= FORMAT INFO BLOCKS ================= */
+
+  const info_blocks =
+    product.product_info_blocks
+      ?.sort((a: any, b: any) => a.display_order - b.display_order) ?? []
+
+
+  // Tri des tailles
+  const sizes =
+      product.product_sizes
+        ?.sort((a: any, b: any) => a.display_order - b.display_order) ?? []
 
   /* ================= FORMAT SUGGESTIONS ================= */
 
@@ -70,6 +91,8 @@ export async function GET(
   return NextResponse.json(
     {
       ...product,
+      product_sizes: sizes,
+      product_info_blocks: info_blocks,
       product_suggestions: suggested_products
     },
     { status: 200 }

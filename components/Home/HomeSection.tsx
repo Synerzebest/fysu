@@ -22,7 +22,7 @@ export default function HomeSection({ slug }: { slug: string }) {
 
   return (
     <section className="relative top-56 w-11/12 mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold mb-8 font-dior">{title}</h2>
+      <h2 className="text-xl sm:text-2xl mb-8">{title}</h2>
 
       <div
         ref={scrollRef}

@@ -20,6 +20,9 @@
   --navbar-bg: #ffff;
 }
 
+.bg-product-frame {
+  background-color: rgb(224, 224, 224);
+}
 
 @theme inline {
   --color-background: var(--background);

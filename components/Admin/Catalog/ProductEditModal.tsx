@@ -31,18 +31,25 @@ export default function ProductEditModal({
 }: Props) {
   const [form] = Form.useForm();
 
+  const [infoBlocks, setInfoBlocks] = useState<
+    {
+      id?: string;
+      image_url: string | null;
+      title: string;
+      subtitle: string;
+      content: string;
+    }[]
+  >([]);
+
   const [colors, setColors] = useState<
     { id?: number; color: string }[]
   >([]);
 
   const [sizes, setSizes] = useState<
-    { id?: string; size: string; stock: number; is_active: boolean }[]
+    { id?: string; size: string; stock: number; is_active: boolean; display_order: number }[]
   >([]);
 
   const [sizeGuideImageUrl, setSizeGuideImageUrl] = useState<string | null>(null);
-
-  const [decorationImageUrl, setDecorationImageUrl] =
-    useState<string | null>(null);
 
   const [suggestedProducts, setSuggestedProducts] =
     useState<number[]>([]);
@@ -55,10 +62,14 @@ export default function ProductEditModal({
     form.setFieldsValue({
       ...product,
       price: Number(product.price),
-      decoration_text: product.decoration_text,
     });
 
-    setSizes(product.product_sizes || []);
+    setSizes(
+      (product.product_sizes || []).map((s: any, index: number) => ({
+        ...s,
+        display_order: s.display_order ?? index
+      }))
+    );
 
     const uniqueColors = Array.from(
       new Map(
@@ -69,7 +80,15 @@ export default function ProductEditModal({
     );
 
     setColors(uniqueColors);
-    setDecorationImageUrl(product.decoration_image_url ?? null);
+    setInfoBlocks(
+      (product.product_info_blocks || []).map((b: any) => ({
+        id: b.id,
+        image_url: b.image_url,
+        title: b.title,
+        subtitle: b.subtitle,
+        content: b.content,
+      }))
+    );
     setSizeGuideImageUrl(product.size_guide_image_url ?? null)
 
     setSuggestedProducts(
@@ -86,51 +105,6 @@ export default function ProductEditModal({
   /* ================= IMAGE UPLOAD ================= */
 
   const [uploading, setUploading] = useState(false);
-
-  const handleDecorationUpload = async (file: File) => {
-    if (!product) return;
-  
-    if (!file.type.startsWith("image/")) {
-      alert("Le fichier doit être une image");
-      return;
-    }
-  
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image trop volumineuse (max 5MB)");
-      return;
-    }
-  
-    try {
-      setUploading(true);
-  
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("productId", product.id.toString());
-  
-      const res = await fetch(
-        "/api/admin/products/upload-decoration",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-  
-      const data = await res.json();
-  
-      if (!res.ok) {
-        alert(data.error || "Erreur upload");
-        return;
-      }
-  
-      setDecorationImageUrl(data.url);
-  
-    } catch (err) {
-      console.error(err);
-      alert("Erreur serveur");
-    } finally {
-      setUploading(false);
-    }
-  };
 
   // Size guide image upload
   const handleSizeGuideUpload = async (file: File) => {
@@ -183,7 +157,7 @@ export default function ProductEditModal({
       price: Number(values.price),
       colors,
       sizes,
-      decoration_image_url: decorationImageUrl,
+      info_blocks: infoBlocks,
       size_guide_image_url: sizeGuideImageUrl,
       suggested_product_ids: suggestedProducts,
     });
@@ -290,8 +264,6 @@ export default function ProductEditModal({
 
           <Divider />
 
-          <Divider />
-
           <h3 className="text-lg font-medium mb-4">Tailles</h3>
 
           <div className="space-y-4">
@@ -319,6 +291,16 @@ export default function ProductEditModal({
                   onChange={(value) => {
                     const newSizes = [...sizes];
                     newSizes[index].stock = Number(value ?? 0);
+                    setSizes(newSizes);
+                  }}
+                />
+
+                <InputNumber
+                  min={0}
+                  value={s.display_order}
+                  onChange={(value) => {
+                    const newSizes = [...sizes];
+                    newSizes[index].display_order = Number(value ?? 0);
                     setSizes(newSizes);
                   }}
                 />
@@ -357,7 +339,12 @@ export default function ProductEditModal({
               onClick={() =>
                 setSizes([
                   ...sizes,
-                  { size: "", stock: 0, is_active: true },
+                  {
+                    size: "",
+                    stock: 0,
+                    is_active: true,
+                    display_order: sizes.length
+                  }
                 ])
               }
             >
@@ -365,71 +352,130 @@ export default function ProductEditModal({
             </Button>
           </div>
 
-          {/* ================= DECORATION ================= */}
+          <Divider />
 
-          <Form.Item label="Texte décoration" name="decoration_text">
-            <Input.TextArea rows={4} />
-          </Form.Item>
+          <h3 className="text-lg font-medium mb-4">
+            Blocs d'information
+          </h3>
 
-          <Form.Item label="Image décoration">
-            <div className="flex flex-col gap-4">
+          <div className="space-y-6">
 
-                {/* IMAGE PREVIEW */}
-                <div className="relative group w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-50">
+          {infoBlocks.map((block, index) => (
+            <div
+              key={block.id ?? index}
+              className="border border-neutral-200 rounded-2xl p-6 space-y-4"
+            >
 
-                {decorationImageUrl ? (
-                    <>
-                    <img
-                        src={decorationImageUrl}
-                        className="w-full h-full object-cover transition duration-300 group-hover:scale-[1.02]"
-                    />
+              <Input
+                placeholder="Titre"
+                value={block.title}
+                onChange={(e) => {
+                  const newBlocks = [...infoBlocks];
+                  newBlocks[index].title = e.target.value;
+                  setInfoBlocks(newBlocks);
+                }}
+              />
 
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300 flex items-center justify-center">
+              <Input
+                placeholder="Sous titre"
+                value={block.subtitle}
+                onChange={(e) => {
+                  const newBlocks = [...infoBlocks];
+                  newBlocks[index].subtitle = e.target.value;
+                  setInfoBlocks(newBlocks);
+                }}
+              />
 
-                        <button
-                        type="button"
-                        onClick={() => setDecorationImageUrl(null)}
-                        className="opacity-0 group-hover:opacity-100 transition duration-300 bg-white text-black text-xs px-4 py-2 rounded-full shadow-lg"
-                        >
-                        Supprimer
-                        </button>
+              <Input.TextArea
+                rows={4}
+                placeholder="Texte"
+                value={block.content}
+                onChange={(e) => {
+                  const newBlocks = [...infoBlocks];
+                  newBlocks[index].content = e.target.value;
+                  setInfoBlocks(newBlocks);
+                }}
+              />
 
-                    </div>
-                    </>
-                ) : (
-                    <div className="flex flex-col items-center justify-center text-neutral-400 text-sm h-full">
-                    Aucune image
-                    </div>
+              {/* IMAGE */}
+              <div className="flex flex-col gap-4">
+
+                {block.image_url && (
+                  <img
+                    src={block.image_url}
+                    className="w-48 rounded-lg border"
+                  />
                 )}
 
-                {uploading && (
-                    <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center">
-                    <div className="animate-pulse text-sm text-neutral-600">
-                        Upload en cours...
-                    </div>
-                    </div>
-                )}
-
-                </div>
-
-                {/* UPLOAD BUTTON */}
-                <label className="cursor-pointer inline-flex items-center justify-center px-5 py-3 rounded-full border border-neutral-300 text-sm font-medium hover:bg-neutral-100 transition">
-                Changer l’image
-                <input
+                <label className="cursor-pointer px-4 py-2 border rounded-md w-fit">
+                  Upload image
+                  <input
                     type="file"
-                    accept="image/*"
                     className="hidden"
-                    disabled={uploading}
-                    onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleDecorationUpload(file);
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const formData = new FormData();
+                      formData.append("file", file);
+                      formData.append("productId", product!.id.toString());
+
+                      const res = await fetch(
+                        "/api/admin/products/upload-info-block",
+                        {
+                          method: "POST",
+                          body: formData,
+                        }
+                      );
+
+                      const data = await res.json();
+
+                      if (!res.ok) {
+                        alert(data.error || "Upload error");
+                        return;
+                      }
+                      
+                      const newBlocks = [...infoBlocks];
+                      newBlocks[index].image_url = data.url;
+                      setInfoBlocks(newBlocks);
                     }}
-                />
+                  />
                 </label>
 
+              </div>
+
+              <Button
+                danger
+                onClick={() =>
+                  setInfoBlocks(infoBlocks.filter((_, i) => i !== index))
+                }
+              >
+                Supprimer ce bloc
+              </Button>
+
             </div>
-            </Form.Item>
+          ))}
+
+          <Button
+            type="dashed"
+            block
+            onClick={() =>
+              setInfoBlocks([
+                ...infoBlocks,
+                {
+                  image_url: null,
+                  title: "",
+                  subtitle: "",
+                  content: "",
+                },
+              ])
+            }
+          >
+            + Ajouter un bloc
+          </Button>
+
+          </div>
 
           <Divider />
 
