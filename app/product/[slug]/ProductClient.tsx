@@ -107,13 +107,18 @@ export default function ProductClient() {
   const mainImage = filteredImages[0]?.url
   const otherImages = filteredImages.slice(1)
 
+  function formatText(text?: string | null) {
+    if (!text) return ""
+    return text.replace(/\\n/g, "\n")
+  }
+
   const items: CollapseProps["items"] = [
     {
       key: "1",
       label: "Product details",
       children: (
-        <p>
-          {product.details ?? "No details available."}
+        <p className="whitespace-pre-line">
+          {formatText(product.details) || "No details available."}
         </p>
       ),
     },
@@ -121,8 +126,8 @@ export default function ProductClient() {
       key: "2",
       label: "Size & fit",
       children: (
-        <p>
-          {product.size_fit ?? "No info available."}
+        <p className="whitespace-pre-line">
+          {formatText(product.size_fit) || "No info available."}
         </p>
       ),
     },
@@ -130,8 +135,8 @@ export default function ProductClient() {
       key: "3",
       label: "Care instructions",
       children: (
-        <p>
-          {product.care_instructions ?? "No care instructions available."}
+        <p className="whitespace-pre-line">
+          {formatText(product.care_instructions) || "No care instructions available."}
         </p>
       ),
     },
@@ -139,8 +144,8 @@ export default function ProductClient() {
       key: "4",
       label: "Shipping",
       children: (
-        <p>
-          {product.shipping ?? "Shipping information not available."}
+        <p className="whitespace-pre-line">
+          {formatText(product.shipping) || "Shipping information not available."}
         </p>
       ),
     },
@@ -229,8 +234,8 @@ export default function ProductClient() {
             {product.name}
           </h1>
 
-          <p className="text-sm">
-            {product.description}
+          <p className="text-sm whitespace-pre-line">
+            {formatText(product.description)}
           </p>
   
           <p className="text-sm font-bold">
