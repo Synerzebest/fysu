@@ -14,12 +14,12 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const isPasswordPage = pathname === "/password";
-  const hasAccess = req.cookies.get("dev_access")?.value === "true";
+  // const isPasswordPage = pathname === "/password";
+  // const hasAccess = req.cookies.get("dev_access")?.value === "true";
 
-  if (!hasAccess && !isPasswordPage) {
-    return NextResponse.redirect(new URL("/password", req.url));
-  }
+  // if (!hasAccess && !isPasswordPage) {
+  //   return NextResponse.redirect(new URL("/password", req.url));
+  // }
 
   return NextResponse.next();
 }
