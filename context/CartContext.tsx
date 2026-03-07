@@ -35,6 +35,9 @@ type CartContextType = {
   decreaseQuantity: (productId: number, sizeId: string) => void;
 
   clearCart: () => void;
+
+  isCartOpen: boolean;
+  setIsCartOpen: (v: boolean) => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -43,6 +46,7 @@ const STORAGE_KEY = "fysu_cart_v1";
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
 
   const [justAdded, setJustAdded] = useState<Record<string, boolean>>({});
@@ -166,8 +170,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       increaseQuantity,
       decreaseQuantity,
       clearCart,
+      isCartOpen,
+      setIsCartOpen,
     }),
-    [cart, justAdded]
+    [cart, justAdded, isCartOpen]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

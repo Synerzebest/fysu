@@ -42,6 +42,8 @@ export default function ProductClient() {
 
     if (slug) fetchProduct()
   }, [slug])
+  console.log(product)
+
 
   /* ================= DERIVED DATA ================= */
 
@@ -223,11 +225,15 @@ export default function ProductClient() {
         {/* ================= INFO ================= */}
         <div className="space-y-6 sticky top-24 self-start w-11/12 mx-auto">
   
-          <h1 className="text-4xl font-medium">
+          <h1 className="text-xl font-medium">
             {product.name}
           </h1>
+
+          <p className="text-sm">
+            {product.description}
+          </p>
   
-          <p className="text-lg font-bold">
+          <p className="text-sm font-bold">
             {new Intl.NumberFormat("fr-BE", {
               style: "currency",
               currency: "EUR",

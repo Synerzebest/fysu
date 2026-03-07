@@ -22,9 +22,9 @@ const Footer: React.FC = () => {
         <div>
           <h2 className="font-bold uppercase mb-2">Client Services</h2>
           <ul className="space-y-2">
-            <li><a href="#" className="hover:underline">Expedition</a></li>
-            <li><a href="#" className="hover:underline">Payment</a></li>
-            <li><a href="#" className="hover:underline">Product Returns</a></li>
+            <li><a href="/privacy" className="hover:underline">Expedition</a></li>
+            <li><a href="/privacy" className="hover:underline">Payment</a></li>
+            <li><a href="/privacy" className="hover:underline">Product Returns</a></li>
           </ul>
         </div>
 
@@ -44,8 +44,8 @@ const Footer: React.FC = () => {
       {/* Bottom links */}
       <div className="border-t border-white mt-10 pt-6">
         <div className="max-w-6xl mx-auto flex flex-wrap justify-center md:justify-between text-xs md:text-sm gap-4 md:gap-8 text-center">
-          <Link href="#" className="hover:underline">LEGAL TERMS</Link>
-          <Link href="#" className="hover:underline">CONTACT</Link>
+          <Link href="/privacy" className="hover:underline">LEGAL TERMS</Link>
+          <Link href="/privacy" className="hover:underline">CONTACT</Link>
           <Link href="/privacy" className="hover:underline">PRIVACY POLICY</Link>
         </div>
       </div>

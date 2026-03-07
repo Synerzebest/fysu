@@ -19,7 +19,7 @@ export default function AddToCartButton({
   selectedSizeLabel,
   className,
 }: Props) {
-  const { addToCartWithFeedback, justAdded } = useCart();
+  const { addToCartWithFeedback, justAdded, setIsCartOpen } = useCart();
   const [applePayOpen, setApplePayOpen] = useState(false);
 
   // clé unique produit + taille
@@ -119,6 +119,7 @@ export default function AddToCartButton({
           }
 
           addToCartWithFeedback(product, selectedSizeId, selectedSizeLabel, 1500);
+          setIsCartOpen(true);
         }}
         className={`
           w-full

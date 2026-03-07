@@ -39,7 +39,6 @@ export default function UserOrders() {
       const body = await res.json().catch(() => ({}));
       throw new Error(body?.error || "Erreur récupération commandes");
     }
-
     return res.json() as Promise<{ orders: Order[] }>;
   }
 
@@ -81,7 +80,7 @@ export default function UserOrders() {
       transition={{ duration: 0.5 }}
       className="w-11/12 max-w-7xl mx-auto py-10 relative top-44"
     >
-        <h1 className="text-2xl mb-6 font-dior">Mes commandes</h1>
+        <h1 className="text-2xl mb-6 font-dior">My orders</h1>
       {loading ? (
         <div className="flex justify-center py-20">
           <Spin size="large" />
@@ -89,7 +88,7 @@ export default function UserOrders() {
       ) : error ? (
         <Empty description={error} />
       ) : orders.length === 0 ? (
-          <p>Aucune commande trouvée</p>
+          <p>No orders found</p>
       ) : (
         <div className="flex sm:flex-row flex-col gap-4">
           {orders.map((order, idx) => {
@@ -120,7 +119,7 @@ export default function UserOrders() {
                 <div className="flex flex-col items-start mb-4">
                   <div>
                     <p className="text-xs text-gray-400">
-                      Commande #{order.id.slice(0, 8)}
+                      Order #{order.id.slice(0, 8)}
                     </p>
                     {createdLabel && (
                       <p className="text-sm text-gray-500">{createdLabel}</p>
@@ -140,8 +139,6 @@ export default function UserOrders() {
                 {items.map((item, i) => {
                   const p = item?.product;
 
-                  console.log("ITEM:", item);
-console.log("PRODUCT:", item?.product);
 
                   const imgUrl = p?.product_images?.[0]?.url ?? "/placeholder.png";
                   const name = p?.name ?? item?.description ?? "Produit";
@@ -172,7 +169,7 @@ console.log("PRODUCT:", item?.product);
                           {price != null ? `€${Number(price).toFixed(2)}` : "—"}
                         </p>
 
-                        <p className="text-xs text-gray-400">Qté: {qty}</p>
+                        <p className="text-xs text-gray-400">Qty: {qty}</p>
                       </div>
                     </motion.div>
                   );

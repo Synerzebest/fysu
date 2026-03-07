@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, ChevronDown, UserRound, ShoppingCart } from "lucide-react";
@@ -11,6 +11,8 @@ import { useCart } from "@/context/CartContext";
 const logoWhite = "/images/fysu-light.png";
 const logoBlack = "/images/fysu-dark.png";
 
+const PANEL_TRANSITION_MS = 600;
+
 function MobileMenu({
   activePanel,
   setActivePanel,
@@ -20,22 +22,21 @@ function MobileMenu({
   links,
   collections,
 }: {
-  activePanel: "menu" | "cart" | null;
-  setActivePanel: (v: "menu" | "cart" | null) => void;
+  activePanel: "menu" | null;
+  setActivePanel: (v: "menu" | null) => void;
   collectionOpen: boolean;
   setCollectionOpen: (v: boolean) => void;
   handleMobileLinkClick: () => void;
   links: { label: string; href: string }[];
   collections: { label: string; href: string }[];
 }) {
+  const { cart, isCartOpen, setIsCartOpen } = useCart();
   const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const { cart } = useCart();
+  const switchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const totalItems = cart.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     const update = () => {
@@ -54,85 +55,110 @@ function MobileMenu({
     return () => observer.disconnect();
   }, []);
 
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const switchPanel = (panel: "menu" | "cart") => {
-    if (activePanel === panel) {
+  useEffect(() => {
+    return () => {
+      if (switchTimeoutRef.current) {
+        clearTimeout(switchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const clearPendingSwitch = () => {
+    if (switchTimeoutRef.current) {
+      clearTimeout(switchTimeoutRef.current);
+      switchTimeoutRef.current = null;
+    }
+  };
+
+  const openCartWithDelay = () => {
+    clearPendingSwitch();
+
+    if (isCartOpen) {
+      setIsCartOpen(false);
+      return;
+    }
+
+    if (activePanel === "menu") {
+      setActivePanel(null);
+      switchTimeoutRef.current = setTimeout(() => {
+        setIsCartOpen(true);
+        switchTimeoutRef.current = null;
+      }, PANEL_TRANSITION_MS);
+      return;
+    }
+
+    setIsCartOpen(true);
+  };
+
+  const openMenuWithDelay = () => {
+    clearPendingSwitch();
+
+    if (activePanel === "menu") {
       setActivePanel(null);
       return;
     }
-  
-    if (activePanel !== null) {
-      // fermer d'abord
-      setActivePanel(null);
-  
-      setTimeout(() => {
-        setActivePanel(panel);
-      }, 600); 
-    } else {
-      setActivePanel(panel);
+
+    if (isCartOpen) {
+      setIsCartOpen(false);
+      switchTimeoutRef.current = setTimeout(() => {
+        setActivePanel("menu");
+        switchTimeoutRef.current = null;
+      }, PANEL_TRANSITION_MS);
+      return;
     }
+
+    setActivePanel("menu");
   };
-  
+
   return (
-     <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-3xl">
-      {/* Barre mobile */}
+    <div className="fixed top-2 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-3xl">
       <div className="flex items-center gap-3">
         <div className="bg-[var(--navbar-bg)]/60 backdrop-blur-sm w-[70%] rounded-4xl flex justify-start">
-        <Link href="/" className="w-full flex items-center justify-start">
-          <div className="relative h-[24px] w-[160px] my-[.52rem]">
-            <Image
-              src={isDark ? logoBlack : logoWhite}
-              alt="FYSU Logo"
-              fill
-              priority
-              sizes="160px"
-              className="object-contain"
-            />
-          </div>
-        </Link>
+          <Link href="/" className="w-full flex items-center justify-start">
+            <div className="relative h-[24px] w-[160px] my-[.52rem]">
+              <Image
+                src={isDark ? logoBlack : logoWhite}
+                alt="FYSU Logo"
+                fill
+                priority
+                sizes="160px"
+                className="object-contain"
+              />
+            </div>
+          </Link>
         </div>
 
         <div className="bg-[var(--navbar-bg)]/60 backdrop-blur-sm w-[30%] rounded-4xl flex gap-4 justify-center items-center text-[var(--menu)] h-[42px]">
-        {/* BOUTON PANIER */}
-        <button
-          onClick={() => switchPanel("cart")}
-          className="relative cursor-pointer"
-        >
-          <ShoppingCart size={20} />
+          <button
+            onClick={openCartWithDelay}
+            className="relative cursor-pointer"
+            type="button"
+          >
+            <ShoppingCart size={20} />
 
-          {totalItems > 0 && (
-            <span className="absolute -top-2 -right-2 bg-green-900 text-white text-xs px-1.5 py-0.5 rounded-full">
-              {totalItems}
-            </span>
-          )}
-        </button>
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-green-900 text-white text-xs px-1.5 py-0.5 rounded-full">
+                {totalItems}
+              </span>
+            )}
+          </button>
 
-        {/* HAMBURGER */}
-        <button
-          onClick={() => switchPanel("menu")}
-          className="text-[var(--menu)]"
-        >
-          {activePanel === "menu" ? <X size={24} /> : <Menu size={24} />}
-        </button>
-
+          <button
+            onClick={openMenuWithDelay}
+            className="text-[var(--menu)]"
+            type="button"
+          >
+            {activePanel === "menu" ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
-      </div>
 
-      {/* Cart drawer */}
-      {mounted && (
-        <CartDrawer
-          isOpen={activePanel === "cart"}
-          setIsOpen={(value) =>
-            setActivePanel(value ? "cart" : null)
-          }
-        />
-        )}
-      {/* MENU MOBILE */}
+      {mounted && <CartDrawer />}
+
       <AnimatePresence>
         {activePanel === "menu" && (
           <motion.div
@@ -150,7 +176,6 @@ function MobileMenu({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {/* Pages normales */}
               {links.map((link) =>
                 link.label === "COLLECTIONS" ? (
                   <React.Fragment key="collections-mobile">
@@ -158,11 +183,14 @@ function MobileMenu({
                       <button
                         onClick={() => setCollectionOpen(!collectionOpen)}
                         className="flex items-center justify-between w-full py-2 border-b border-white/20"
+                        type="button"
                       >
                         COLLECTIONS
                         <ChevronDown
                           size={16}
-                          className={`transition-transform ${collectionOpen ? "rotate-180" : ""}`}
+                          className={`transition-transform ${
+                            collectionOpen ? "rotate-180" : ""
+                          }`}
                         />
                       </button>
                     </li>
@@ -202,6 +230,7 @@ function MobileMenu({
                   </li>
                 )
               )}
+
               <li>
                 <Link
                   href="/about"
@@ -211,6 +240,7 @@ function MobileMenu({
                   About
                 </Link>
               </li>
+
               <li className="mt-24">
                 <Link href="/profile" className="flex items-center gap-2">
                   <UserRound size={20} /> My Fysu
@@ -224,17 +254,15 @@ function MobileMenu({
   );
 }
 
-// -----------------------
-// MAIN NAVBAR
-// -----------------------
 export default function Navbar() {
-  const [activePanel, setActivePanel] = useState<"menu" | "cart" | null>(null);
+  const [activePanel, setActivePanel] = useState<"menu" | null>(null);
   const [collectionOpen, setCollectionOpen] = useState(false);
 
   const [links, setLinks] = useState<{ label: string; href: string }[]>([]);
-  const [collections, setCollections] = useState<{ label: string; href: string }[]>([]);
+  const [collections, setCollections] = useState<
+    { label: string; href: string }[]
+  >([]);
 
-  // LOAD DB NAV LINKS
   useEffect(() => {
     const loadPages = async () => {
       const res = await fetch("/api/pages");
@@ -245,7 +273,7 @@ export default function Navbar() {
           label: p.title.toUpperCase(),
           href: `/${p.slug}`,
         })),
-        { label: "COLLECTIONS", href: "#" }, // entry point for submenu
+        { label: "COLLECTIONS", href: "#" },
       ]);
     };
 
@@ -267,19 +295,18 @@ export default function Navbar() {
 
   const handleMobileLinkClick = () => {
     setCollectionOpen(false);
+    setActivePanel(null);
   };
 
   return (
-    <>
-      <MobileMenu
-        activePanel={activePanel}
-        setActivePanel={setActivePanel}
-        collectionOpen={collectionOpen}
-        setCollectionOpen={setCollectionOpen}
-        handleMobileLinkClick={handleMobileLinkClick}
-        links={links}
-        collections={collections}
-      />
-    </>
+    <MobileMenu
+      activePanel={activePanel}
+      setActivePanel={setActivePanel}
+      collectionOpen={collectionOpen}
+      setCollectionOpen={setCollectionOpen}
+      handleMobileLinkClick={handleMobileLinkClick}
+      links={links}
+      collections={collections}
+    />
   );
 }

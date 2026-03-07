@@ -85,7 +85,7 @@ export async function GET() {
           slug,
           category_id,
           gender,
-          product_images (
+          product_images!product_images_productId_fkey (
             id,
             url,
             color
@@ -93,6 +93,8 @@ export async function GET() {
         `
         )
         .in("id", ids);
+
+        console.log(products)
 
       if (prodError) {
         console.error("getUserOrders products fetch error:", prodError);

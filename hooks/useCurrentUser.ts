@@ -51,27 +51,27 @@ export function useCurrentUser() {
 
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(
-      async (_event, session) => {
+    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      if (!mounted) return;
+    
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+    
+      if (nextUser) {
+        const { data: profileData } = await supabaseClient
+          .from("profiles")
+          .select("*")
+          .eq("id", nextUser.id)
+          .maybeSingle();
+    
         if (!mounted) return;
-
-        const nextUser = session?.user ?? null;
-        setUser(nextUser);
-
-        if (nextUser) {
-          const { data: profileData } = await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq("id", nextUser.id)
-            .maybeSingle();
-
-          if (!mounted) return;
-          setProfile(profileData ?? null);
-        } else {
-          setProfile(null);
-        }
+        setProfile(profileData ?? null);
+      } else {
+        setProfile(null);
       }
-    );
+    
+      setLoading(false);
+    });
 
     // Sécurité : si pour une raison X ça bloque, on débloque après 3s
     const safetyTimeout = setTimeout(() => {

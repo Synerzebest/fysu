@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function SuccessClient() {
   const searchParams = useSearchParams();
@@ -36,15 +37,15 @@ export default function SuccessClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Vérification du paiement...
+      <div className="min-h-screen flex items-center justify-center text-neutral-500 text-sm tracking-wide">
+        Vérification du paiement…
       </div>
     );
   }
 
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center text-neutral-500 text-sm">
         Paiement introuvable.
       </div>
     );
@@ -52,49 +53,60 @@ export default function SuccessClient() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-4xl mx-auto py-24 px-4 text-center"
+      transition={{ duration: 0.5 }}
+      className="min-h-screen flex items-center justify-center px-6"
     >
-      <div className="text-5xl mb-6">🎉</div>
+      <div className="max-w-2xl w-full text-center">
 
-      <h1 className="text-3xl font-bold mb-4">
-        Merci pour votre commande !
-      </h1>
+        {/* Header */}
+        <h1 className="text-4xl font-semibold tracking-tight mb-4">
+          Paiement confirmé
+        </h1>
 
-      <p className="text-neutral-600 mb-6">
-        Un email de confirmation a été envoyé à{" "}
-        <strong>{session.customer_email}</strong>
-      </p>
+        {/* <p className="text-neutral-500 text-sm mb-12">
+          Un email de confirmation a été envoyé à{" "}
+          <span className="text-neutral-900 font-medium">
+            {session.customer_email}
+          </span>
+        </p> */}
 
-      <div className="border rounded-lg p-6 bg-neutral-50 text-left mb-8">
-        <h2 className="font-semibold mb-4">Résumé</h2>
+        {/* Order card */}
+        <div className="border border-neutral-200 rounded-2xl p-8 text-left bg-white">
 
-        {session.line_items?.data?.map((item: any) => (
-          <div key={item.id} className="flex justify-between mb-2">
-            <span>
-              {item.description} × {item.quantity}
-            </span>
-            <span>
-              €{(item.amount_total / 100).toFixed(2)}
+          <div className="space-y-4">
+            {session.line_items?.data?.map((item: any) => (
+              <div
+                key={item.id}
+                className="flex justify-between text-sm text-neutral-700"
+              >
+                <span>
+                  {item.description} × {item.quantity}
+                </span>
+                <span className="font-medium text-neutral-900">
+                  €{(item.amount_total / 100).toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t border-neutral-200 mt-6 pt-6 flex justify-between text-sm font-medium">
+            <span>Total payé</span>
+            <span className="text-neutral-900">
+              €{(session.amount_total / 100).toFixed(2)}
             </span>
           </div>
-        ))}
-
-        <div className="border-t mt-4 pt-4 flex justify-between font-semibold">
-          <span>Total payé</span>
-          <span>
-            €{(session.amount_total / 100).toFixed(2)}
-          </span>
         </div>
-      </div>
 
-      <a
-        href="/"
-        className="inline-block bg-black text-white px-8 py-4 text-sm font-medium tracking-wide hover:bg-neutral-800 transition"
-      >
-        Retour à la boutique
-      </a>
+        {/* CTA */}
+        <Link
+          href="/"
+          className="inline-block mt-10 text-sm font-medium text-neutral-900 hover:opacity-60 transition"
+        >
+          Continuer mes achats
+        </Link>
+      </div>
     </motion.div>
   );
 }

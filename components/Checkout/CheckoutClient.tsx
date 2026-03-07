@@ -5,10 +5,12 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutClient() {
   const { cart } = useCart();
   const { user, loading: userLoading } = useCurrentUser();
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +22,7 @@ export default function CheckoutClient() {
 
   const handleCheckout = async () => {
     if (!user) {
-      setError("Vous devez être connecté pour procéder au paiement.");
+      router.push("/auth/signin");
       return;
     }
 
@@ -72,7 +74,6 @@ export default function CheckoutClient() {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-6xl mx-auto py-12 px-4 relative top-24"
     >
-      {/* ORDER SUMMARY */}
       <div>
         <h2 className="text-2xl font-semibold mb-6">
           Résumé de commande
@@ -121,14 +122,14 @@ export default function CheckoutClient() {
 
           <button
             onClick={handleCheckout}
-            disabled={loading || !user}
+            disabled={loading}
             className="w-full bg-black text-white py-4 text-sm font-medium tracking-wide hover:bg-neutral-800 transition disabled:opacity-60"
           >
             {loading
               ? "Redirection..."
               : user
-              ? "Procéder au paiement"
-              : "Connexion requise"}
+              ? "Pay"
+              : "Sign in to pay"}
           </button>
         </div>
       </div>

@@ -36,12 +36,12 @@ export default function Wishlist() {
 
   return (
     <div className="w-11/12 mx-auto max-w-7xl relative top-44">
-      <h1 className="text-2xl font-dior mb-6">Mon étagère</h1>
+      <h1 className="text-2xl font-dior mb-6">My wardrobe</h1>
 
       {loading ? (
-        <p>Chargement...</p>
+        <p>Loading...</p>
       ) : wishlist.length === 0 ? (
-        <p>Aucun produit liké.</p>
+        <p>No products found.</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {wishlist.map((w, idx) => (

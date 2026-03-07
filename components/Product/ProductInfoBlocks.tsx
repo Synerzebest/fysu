@@ -29,7 +29,7 @@ function ExpandableText({ text }: { text: string }) {
         transition={{ duration: 0.35 }}
         className="overflow-hidden"
       >
-        <p className="text-lg leading-relaxed text-foreground/80 whitespace-pre-line">
+        <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">
           {formattedText}
         </p>
       </motion.div>
@@ -74,7 +74,7 @@ export default function ProductInfoBlocks({ blocks }: Props) {
             <div className="max-w-6xl mx-auto mt-14 grid md:grid-cols-2 gap-16 w-11/12">
               <div className="space-y-2">
                 {block.title && (
-                  <h3 className="text-3xl md:text-4xl font-medium font-dior">
+                  <h3 className="text-xl font-medium font-dior">
                     {block.title}
                   </h3>
                 )}
