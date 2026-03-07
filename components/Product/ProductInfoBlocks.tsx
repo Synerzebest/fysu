@@ -19,24 +19,27 @@ type Props = {
 function ExpandableText({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false)
 
+  const formattedText = text.replace(/\\n/g, "\n")
+
   return (
     <div>
-      <p
-        className={`text-lg leading-relaxed text-foreground/80 whitespace-pre-line ${
-          expanded ? "" : "line-clamp-3"
-        }`}
+      <motion.div
+        initial={false}
+        animate={{ height: expanded ? "auto" : "5.5rem" }}
+        transition={{ duration: 0.35 }}
+        className="overflow-hidden"
       >
-        {text}
-      </p>
+        <p className="text-lg leading-relaxed text-foreground/80 whitespace-pre-line">
+          {formattedText}
+        </p>
+      </motion.div>
 
-      {!expanded && (
-        <button
-          onClick={() => setExpanded(true)}
-          className="text-sm mt-2 text-foreground/50 hover:text-foreground transition"
-        >
-          Read more
-        </button>
-      )}
+      <button
+        onClick={() => setExpanded((prev) => !prev)}
+        className="text-sm mt-2 text-foreground/50 hover:text-foreground transition"
+      >
+        {expanded ? "Read less" : "Read more"}
+      </button>
     </div>
   )
 }
@@ -58,7 +61,6 @@ export default function ProductInfoBlocks({ blocks }: Props) {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            {/* IMAGE */}
             <div className="relative w-full aspect-[16/7] overflow-hidden">
               <Image
                 src={block.image_url}
@@ -69,10 +71,7 @@ export default function ProductInfoBlocks({ blocks }: Props) {
               />
             </div>
 
-            {/* TEXT SECTION */}
             <div className="max-w-6xl mx-auto mt-14 grid md:grid-cols-2 gap-16 w-11/12">
-              
-              {/* TITLE SIDE */}
               <div className="space-y-2">
                 {block.title && (
                   <h3 className="text-3xl md:text-4xl font-medium font-dior">
@@ -87,11 +86,9 @@ export default function ProductInfoBlocks({ blocks }: Props) {
                 )}
               </div>
 
-              {/* CONTENT SIDE */}
               <div className="pt-6 border-t border-neutral-300">
                 {block.content && <ExpandableText text={block.content} />}
               </div>
-
             </div>
           </motion.div>
         )
