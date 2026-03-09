@@ -111,14 +111,8 @@ export default function ProductEditModal({
     setSizeGuideImageUrl(product.size_guide_image_url ?? null)
 
     setSuggestedProducts(
-        Array.from(
-          new Set(
-            product.product_suggestions?.map(
-              (p: any) => Number(p.suggested_product_id)
-            ) ?? []
-          )
-        )
-      );
+      product.product_suggestions?.map((p: any) => p.id) ?? []
+    );
   }, [product, form]);
 
   /* ================= IMAGE UPLOAD ================= */

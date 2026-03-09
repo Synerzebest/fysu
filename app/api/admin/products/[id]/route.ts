@@ -43,6 +43,10 @@ export async function GET(
   const formatted = {
     ...product,
 
+    product_sizes:
+      product.product_sizes
+        ?.sort((a: any, b: any) => a.display_order - b.display_order) ?? [],
+
     product_info_blocks:
       product.product_info_blocks?.sort(
         (a: any, b: any) => a.display_order - b.display_order
