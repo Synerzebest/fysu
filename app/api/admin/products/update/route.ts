@@ -14,6 +14,7 @@ export async function POST(req: Request) {
       price,
       category_id,
       gender,
+      images,
       care_instructions,
       shipping,
       size_guide_image_url,
@@ -67,11 +68,40 @@ export async function POST(req: Request) {
         size: s.size,
         stock: s.stock,
         is_active: s.is_active,
+        display_order: s.display_order
       }));
 
       const { error } = await supabaseAdmin
         .from("product_sizes")
         .insert(formattedSizes);
+
+      if (error) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 500 }
+        );
+      }
+    }
+
+    /* ================= PRODUCT IMAGES ================= */
+
+    await supabaseAdmin
+      .from("product_images")
+      .delete()
+      .eq("productId", id);
+
+    if (images?.length) {
+      const formattedImages = images
+        .filter((img: any) => img.url && img.color)
+        .map((img: any) => ({
+          productId: id,
+          url: img.url,
+          color: img.color
+        }));
+
+      const { error } = await supabaseAdmin
+        .from("product_images")
+        .insert(formattedImages);
 
       if (error) {
         return NextResponse.json(

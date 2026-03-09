@@ -9,7 +9,12 @@ import {
   Form,
   Divider,
   Select,
+  Upload,
+  Image,
+  Card,
+  Space,
 } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { ProductType } from "../../../types/product";
 
 type Props = {
@@ -41,14 +46,13 @@ export default function ProductEditModal({
     }[]
   >([]);
 
-  const [colors, setColors] = useState<
-    { id?: number; color: string }[]
-  >([]);
-
   const [sizes, setSizes] = useState<
     { id?: string; size: string; stock: number; is_active: boolean; display_order: number }[]
   >([]);
 
+  const [colorSets, setColorSets] = useState<
+    { color: string; images: { id?: number; url: string }[] }[]
+  >([]);
   const [sizeGuideImageUrl, setSizeGuideImageUrl] = useState<string | null>(null);
 
   const [suggestedProducts, setSuggestedProducts] =
@@ -71,15 +75,30 @@ export default function ProductEditModal({
       }))
     );
 
-    const uniqueColors = Array.from(
-      new Map(
-        (product.product_images || [])
-          .filter((img) => !!img.color)
-          .map((img) => [img.color, { id: img.id, color: img.color }])
-      ).values()
+    const grouped: { color: string; images: { id?: number; url: string }[] }[] =
+    Object.values(
+      (product.product_images || []).reduce(
+        (
+          acc: Record<string, { color: string; images: { id?: number; url: string }[] }>,
+          img: any
+        ) => {
+          if (!acc[img.color]) {
+            acc[img.color] = { color: img.color, images: [] };
+          }
+  
+          acc[img.color].images.push({
+            id: img.id,
+            url: img.url,
+          });
+  
+          return acc;
+        },
+        {}
+      )
     );
+    
+    setColorSets(grouped);
 
-    setColors(uniqueColors);
     setInfoBlocks(
       (product.product_info_blocks || []).map((b: any) => ({
         id: b.id,
@@ -146,17 +165,59 @@ export default function ProductEditModal({
     }
   };
 
+  const handleProductImageUpload = async (
+    file: File,
+    colorIndex: number
+  ) => {
+
+    if (!product) return;
+  
+    const color = colorSets[colorIndex].color;
+  
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("productId", product!.id.toString());
+    formData.append("color", color);
+  
+    const res = await fetch("/api/admin/products/upload-product-image", {
+      method: "POST",
+      body: formData,
+    });
+  
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Upload error");
+      return;
+    }
+
+    const updated = [...colorSets];
+    updated[colorIndex].images.push({
+      id: data.id,
+      url: data.url
+    });
+
+    setColorSets(updated);
+  };
+
   /* ================= SUBMIT ================= */
 
   const handleFinish = (values: any) => {
     if (!product) return;
 
+    const images = colorSets.flatMap((set) =>
+      set.images.map((img) => ({
+        url: img.url,
+        color: set.color,
+      }))
+    );
+
     onSubmit({
       ...product,
       ...values,
       price: Number(values.price),
-      colors,
       sizes,
+      images,
       info_blocks: infoBlocks,
       size_guide_image_url: sizeGuideImageUrl,
       suggested_product_ids: suggestedProducts,
@@ -262,6 +323,82 @@ export default function ProductEditModal({
             <Input />
           </Form.Item>
 
+          <Divider />
+
+          <h3 className="text-lg font-medium mb-4">
+            Images produit
+          </h3>
+
+          <div className="flex flex-col gap-6">
+
+          {colorSets.map((set, colorIndex) => (
+            <Card key={colorIndex} className="w-full">
+
+              <div className="flex items-center gap-3 mb-4">
+
+                <input
+                  type="color"
+                  value={set.color}
+                  onChange={(e) => {
+                    const updated = [...colorSets];
+                    updated[colorIndex].color = e.target.value;
+                    setColorSets(updated);
+                  }}
+                />
+
+                <span>{set.color}</span>
+
+                <Button
+                  danger
+                  size="small"
+                  onClick={() => {
+                    const updated = [...colorSets];
+                    updated.splice(colorIndex, 1);
+                    setColorSets(updated);
+                  }}
+                >
+                  Supprimer couleur
+                </Button>
+
+              </div>
+
+              <Space wrap>
+                {set.images.map((img, imgIndex) => (
+                  <Card
+                    key={imgIndex}
+                    cover={<Image src={img.url} className="h-40 object-cover" />}
+                  />
+                ))}
+
+                <Upload
+                  showUploadList={false}
+                  beforeUpload={(file) => {
+                    handleProductImageUpload(file, colorIndex);
+                    return false;
+                  }}
+                >
+                  <Card className="w-32 h-40 flex items-center justify-center border-dashed">
+                    <PlusOutlined />
+                  </Card>
+                </Upload>
+              </Space>
+
+            </Card>
+          ))}
+
+          <Button
+            type="dashed"
+            icon={<PlusOutlined />}
+            onClick={() =>
+              setColorSets([
+                ...colorSets,
+                { color: "#000000", images: [] }
+              ])
+            }
+          >
+            Ajouter une couleur
+          </Button>
+          </div>
           <Divider />
 
           <h3 className="text-lg font-medium mb-4">Tailles</h3>
