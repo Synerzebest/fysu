@@ -42,7 +42,6 @@ export default function ProductClient() {
 
     if (slug) fetchProduct()
   }, [slug])
-  console.log(product)
 
 
   /* ================= DERIVED DATA ================= */
@@ -166,6 +165,7 @@ export default function ProductClient() {
             h-[66vh]
             overflow-y-scroll
             sm:overflow-visible
+            no-scrollbar
           "
         >
 
@@ -252,7 +252,7 @@ export default function ProductClient() {
                 <button
                   key={color}
                   onClick={() => handleColorClick(color)}
-                  className={`w-7 h-7 rounded-full border ${
+                  className={`w-7 h-7 rounded-full ${
                     selectedColor === color
                       ? "ring-2 ring-black"
                       : ""
@@ -273,7 +273,7 @@ export default function ProductClient() {
                 <button
                   type="button"
                   onClick={() => setSizeGuideOpen(true)}
-                  className="text-sm underline text-gray-600 hover:text-black"
+                  className="text-sm underline text-foreground hover:text-foreground/60 cursor-pointer"
                 >
                   Size guide
                 </button>

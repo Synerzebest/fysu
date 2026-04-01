@@ -61,7 +61,7 @@ const HomeHero = () => {
     `https://mugpnlsqeqbojnzrfnjf.supabase.co/storage/v1/object/public/hero-images/${path}`;
 
   return (
-    <section className="relative w-full h-[100vh] min-h-[600px] overflow-hidden">
+    <section className="relative w-full h-[65vh] sm:h-[75vh] lg:h-[100vh] min-h-[400px] overflow-hidden">
       <Carousel
         ref={carouselRef}
         dots={false}
@@ -78,7 +78,7 @@ const HomeHero = () => {
           return (
             <div
               key={index}
-              className="relative w-full h-[100vh] min-h-[600px]"
+              className="relative w-full h-[65vh] sm:h-[75vh] lg:h-[100vh] min-h-[400px]"
             >
               {isVideo ? (
                 <video

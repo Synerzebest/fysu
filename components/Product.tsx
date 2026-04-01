@@ -200,7 +200,7 @@ const Product = ({
                   <div
                     key={color}
                     title={color}
-                    className="w-3.5 h-3.5 rounded-full border border-gray-300"
+                    className="w-3.5 h-3.5 rounded-full"
                     style={{ backgroundColor: color }}
                   />
                 ))}

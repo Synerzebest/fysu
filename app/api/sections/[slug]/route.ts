@@ -50,7 +50,8 @@ export async function GET(
         name
       ),
       product_images (
-        url
+        url,
+        color
       )
     `)
     .in("id", productIds);
