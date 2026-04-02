@@ -232,7 +232,7 @@ export default function CollectionPage() {
                         "
                       >
 
-                        {filteredProducts.map((product) => (
+                        {filteredProducts.map((product, index) => (
                           <div
                             key={product.id}
                             className="
@@ -243,7 +243,7 @@ export default function CollectionPage() {
                               flex-shrink-0
                             "
                           >
-                            <Product product={product} scrollRef={scrollRef} />
+                            <Product product={product} scrollRef={scrollRef} isFirst={index === 0} />
                           </div>
                         ))}
 

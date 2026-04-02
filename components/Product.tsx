@@ -10,11 +10,34 @@ import { motion, useMotionValue, animate } from "framer-motion"
 const Product = ({
   product,
   scrollRef,
+  isFirst = false,
 }: {
   product: ProductType
   scrollRef?: React.RefObject<HTMLDivElement | null>
+  isFirst?: boolean
 }) => {
   const [liked, setLiked] = useState(false)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const [isInView, setIsInView] = useState(false)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+  
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true)
+        }
+      },
+      {
+        threshold: 0.6,
+      }
+    )
+  
+    observer.observe(containerRef.current)
+  
+    return () => observer.disconnect()
+  }, [])
 
   // Vérifie si ce produit est déjà dans la wishlist
   useEffect(() => {
@@ -82,10 +105,35 @@ const Product = ({
   
     return () => window.removeEventListener("resize", updateWidth)
   }, [])
+
+  const hasAnimatedRef = useRef(false)
+
+  useEffect(() => {
+    if (!isFirst) return
+    if (!isInView) return
+    if (hasAnimatedRef.current) return
+    if (images.length <= 1) return
+    if (!trackWidth) return
   
+    hasAnimatedRef.current = true
+  
+    const timeout = setTimeout(() => {
+      animate(x, -trackWidth * 0.6, {
+        duration: 0.5,
+        ease: [0.4, 0, 0.2, 1],
+      }).then(() => {
+        animate(x, 0, {
+          duration: 0.5,
+          ease: [0.4, 0, 0.2, 1],
+        })
+      })
+    }, 300)
+  
+    return () => clearTimeout(timeout)
+  }, [isFirst, isInView, trackWidth, images.length])
 
   return (
-    <div className="relative w-full group">
+    <div className="relative w-full group" ref={containerRef} >
       {/* Catégorie */}
       <div className="absolute left-2 top-2 rounded-md px-2 py-0.5 z-10">
         <p className="uppercase tracking-wide text-xs text-gray-600">
@@ -165,22 +213,6 @@ const Product = ({
             </div>
           ))}
         </motion.div>
-  
-        {/* Indicateurs */}
-        {images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {images.map((_, i) => (
-              <div
-                key={i}
-                className={`h-[2px] rounded-full transition-all duration-200 ${
-                  i === currentIndex
-                    ? "w-8 bg-black"
-                    : "w-5 bg-black/30"
-                }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
   
       {/* Infos produit */}
