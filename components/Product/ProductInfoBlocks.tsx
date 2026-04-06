@@ -61,7 +61,7 @@ export default function ProductInfoBlocks({ blocks }: Props) {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="relative w-full aspect-[16/7] overflow-hidden">
+            <div className="relative w-full aspect-[16/9] overflow-hidden">
               <Image
                 src={block.image_url}
                 alt={block.title ?? "Product detail"}

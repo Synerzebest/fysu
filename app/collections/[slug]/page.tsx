@@ -131,7 +131,7 @@ export default function CollectionPage() {
         <Navbar />
     
         {/* ================= MOBILE / TABLETTE ================= */}
-        <div className="lg:hidden">
+        <div className="hidden">
     
           {/* STORIES */}
           <StoryBar collectionSlug={slug} />
@@ -158,11 +158,11 @@ export default function CollectionPage() {
         </div>
     
         {/* ================= DESKTOP ================= */}
-        <div className="hidden lg:block">
+        <div className="block">
     
           {/* HERO */}
           {hasHero && (
-            <div className="relative w-full h-[90vh] min-h-[600px]">
+            <div className="relative w-full h-[65vh] sm:h-[75vh] lg:h-[100vh] min-h-[600px]">
               <Image
                 src={page.hero_image}
                 alt={page.title}
@@ -170,10 +170,17 @@ export default function CollectionPage() {
                 priority
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <h1 className="text-lg font-pagetitle font-thin text-white">
-                  {page.title}
-                </h1>
+
+              {/* Overlay léger pour lisibilité */}
+              <div className="absolute inset-0 bg-black/20" />
+
+              {/* TITLE */}
+              <div className="absolute inset-0 flex items-end">
+                <div className="pb-24 pl-16">
+                  <h1 className="text-white font-dior font-light text-2xl tracking-wide">
+                    {page.title}
+                  </h1>
+                </div>
               </div>
             </div>
           )}
