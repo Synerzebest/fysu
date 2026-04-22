@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import ThemeToggle from "@/components/ThemeToggle"
+import { getTranslations } from "next-intl/server"
 
 type Paragraph = {
   id: string
@@ -28,6 +29,7 @@ async function getPrivacyPolicy(): Promise<Section[]> {
 }
 
 export default async function Page() {
+  const t = await getTranslations("Pages")
   const sections = await getPrivacyPolicy()
 
   return (
@@ -36,7 +38,7 @@ export default async function Page() {
 
       <main className="max-w-4xl mx-auto px-6 py-24">
         <h1 className="text-4xl font-semibold mb-16">
-          Privacy Policy
+          {t("privacyPolicy")}
         </h1>
 
         <div className="space-y-16">

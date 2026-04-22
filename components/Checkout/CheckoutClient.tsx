@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function CheckoutClient() {
+  const t = useTranslations("Checkout");
   const { cart } = useCart();
   const { user, loading: userLoading } = useCurrentUser();
   const router = useRouter();
@@ -44,10 +46,10 @@ export default function CheckoutClient() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        throw new Error("URL de paiement introuvable");
+        throw new Error(t("missingUrl"));
       }
     } catch (err: any) {
-      setError(err.message || "Une erreur est survenue");
+      setError(err.message || t("genericError"));
     } finally {
       setLoading(false);
     }
@@ -76,7 +78,7 @@ export default function CheckoutClient() {
     >
       <div>
         <h2 className="text-2xl font-semibold mb-6">
-          Résumé de commande
+          {t("summary")}
         </h2>
 
         <div className="divide-y rounded-lg border bg-white">
@@ -95,11 +97,11 @@ export default function CheckoutClient() {
                 <p className="font-medium">{item.name}</p>
 
                 <p className="text-xs text-neutral-500 mt-1">
-                  Taille : {item.selectedSizeLabel}
+                  {t("size")} : {item.selectedSizeLabel}
                 </p>
 
                 <p className="text-sm text-neutral-500 mt-1">
-                  Quantité : {item.quantity}
+                  {t("quantity")} : {item.quantity}
                 </p>
               </div>
 
@@ -112,7 +114,7 @@ export default function CheckoutClient() {
 
         <div className="mt-6 border-t pt-4">
           <div className="flex justify-between text-lg font-semibold mb-4">
-            <span>Total</span>
+            <span>{t("total")}</span>
             <span>€{total.toFixed(2)}</span>
           </div>
 
@@ -126,10 +128,10 @@ export default function CheckoutClient() {
             className="w-full bg-black text-white py-4 text-sm font-medium tracking-wide hover:bg-neutral-800 transition disabled:opacity-60"
           >
             {loading
-              ? "Redirection..."
+              ? t("redirecting")
               : user
-              ? "Pay"
-              : "Sign in to pay"}
+              ? t("pay")
+              : t("signInToPay")}
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   product: ProductType;
@@ -19,6 +20,7 @@ export default function AddToCartButton({
   selectedSizeLabel,
   className,
 }: Props) {
+  const t = useTranslations("Product");
   const { addToCartWithFeedback, justAdded, setIsCartOpen } = useCart();
   const [applePayOpen, setApplePayOpen] = useState(false);
 
@@ -69,7 +71,7 @@ export default function AddToCartButton({
               type="button"
               className="absolute inset-0 bg-black/50"
               onClick={() => setApplePayOpen(false)}
-              aria-label="Close Apple Pay popup"
+              aria-label={t("closeApplePay")}
             />
 
             {/* Modal */}
@@ -84,14 +86,14 @@ export default function AddToCartButton({
                 type="button"
                 onClick={() => setApplePayOpen(false)}
                 className="absolute right-4 top-4 rounded-full p-2 hover:bg-neutral-100"
-                aria-label="Close"
+                aria-label={t("closeApplePay")}
               >
                 <X size={18} />
               </button>
 
               <h3 className="text-lg font-semibold mb-2">Apple Pay</h3>
               <p className="text-sm text-neutral-600 leading-relaxed">
-                You can pay with Apple Pay at checkout if your device and browser support it.
+                {t("applePayInfo")}
               </p>
 
               <div className="mt-5 flex justify-end">
@@ -100,7 +102,7 @@ export default function AddToCartButton({
                   onClick={() => setApplePayOpen(false)}
                   className="px-4 py-2 text-sm rounded-full border border-neutral-300 hover:bg-neutral-50"
                 >
-                  Got it
+                  {t("gotIt")}
                 </button>
               </div>
             </motion.div>
@@ -114,7 +116,7 @@ export default function AddToCartButton({
         disabled={isAdded}
         onClick={() => {
           if (!selectedSizeId || !selectedSizeLabel) {
-            alert("Please select a size");
+            alert(t("selectSize"));
             return;
           }
 
@@ -150,7 +152,7 @@ export default function AddToCartButton({
                 className="flex items-center gap-2"
               >
                 <Check size={16} />
-                <span>Added to basket</span>
+                <span>{t("addedToBasket")}</span>
               </motion.div>
             ) : (
               <motion.div
@@ -160,7 +162,7 @@ export default function AddToCartButton({
                 exit={{ opacity: 0, y: 8 }}
                 transition={{ duration: 0.25 }}
               >
-                Preorder
+                {t("preorder")}
               </motion.div>
             )}
           </AnimatePresence>

@@ -5,6 +5,7 @@ import { supabaseClient } from "@/lib/supabaseClient";
 import { Carousel } from "antd";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type HeroMedia = {
   media_path: string;
@@ -14,6 +15,7 @@ type HeroMedia = {
 const SLIDE_DURATION = 6000; // ms
 
 const HomeHero = () => {
+  const t = useTranslations("Home");
   const [slides, setSlides] = useState<HeroMedia[]>([]);
   const [current, setCurrent] = useState(0);
 
@@ -105,16 +107,16 @@ const HomeHero = () => {
                 <div className="relative text-white space-y-2 pb-6">
                   <div>
                     <p className="font-dior text-[1.1rem]">
-                      When the flowers bloom
+                      {t("heroTitle")}
                     </p>
                     <p className="font-dior text-sm">
-                      the newest spring collection
+                      {t("heroSubtitle")}
                     </p>
                   </div>
 
                   <Link href="/collections/when-the-flowers-bloom">
                     <button className="text-sm mb-4 px-4 py-2 bg-white text-black rounded-lg cursor-pointer">
-                      Explore the collection
+                      {t("heroCta")}
                     </button>
                   </Link>
                 </div>

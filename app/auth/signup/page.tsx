@@ -5,8 +5,10 @@ import { supabaseClient } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function SignupPage() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -73,10 +75,10 @@ export default function SignupPage() {
         {/* Title */}
         <div className="space-y-1 text-center">
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
-            Créer un compte
+            {t("signupTitle")}
           </h1>
           <p className="text-sm text-neutral-500">
-            Rejoignez-nous en quelques secondes
+            {t("signupSubtitle")}
           </p>
         </div>
   
@@ -86,7 +88,7 @@ export default function SignupPage() {
             whileFocus={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
             className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/5 transition"
-            placeholder="Email"
+            placeholder={t("email")}
             onChange={(e) => setEmail(e.target.value)}
           />
   
@@ -94,7 +96,7 @@ export default function SignupPage() {
             whileFocus={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
             className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/5 transition"
-            placeholder="Mot de passe"
+            placeholder={t("password")}
             type="password"
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -124,17 +126,17 @@ export default function SignupPage() {
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.2 }}
             >
-              Création...
+              {t("creating")}
             </motion.span>
           ) : (
-            "Créer un compte"
+            t("createAccount")
           )}
         </motion.button>
   
         {/* Divider */}
         <div className="relative flex items-center">
           <div className="flex-grow border-t border-neutral-200" />
-          <span className="mx-3 text-xs text-neutral-400">OU</span>
+          <span className="mx-3 text-xs text-neutral-400">{t("or")}</span>
           <div className="flex-grow border-t border-neutral-200" />
         </div>
   
@@ -163,20 +165,20 @@ export default function SignupPage() {
               d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-8.5-6.6c-2.3 1.6-5.3 2.6-7.4 2.6-6.4 0-11.8-3.8-13.5-9.7L3 34.6C6.8 42.5 14.8 48 24 48z"
             />
           </svg>
-          Continuer avec Google
+          {t("continueGoogle")}
         </motion.button>
   
         {/* Small helper text */}
         <p className="text-xs text-neutral-500 text-center">
-          En créant un compte, vous acceptez nos conditions.
+          {t("terms")}
         </p>
 
         <motion.div
           className="text-sm flex justify-center gap-2"
         >
-          <p>Vous avez déjà un compte ?</p>
+          <p>{t("alreadyAccount")}</p>
           <Link href="/auth/signin" className="text-blue-500 underline" >
-            Se connecter
+            {t("signIn")}
           </Link>
         </motion.div>
       </motion.div>

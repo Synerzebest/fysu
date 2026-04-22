@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 type InfoBlock = {
   id: string
@@ -17,6 +18,7 @@ type Props = {
 }
 
 function ExpandableText({ text }: { text: string }) {
+  const t = useTranslations("Product")
   const [expanded, setExpanded] = useState(false)
 
   const formattedText = text.replace(/\\n/g, "\n")
@@ -38,7 +40,7 @@ function ExpandableText({ text }: { text: string }) {
         onClick={() => setExpanded((prev) => !prev)}
         className="text-sm mt-2 text-foreground/50 hover:text-foreground transition"
       >
-        {expanded ? "Read less" : "Read more"}
+        {expanded ? t("readLess") : t("readMore")}
       </button>
     </div>
   )

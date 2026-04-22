@@ -1,30 +1,33 @@
 import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 const logo = "/images/footer_logo.png"
 
 const Footer: React.FC = () => {
+  const t = useTranslations("Footer");
+
   return (
     <footer className="relative top-64 bg-[#154733] text-white px-6 py-10 text-sm md:text-base mt-36 font-dior">
       {/* Email Signup */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
-          <h2 className="font-bold uppercase mb-2">Sign In Now</h2>
+          <h2 className="font-bold uppercase mb-2">{t("signInNow")}</h2>
           <input
             type="email"
-            placeholder="Enter your email adress"
+            placeholder={t("emailPlaceholder")}
             className="w-full px-4 py-2 bg-transparent border border-white placeholder-white text-white"
           />
         </div>
 
         {/* Client Services */}
         <div>
-          <h2 className="font-bold uppercase mb-2">Client Services</h2>
+          <h2 className="font-bold uppercase mb-2">{t("clientServices")}</h2>
           <ul className="space-y-2">
-            <li><a href="/privacy" className="hover:underline">Expedition</a></li>
-            <li><a href="/privacy" className="hover:underline">Payment</a></li>
-            <li><a href="/privacy" className="hover:underline">Product Returns</a></li>
+            <li><Link href="/privacy" className="hover:underline">{t("shipping")}</Link></li>
+            <li><Link href="/privacy" className="hover:underline">{t("payment")}</Link></li>
+            <li><Link href="/privacy" className="hover:underline">{t("returns")}</Link></li>
           </ul>
         </div>
 
@@ -44,9 +47,9 @@ const Footer: React.FC = () => {
       {/* Bottom links */}
       <div className="border-t border-white mt-10 pt-6">
         <div className="max-w-6xl mx-auto flex flex-wrap justify-center md:justify-between text-xs md:text-sm gap-4 md:gap-8 text-center">
-          <Link href="/privacy" className="hover:underline">LEGAL TERMS</Link>
-          <Link href="/privacy" className="hover:underline">CONTACT</Link>
-          <Link href="/privacy" className="hover:underline">PRIVACY POLICY</Link>
+          <Link href="/privacy" className="hover:underline">{t("legalTerms").toUpperCase()}</Link>
+          <Link href="/privacy" className="hover:underline">{t("contact").toUpperCase()}</Link>
+          <Link href="/privacy" className="hover:underline">{t("privacyPolicy").toUpperCase()}</Link>
         </div>
       </div>
     </footer>

@@ -2,8 +2,10 @@ import { getAboutBlocks } from "@/lib/db/about"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import ThemeToggle from "@/components/ThemeToggle"
+import { getTranslations } from "next-intl/server"
 
 export default async function AboutPage() {
+  const t = await getTranslations("Pages")
   const blocks = await getAboutBlocks()
 
   if (!blocks.length) {
@@ -11,7 +13,7 @@ export default async function AboutPage() {
         <>
             <Navbar />
 
-            <p className="text-center pt-44">FYSU is scared to talk about itself.</p>
+            <p className="text-center pt-44">{t("aboutEmpty")}</p>
 
             <div className="relative top-42">
                 <Footer />

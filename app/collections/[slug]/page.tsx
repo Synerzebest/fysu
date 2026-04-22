@@ -9,8 +9,10 @@ import Product from "@/components/Product"
 import ProductFilters from "@/components/ProductFilters"
 import ThemeToggle from "@/components/ThemeToggle"
 import StoryBar from "@/components/Stories/StoryBar"
+import { useTranslations } from "next-intl"
 
 export default function CollectionPage() {
+  const t = useTranslations("Pages")
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
 
@@ -55,7 +57,7 @@ export default function CollectionPage() {
     }
   
     fetchData()
-  }, [slug, router]) 
+  }, [slug, router, isFlowersBloomCollection]) 
 
   const filteredProducts = products
   .filter((p) => {
@@ -117,7 +119,7 @@ export default function CollectionPage() {
       <>
         <Navbar />
         <div className="p-20 text-center text-neutral-500">
-          Page introuvable.
+          {t("collectionNotFound")}
         </div>
         <Footer />
       </>
@@ -194,7 +196,7 @@ export default function CollectionPage() {
         <div className="relative px-6 pt-12 pb-44">
           {products.length === 0 ? (
             <p className="text-neutral-500 font-dior">
-              Aucun produit dans cette collection.
+              {t("noProducts")}
             </p>
           ) : (
             <>

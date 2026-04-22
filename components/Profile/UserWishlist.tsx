@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Product from "../Product";
+import { useTranslations } from "next-intl";
 
 export default function Wishlist() {
+  const t = useTranslations("Profile");
   const [wishlist, setWishlist] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,12 +38,12 @@ export default function Wishlist() {
 
   return (
     <div className="w-11/12 mx-auto max-w-7xl relative top-44">
-      <h1 className="text-2xl font-dior mb-6">My wardrobe</h1>
+      <h1 className="text-2xl font-dior mb-6">{t("wardrobe")}</h1>
 
       {loading ? (
-        <p>Loading...</p>
+        <p>{t("loading")}</p>
       ) : wishlist.length === 0 ? (
-        <p>No products found.</p>
+        <p>{t("noProducts")}</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {wishlist.map((w, idx) => (

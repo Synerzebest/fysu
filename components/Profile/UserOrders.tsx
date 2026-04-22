@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Tag, Spin, Empty } from "antd";
 import { motion } from "framer-motion";
+import { useFormatter, useTranslations } from "next-intl";
 
 type OrderItem = {
   product_id?: number;
@@ -27,6 +28,8 @@ type Order = {
 };
 
 export default function UserOrders() {
+  const t = useTranslations("Profile");
+  const format = useFormatter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export default function UserOrders() {
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error(body?.error || "Erreur récupération commandes");
+      throw new Error(body?.error || t("fetchOrdersError"));
     }
     return res.json() as Promise<{ orders: Order[] }>;
   }
@@ -53,7 +56,7 @@ export default function UserOrders() {
         const { orders } = await fetchOrders();
         if (!cancelled) setOrders(orders ?? []);
       } catch (e: any) {
-        if (!cancelled) setError(e?.message ?? "Erreur inconnue");
+        if (!cancelled) setError(e?.message ?? t("unknownError"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -80,7 +83,7 @@ export default function UserOrders() {
       transition={{ duration: 0.5 }}
       className="w-11/12 max-w-7xl mx-auto py-10 relative top-44"
     >
-        <h1 className="text-2xl mb-6 font-dior">My orders</h1>
+        <h1 className="text-2xl mb-6 font-dior">{t("orders")}</h1>
       {loading ? (
         <div className="flex justify-center py-20">
           <Spin size="large" />
@@ -88,7 +91,7 @@ export default function UserOrders() {
       ) : error ? (
         <Empty description={error} />
       ) : orders.length === 0 ? (
-          <p>No orders found</p>
+          <p>{t("noOrders")}</p>
       ) : (
         <div className="flex sm:flex-row flex-col gap-4">
           {orders.map((order, idx) => {
@@ -104,7 +107,7 @@ export default function UserOrders() {
 
             const created = order.createdAt ?? "";
             const createdLabel = created
-              ? new Date(created).toLocaleDateString()
+              ? format.dateTime(new Date(created), "medium")
               : "";
 
             return (
@@ -119,7 +122,7 @@ export default function UserOrders() {
                 <div className="flex flex-col items-start mb-4">
                   <div>
                     <p className="text-xs text-gray-400">
-                      Order #{order.id.slice(0, 8)}
+                      {t("order")} #{order.id.slice(0, 8)}
                     </p>
                     {createdLabel && (
                       <p className="text-sm text-gray-500">{createdLabel}</p>
@@ -169,7 +172,7 @@ export default function UserOrders() {
                           {price != null ? `€${Number(price).toFixed(2)}` : "—"}
                         </p>
 
-                        <p className="text-xs text-gray-400">Qty: {qty}</p>
+                        <p className="text-xs text-gray-400">{t("quantityShort")}: {qty}</p>
                       </div>
                     </motion.div>
                   );

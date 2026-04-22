@@ -9,8 +9,10 @@ import Footer from "@/components/Footer";
 import UserOders from "@/components/Profile/UserOrders";
 import UserWishlist from "@/components/Profile/UserWishlist";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useTranslations } from "next-intl";
 
 export default function ProfilePage() {
+  const t = useTranslations("Profile");
   const router = useRouter();
   const { user, loading } = useCurrentUser();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -64,7 +66,7 @@ export default function ProfilePage() {
 
       <div className="w-11/12 max-w-7xl relative top-24 flex justify-between items-end mx-auto">
         <h1 className="text-3xl font-dior">
-          Hello {user.user_metadata?.name ?? "👋"}
+          {t("hello", { name: user.user_metadata?.name ?? t("fallbackName") })}
         </h1>
 
         <button
@@ -73,7 +75,7 @@ export default function ProfilePage() {
           disabled={loggingOut}
           className="w-fit text-foreground/40 rounded cursor-pointer underline underline-offset-1 disabled:opacity-50"
         >
-          {loggingOut ? "Signing out..." : "Sign out"}
+          {loggingOut ? t("signingOut") : t("signOut")}
         </button>
       </div>
 

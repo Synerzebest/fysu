@@ -5,8 +5,10 @@ import { supabaseClient } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,10 +67,10 @@ export default function LoginPage() {
         {/* Title */}
         <div className="space-y-1 text-center">
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
-            Connexion
+            {t("signinTitle")}
           </h1>
           <p className="text-sm text-neutral-500">
-            Accédez à l&apos;univers de FYSU
+            {t("signinSubtitle")}
           </p>
         </div>
   
@@ -78,7 +80,7 @@ export default function LoginPage() {
             whileFocus={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
             className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/5 transition"
-            placeholder="Email"
+            placeholder={t("email")}
             onChange={(e) => setEmail(e.target.value)}
           />
   
@@ -86,7 +88,7 @@ export default function LoginPage() {
             whileFocus={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
             className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-black focus:ring-2 focus:ring-black/5 transition"
-            placeholder="Mot de passe"
+            placeholder={t("password")}
             type="password"
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -116,17 +118,17 @@ export default function LoginPage() {
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.2 }}
             >
-              Connexion...
+              {t("signingIn")}
             </motion.span>
           ) : (
-            "Se connecter"
+            t("signIn")
           )}
         </motion.button>
   
         {/* Divider */}
         <div className="relative flex items-center">
           <div className="flex-grow border-t border-neutral-200" />
-          <span className="mx-3 text-xs text-neutral-400">OU</span>
+          <span className="mx-3 text-xs text-neutral-400">{t("or")}</span>
           <div className="flex-grow border-t border-neutral-200" />
         </div>
   
@@ -158,15 +160,15 @@ export default function LoginPage() {
               d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-8.5-6.6c-2.3 1.6-5.3 2.6-7.4 2.6-6.4 0-11.8-3.8-13.5-9.7L3 34.6C6.8 42.5 14.8 48 24 48z"
             />
           </svg>
-          Continuer avec Google
+          {t("continueGoogle")}
         </motion.button>
 
         <motion.div
           className="text-sm flex justify-center gap-2"
         >
-          <p>Vous n&apos;avez pas encore de compte ?</p>
+          <p>{t("noAccount")}</p>
           <Link href="/auth/signup" className="text-blue-500 underline" >
-            Créer un compte
+            {t("createAccount")}
           </Link>
         </motion.div>
       </motion.div>

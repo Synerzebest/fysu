@@ -1,6 +1,27 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { createServerClient } from "@supabase/ssr"
+import { defaultLocale, isAppLocale, locales } from "@/i18n/routing"
+
+function getPreferredLocale(req: NextRequest) {
+  const cookieLocale = req.cookies.get("NEXT_LOCALE")?.value
+  if (isAppLocale(cookieLocale)) return cookieLocale
+
+  const acceptLanguage = req.headers.get("accept-language")
+  const acceptedLocales =
+    acceptLanguage
+      ?.split(",")
+      .map((part) => part.split(";")[0]?.trim().toLowerCase())
+      .filter(Boolean) ?? []
+
+  for (const accepted of acceptedLocales) {
+    const base = accepted.split("-")[0]
+    const locale = locales.find((item) => item === accepted || item === base)
+    if (locale) return locale
+  }
+
+  return defaultLocale
+}
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
@@ -9,20 +30,28 @@ export async function middleware(req: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/images") ||
-    pathname.includes(".")
+    pathname.includes(".") ||
+    pathname.startsWith("/api")
   ) {
     return NextResponse.next()
   }
 
   const isAdminPage = pathname.startsWith("/admin")
   const isAuthPage = pathname.startsWith("/auth")
+  const res = NextResponse.next()
+
+  if (!req.cookies.get("NEXT_LOCALE")) {
+    res.cookies.set("NEXT_LOCALE", getPreferredLocale(req), {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
+    })
+  }
 
   // Si la route n'est ni admin ni auth, on laisse passer
   if (!isAdminPage && !isAuthPage) {
-    return NextResponse.next()
+    return res
   }
-
-  const res = NextResponse.next()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -73,5 +102,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/auth/:path*"],
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
 }

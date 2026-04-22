@@ -7,6 +7,8 @@ import { Menu, X, ChevronDown, UserRound, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import CartDrawer from "./CartDrawer";
 import { useCart } from "@/context/CartContext";
+import { useTranslations } from "next-intl";
+import LocaleSwitcher from "./LocaleSwitcher";
 
 const logoWhite = "/images/fysu-light.png";
 const logoBlack = "/images/fysu-dark.png";
@@ -30,6 +32,7 @@ function MobileMenu({
   links: { label: string; href: string }[];
   collections: { label: string; href: string }[];
 }) {
+  const t = useTranslations("Navigation");
   const { cart, isCartOpen, setIsCartOpen } = useCart();
   const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -168,7 +171,9 @@ function MobileMenu({
             exit={{ height: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-5xl font-bold tracking-tighter px-4 py-4">Menu</p>
+            <p className="text-5xl font-bold tracking-tighter px-4 py-4">
+              {t("menu")}
+            </p>
 
             <motion.ul
               className="flex flex-col gap-4 uppercase text-sm tracking-wider px-4 pb-4"
@@ -177,7 +182,7 @@ function MobileMenu({
               exit={{ opacity: 0 }}
             >
               {links.map((link) =>
-                link.label === "COLLECTIONS" ? (
+                link.href === "#" ? (
                   <React.Fragment key="collections-mobile">
                     <li>
                       <button
@@ -185,7 +190,7 @@ function MobileMenu({
                         className="flex items-center justify-between w-full py-2 border-b border-white/20"
                         type="button"
                       >
-                        COLLECTIONS
+                        {t("collections").toUpperCase()}
                         <ChevronDown
                           size={16}
                           className={`transition-transform ${
@@ -237,13 +242,17 @@ function MobileMenu({
                   onClick={handleMobileLinkClick}
                   className="block py-2 border-b border-white/20"
                 >
-                  About
+                  {t("about")}
                 </Link>
+              </li>
+
+              <li>
+                <LocaleSwitcher />
               </li>
 
               <li className="mt-24">
                 <Link href="/profile" className="flex items-center gap-2">
-                  <UserRound size={20} /> My Fysu
+                  <UserRound size={20} /> {t("myFysu")}
                 </Link>
               </li>
             </motion.ul>
@@ -255,6 +264,7 @@ function MobileMenu({
 }
 
 export default function Navbar() {
+  const t = useTranslations("Navigation");
   const [activePanel, setActivePanel] = useState<"menu" | null>(null);
   const [collectionOpen, setCollectionOpen] = useState(false);
 
@@ -273,7 +283,7 @@ export default function Navbar() {
           label: p.title.toUpperCase(),
           href: `/${p.slug}`,
         })),
-        { label: "COLLECTIONS", href: "#" },
+        { label: t("collections").toUpperCase(), href: "#" },
       ]);
     };
 
@@ -291,7 +301,7 @@ export default function Navbar() {
 
     loadPages();
     loadCollections();
-  }, []);
+  }, [t]);
 
   const handleMobileLinkClick = () => {
     setCollectionOpen(false);

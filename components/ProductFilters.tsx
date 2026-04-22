@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Select } from "antd"
 import { motion, AnimatePresence } from "framer-motion"
 import { SlidersHorizontal, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 const { Option } = Select
 
@@ -14,6 +15,7 @@ export default function ProductFilters({
   filters: any
   setFilters: (f: any) => void
 }) {
+  const t = useTranslations("Filters")
   const [open, setOpen] = useState(false)
 
   const resetFilters = () => {
@@ -40,7 +42,7 @@ export default function ProductFilters({
           "
         >
           <SlidersHorizontal size={16} />
-          Filtrer
+          {t("open")}
         </button>
       </div>
 
@@ -76,7 +78,7 @@ export default function ProductFilters({
               {/* HEADER */}
               <div className="flex justify-between items-center mb-12">
                 <h3 className="text-sm text-foreground uppercase tracking-[0.3em]">
-                  Filtres
+                  {t("title")}
                 </h3>
                 <button onClick={() => setOpen(false)}>
                   <X size={18} />
@@ -88,7 +90,7 @@ export default function ProductFilters({
                 {/* GENDER */}
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] text-foreground mb-3">
-                    Genre
+                    {t("gender")}
                   </p>
                   <Select
                     value={filters.gender}
@@ -98,17 +100,17 @@ export default function ProductFilters({
                     variant="borderless"
                     className="w-full luxury-select"
                   >
-                    <Option className="text-foreground" value="all">Tous</Option>
-                    <Option className="text-foreground" value="men">Homme</Option>
-                    <Option className="text-foreground" value="women">Femme</Option>
-                    <Option className="text-foreground" value="unisex">Unisex</Option>
+                    <Option className="text-foreground" value="all">{t("all")}</Option>
+                    <Option className="text-foreground" value="men">{t("men")}</Option>
+                    <Option className="text-foreground" value="women">{t("women")}</Option>
+                    <Option className="text-foreground" value="unisex">{t("unisex")}</Option>
                   </Select>
                 </div>
 
                 {/* SORT */}
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] text-foreground mb-3">
-                    Trier par
+                    {t("sort")}
                   </p>
                   <Select
                     value={filters.sort}
@@ -118,10 +120,10 @@ export default function ProductFilters({
                     bordered={false}
                     className="w-full luxury-select"
                   >
-                    <Option className="text-foreground" value="default">Par défaut</Option>
-                    <Option className="text-foreground" value="price-asc">Prix croissant</Option>
-                    <Option className="text-foreground" value="price-desc">Prix décroissant</Option>
-                    <Option className="text-foreground" value="newest">Nouveautés</Option>
+                    <Option className="text-foreground" value="default">{t("default")}</Option>
+                    <Option className="text-foreground" value="price-asc">{t("priceAsc")}</Option>
+                    <Option className="text-foreground" value="price-desc">{t("priceDesc")}</Option>
+                    <Option className="text-foreground" value="newest">{t("newest")}</Option>
                   </Select>
                 </div>
 
@@ -136,7 +138,7 @@ export default function ProductFilters({
                     self-start
                   "
                 >
-                  Réinitialiser
+                  {t("reset")}
                 </button>
               </div>
 
@@ -155,7 +157,7 @@ export default function ProductFilters({
                     transition
                   "
                 >
-                  Appliquer
+                  {t("apply")}
                 </button>
               </div>
             </motion.div>

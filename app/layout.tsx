@@ -5,6 +5,8 @@ import { CartProvider } from "@/context/CartContext";
 import { Libre_Baskerville } from "next/font/google"
 import { Playfair_Display } from 'next/font/google';
 import CookieBanner from "@/components/CookieBanner";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -25,13 +27,16 @@ export const metadata: Metadata = {
   description: "Fysu | the favorite brand of your favorite brand",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className={`${libreBaskerville.variable} ${playfair.variable}`}>
+    <html lang={locale} className={`${libreBaskerville.variable} ${playfair.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -49,10 +54,12 @@ export default function RootLayout({
       </head>
       <body className="bg-background text-foreground transition-colors duration-400">
         {/* <AuthProvider> */}
-          <CartProvider>
-            {children}
-            <CookieBanner />
-          </CartProvider>
+          <NextIntlClientProvider messages={messages}>
+            <CartProvider>
+              {children}
+              <CookieBanner />
+            </CartProvider>
+          </NextIntlClientProvider>
         {/* </AuthProvider> */}
         <Toaster />
         

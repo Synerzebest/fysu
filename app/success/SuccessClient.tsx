@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function SuccessClient() {
+  const t = useTranslations("Success");
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -38,7 +40,7 @@ export default function SuccessClient() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-neutral-500 text-sm tracking-wide">
-        Vérification du paiement…
+        {t("checking")}
       </div>
     );
   }
@@ -46,7 +48,7 @@ export default function SuccessClient() {
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center text-neutral-500 text-sm">
-        Paiement introuvable.
+        {t("notFound")}
       </div>
     );
   }
@@ -62,7 +64,7 @@ export default function SuccessClient() {
 
         {/* Header */}
         <h1 className="text-4xl font-semibold tracking-tight mb-4">
-          Paiement confirmé
+          {t("confirmed")}
         </h1>
 
         {/* <p className="text-neutral-500 text-sm mb-12">
@@ -92,7 +94,7 @@ export default function SuccessClient() {
           </div>
 
           <div className="border-t border-neutral-200 mt-6 pt-6 flex justify-between text-sm font-medium">
-            <span>Total payé</span>
+            <span>{t("paidTotal")}</span>
             <span className="text-neutral-900">
               €{(session.amount_total / 100).toFixed(2)}
             </span>
@@ -104,7 +106,7 @@ export default function SuccessClient() {
           href="/"
           className="inline-block mt-10 text-sm font-medium text-neutral-900 hover:opacity-60 transition"
         >
-          Continuer mes achats
+          {t("continueShopping")}
         </Link>
       </div>
     </motion.div>

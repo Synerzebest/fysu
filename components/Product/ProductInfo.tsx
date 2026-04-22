@@ -4,6 +4,7 @@ import AddToCartButton from "@/components/ui/AddToCartButton"
 import { ColorSelector } from "./ColorSelector"
 import { SizeSelector } from "./SizeSelector"
 import { ProductType } from "@/types/product"
+import { useTranslations } from "next-intl"
 
 type ProductInfoProps = {
   product: ProductType
@@ -28,17 +29,18 @@ export default function ProductInfo({
   onColorSelect,
   onSizeSelect,
 }: ProductInfoProps) {
+  const t = useTranslations("Product")
 
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: <span className="font-medium">Product details</span>,
-      children: <p>{product.details ?? "No details available."}</p>,
+      label: <span className="font-medium">{t("details")}</span>,
+      children: <p>{product.details ?? t("noDetails")}</p>,
     },
     {
       key: "2",
-      label: <span className="font-medium">Size & fit</span>,
-      children: <p>{product.size_fit ?? "No info available."}</p>,
+      label: <span className="font-medium">{t("sizeFit")}</span>,
+      children: <p>{product.size_fit ?? t("noInfo")}</p>,
     },
   ]
 

@@ -6,6 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ProductType } from "@/types/product"
 import { motion, useMotionValue, animate } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 const Product = ({
   product,
@@ -16,6 +17,7 @@ const Product = ({
   scrollRef?: React.RefObject<HTMLDivElement | null>
   isFirst?: boolean
 }) => {
+  const t = useTranslations("Product")
   const [liked, setLiked] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [isInView, setIsInView] = useState(false)
@@ -226,7 +228,7 @@ const Product = ({
             {/* Couleurs */}
             {uniqueColors.length > 0 && (
               <div className="flex items-center gap-2">
-                <p className="text-xs text-foreground/60">Colors</p>
+                <p className="text-xs text-foreground/60">{t("colors")}</p>
   
                 {displayedColors.map((color) => (
                   <div

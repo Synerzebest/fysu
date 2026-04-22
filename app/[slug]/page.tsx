@@ -10,6 +10,7 @@ import ProductFilters from "@/components/ProductFilters"
 import StoryBar from "@/components/Stories/StoryBar"
 import { ProductType } from "@/types/product"
 import ThemeToggle from "@/components/ThemeToggle"
+import { useTranslations } from "next-intl"
 
 type SectionType = {
   id: string
@@ -22,6 +23,7 @@ type SectionType = {
 }
 
 export default function CollectionPage() {
+  const t = useTranslations("Pages")
   const { slug } = useParams<{ slug: string }>()
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement | null>(null)
@@ -103,7 +105,7 @@ export default function CollectionPage() {
       <>
         <Navbar />
         <div className="p-20 text-center text-neutral-500">
-          Page introuvable.
+          {t("pageNotFound")}
         </div>
         <Footer />
       </>
@@ -185,7 +187,7 @@ export default function CollectionPage() {
       >
         {sections.length === 0 ? (
           <p className="text-neutral-500">
-            Aucun contenu dans cette page.
+            {t("noProducts")}
           </p>
         ) : (
           <>

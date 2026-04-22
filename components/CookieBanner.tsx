@@ -3,10 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { acceptAll, rejectAll, getConsent, setConsent, CookieConsent } from "@/lib/cookieConsent";
+import { useTranslations } from "next-intl";
 
 type Mode = "banner" | "prefs";
 
 export default function CookieBanner() {
+  const t = useTranslations("CookieBanner");
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState<Mode>("banner");
 
@@ -62,8 +64,8 @@ export default function CookieBanner() {
   };
 
   const title = useMemo(() => {
-    return mode === "banner" ? "We value your privacy" : "Cookie preferences";
-  }, [mode]);
+    return mode === "banner" ? t("privacyTitle") : t("prefsTitle");
+  }, [mode, t]);
 
   return (
     <AnimatePresence>
@@ -94,19 +96,18 @@ export default function CookieBanner() {
                 <p className="text-sm md:text-base font-medium">{title}</p>
                 {mode === "banner" ? (
                   <p className="mt-2 text-xs md:text-sm text-gray-700 leading-relaxed">
-                    We use cookies for essential site features and, with your permission, for analytics,
-                    personalization and marketing. You can accept all, reject non-essential, or set preferences.
+                    {t("privacyText")}
                   </p>
                 ) : (
                   <p className="mt-2 text-xs md:text-sm text-gray-700 leading-relaxed">
-                    Necessary cookies are always enabled. Choose which optional cookies you allow.
+                    {t("prefsText")}
                   </p>
                 )}
               </div>
 
               <button
                 onClick={close}
-                aria-label="Close"
+                aria-label={t("close")}
                 className="text-gray-500 hover:text-gray-900 transition text-xl leading-none cursor-pointer"
               >
                 ×
@@ -119,48 +120,48 @@ export default function CookieBanner() {
                   onClick={onAcceptAll}
                   className="bg-black text-white py-3.5 rounded-xl text-xs tracking-wide hover:opacity-90 transition cursor-pointer"
                 >
-                  Yeah... whatever 🙄
+                  {t("acceptCasual")}
                 </button>
 
                 <button
                   onClick={onRejectAll}
                   className="border border-black/15 bg-white py-3.5 rounded-xl text-xs tracking-wide hover:bg-black/5 transition cursor-pointer"
                 >
-                  Reject non-essential
+                  {t("rejectNonEssential")}
                 </button>
 
                 <button
                   onClick={openPrefs}
                   className="border border-black/15 bg-white py-3.5 rounded-xl text-xs tracking-wide hover:bg-black/5 transition cursor-pointer"
                 >
-                  Set preferences
+                  {t("setPreferences")}
                 </button>
               </div>
             ) : (
               <>
                 <div className="mt-5 space-y-3">
                   <PrefRow
-                    title="Necessary"
-                    desc="Required for the website to function (cannot be disabled)."
+                    title={t("necessary")}
+                    desc={t("necessaryDesc")}
                     checked
                     disabled
                     onChange={() => {}}
                   />
                   <PrefRow
-                    title="Analytics"
-                    desc="Helps us understand traffic and improve the site."
+                    title={t("analytics")}
+                    desc={t("analyticsDesc")}
                     checked={prefs.analytics}
                     onChange={(v) => setPrefs((p) => ({ ...p, analytics: v }))}
                   />
                   <PrefRow
-                    title="Personalization"
-                    desc="Remembers choices to personalize your experience."
+                    title={t("personalization")}
+                    desc={t("personalizationDesc")}
                     checked={prefs.personalization}
                     onChange={(v) => setPrefs((p) => ({ ...p, personalization: v }))}
                   />
                   <PrefRow
-                    title="Marketing"
-                    desc="Used to measure and improve advertising campaigns."
+                    title={t("marketing")}
+                    desc={t("marketingDesc")}
                     checked={prefs.marketing}
                     onChange={(v) => setPrefs((p) => ({ ...p, marketing: v }))}
                   />
@@ -171,21 +172,21 @@ export default function CookieBanner() {
                     onClick={onSavePrefs}
                     className="bg-black text-white py-3.5 rounded-xl text-xs md:text-sm tracking-wide hover:opacity-90 transition"
                   >
-                    SAVE
+                    {t("save").toUpperCase()}
                   </button>
 
                   <button
                     onClick={onRejectAll}
                     className="border border-black/15 bg-white py-3.5 rounded-xl text-xs md:text-sm tracking-wide hover:bg-black/5 transition"
                   >
-                    REJECT ALL
+                    {t("rejectAll").toUpperCase()}
                   </button>
 
                   <button
                     onClick={onAcceptAll}
                     className="border border-black/15 bg-white py-3.5 rounded-xl text-xs md:text-sm tracking-wide hover:bg-black/5 transition"
                   >
-                    ACCEPT ALL
+                    {t("acceptAll").toUpperCase()}
                   </button>
                 </div>
 
@@ -193,14 +194,14 @@ export default function CookieBanner() {
                   onClick={() => setMode("banner")}
                   className="mt-3 text-xs md:text-sm text-gray-700 hover:underline"
                 >
-                  Back
+                  {t("back")}
                 </button>
               </>
             )}
 
             {/* Optionnel: lien vers ta policy */}
             <p className="mt-4 text-[11px] md:text-xs text-gray-500 leading-relaxed">
-              Read our Cookie Policy for more information.
+              {t("policy")}
             </p>
           </div>
         </motion.div>

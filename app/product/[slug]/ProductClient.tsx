@@ -9,8 +9,11 @@ import { Collapse, Modal } from "antd"
 import type { CollapseProps } from "antd"
 import AddToCartButton from "@/components/ui/AddToCartButton"
 import ProductInfoBlocks from "@/components/Product/ProductInfoBlocks"
+import { useFormatter, useTranslations } from "next-intl"
 
 export default function ProductClient() {
+  const t = useTranslations("Product")
+  const format = useFormatter()
   const { slug } = useParams() as { slug: string }
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -114,37 +117,37 @@ export default function ProductClient() {
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: "Product details",
+      label: t("details"),
       children: (
         <p className="whitespace-pre-line">
-          {formatText(product.details) || "No details available."}
+          {formatText(product.details) || t("noDetails")}
         </p>
       ),
     },
     {
       key: "2",
-      label: "Size & fit",
+      label: t("sizeFit"),
       children: (
         <p className="whitespace-pre-line">
-          {formatText(product.size_fit) || "No info available."}
+          {formatText(product.size_fit) || t("noInfo")}
         </p>
       ),
     },
     {
       key: "3",
-      label: "Care instructions",
+      label: t("careInstructions"),
       children: (
         <p className="whitespace-pre-line">
-          {formatText(product.care_instructions) || "No care instructions available."}
+          {formatText(product.care_instructions) || t("noCareInstructions")}
         </p>
       ),
     },
     {
       key: "4",
-      label: "Shipping",
+      label: t("shipping"),
       children: (
         <p className="whitespace-pre-line">
-          {formatText(product.shipping) || "Shipping information not available."}
+          {formatText(product.shipping) || t("noShipping")}
         </p>
       ),
     },
@@ -239,10 +242,10 @@ export default function ProductClient() {
           </p>
   
           <p className="text-sm font-bold">
-            {new Intl.NumberFormat("fr-BE", {
+            {format.number(product.price, {
               style: "currency",
               currency: "EUR",
-            }).format(product.price)}
+            })}
           </p>
   
           {/* COLORS */}
@@ -268,14 +271,14 @@ export default function ProductClient() {
             <div className="space-y-3">
 
               <div className="flex justify-between items-center">
-                <p className="text-sm font-medium">Size</p>
+                <p className="text-sm font-medium">{t("size")}</p>
 
                 <button
                   type="button"
                   onClick={() => setSizeGuideOpen(true)}
                   className="text-sm underline text-foreground hover:text-foreground/60 cursor-pointer"
                 >
-                  Size guide
+                  {t("sizeGuide")}
                 </button>
               </div>
 
@@ -334,7 +337,7 @@ export default function ProductClient() {
       {product.product_suggestions?.length > 0 && (
         <section className="mt-24 w-11/12 mx-auto">
           <h2 className="text-2xl font-dior text-start mb-12">
-            You may also like
+            {t("youMayAlsoLike")}
           </h2>
 
           <div ref={scrollRef} className="flex gap-8 overflow-x-auto no-scrollbar touch-pan-x overscroll-x-contain">
@@ -359,13 +362,13 @@ export default function ProductClient() {
         <div className="relative w-full aspect-[3/4]">
           <Image
             src={product.size_guide_image_url}
-            alt="Size guide"
+            alt={t("sizeGuide")}
             fill
             className="object-contain"
           />
         </div>
       ) : (
-        <p>No size guide available.</p>
+        <p>{t("noSizeGuide")}</p>
       )}
 
     </Modal>
