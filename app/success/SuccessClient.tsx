@@ -18,20 +18,34 @@ export default function SuccessClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId) {
+      setSession(null);
+      setLoading(false);
+      return;
+    }
 
     const fetchSession = async () => {
-      const res = await fetch("/api/checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId }),
-      });
+      try {
+        const res = await fetch("/api/checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
 
-      const data = await res.json();
-      setSession(data.session);
-      setLoading(false);
+        const data = await res.json();
 
-      clearCart();
+        if (!res.ok) {
+          setSession(null);
+          return;
+        }
+
+        setSession(data.session ?? null);
+        clearCart();
+      } catch {
+        setSession(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchSession();

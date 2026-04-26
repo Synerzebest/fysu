@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { supabaseServer } from "@/lib/supabaseServer";
+import { validateCheckoutCart } from "@/lib/payments";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-01-28.clover",
@@ -36,32 +38,41 @@ const ALL_STRIPE_ALLOWED_COUNTRIES: Stripe.Checkout.SessionCreateParams.Shipping
 
 export async function POST(req: Request) {
   try {
-    const { cart, user } = await req.json();
+    const supabase = await supabaseServer();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!cart || cart.length === 0) {
+    if (userError || !user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
+    const { cart } = await req.json();
+    const validatedCart = await validateCheckoutCart(cart);
+
+    if (!validatedCart.ok) {
       return NextResponse.json(
-        { error: "Cart is empty" },
-        { status: 400 }
+        { error: validatedCart.error },
+        { status: validatedCart.status }
       );
     }
 
-    // 🔹 Stripe line items (prix en cents)
-    const line_items = cart.map((item: any) => ({
+    const line_items = validatedCart.items.map((item) => ({
       price_data: {
         currency: "eur",
         product_data: {
-          name: `${item.name} - size ${item.selectedSizeLabel}`,
+          name: `${item.productName} - size ${item.sizeLabel}`,
         },
-        unit_amount: Math.round(item.price * 100),
+        unit_amount: item.unitAmount,
       },
       quantity: item.quantity,
     }));
 
-    // 🔹 Cart simplifié pour metadata (pour webhook)
-    const simplifiedCart = cart.map((item: any) => ({
-      productId: item.id,
-      sizeId: item.selectedSizeId,
-      sizeLabel: item.selectedSizeLabel,
+    const simplifiedCart = validatedCart.items.map((item) => ({
+      productId: item.productId,
+      sizeId: item.sizeId,
+      sizeLabel: item.sizeLabel,
       quantity: item.quantity,
     }));
 
@@ -69,7 +80,7 @@ export async function POST(req: Request) {
       mode: "payment",
       payment_method_types: ["card"],
 
-      customer_email: user?.email ?? undefined,
+      customer_email: user.email ?? undefined,
 
       line_items,
 
@@ -84,7 +95,7 @@ export async function POST(req: Request) {
       billing_address_collection: "auto",
 
       metadata: {
-        userId: user?.id || "",
+        userId: user.id,
         cart: JSON.stringify(simplifiedCart),
       },
 

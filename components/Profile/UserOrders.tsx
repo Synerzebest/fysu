@@ -107,7 +107,9 @@ export default function UserOrders() {
 
             const created = order.createdAt ?? "";
             const createdLabel = created
-              ? format.dateTime(new Date(created), "medium")
+              ? format.dateTime(new Date(created), {
+                  dateStyle: "medium",
+                })
               : "";
 
             return (

@@ -37,11 +37,14 @@ export default function CheckoutClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           cart,
-          user: { id: user.id },
         }),
       });
 
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || t("genericError"));
+      }
 
       if (data.url) {
         window.location.href = data.url;
