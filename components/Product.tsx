@@ -4,9 +4,12 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import { Heart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ProductType } from "@/types/product"
 import { motion, useMotionValue, animate } from "framer-motion"
 import { useTranslations } from "next-intl"
+
+const IMAGE_CLICK_THRESHOLD = 8
 
 const Product = ({
   product,
@@ -18,9 +21,12 @@ const Product = ({
   isFirst?: boolean
 }) => {
   const t = useTranslations("Product")
+  const router = useRouter()
   const [liked, setLiked] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [isInView, setIsInView] = useState(false)
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
+  const dragIntentRef = useRef(false)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -110,6 +116,42 @@ const Product = ({
 
   const hasAnimatedRef = useRef(false)
 
+  const goToProduct = () => {
+    router.push(`/product/${product.slug}`)
+  }
+
+  const resetGesture = () => {
+    pointerStartRef.current = null
+    dragIntentRef.current = false
+  }
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY }
+    dragIntentRef.current = false
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointerStartRef.current) return
+
+    const deltaX = Math.abs(e.clientX - pointerStartRef.current.x)
+    const deltaY = Math.abs(e.clientY - pointerStartRef.current.y)
+
+    if (deltaX > IMAGE_CLICK_THRESHOLD || deltaY > IMAGE_CLICK_THRESHOLD) {
+      dragIntentRef.current = true
+    }
+  }
+
+  const handlePointerUp = () => {
+    if (!pointerStartRef.current) return
+
+    const shouldNavigate = !dragIntentRef.current
+    resetGesture()
+
+    if (shouldNavigate) {
+      goToProduct()
+    }
+  }
+
   useEffect(() => {
     if (!isFirst) return
     if (!isInView) return
@@ -171,9 +213,14 @@ const Product = ({
             left: -(trackWidth * (images.length - 1)),
           }}
           dragElastic={0.05}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={resetGesture}
           onTouchStart={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
           onDragStart={() => {
+            dragIntentRef.current = true
+
             if (scrollRef?.current) {
               scrollRef.current.style.overflowX = "hidden"
             }
@@ -200,6 +247,8 @@ const Product = ({
               stiffness: 400,
               damping: 40,
             })
+
+            resetGesture()
           }}
         >
           {images.map((src, index) => (
