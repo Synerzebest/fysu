@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { CartProvider } from "@/context/CartContext";
 import { Libre_Baskerville } from "next/font/google"
 import { Playfair_Display } from 'next/font/google';
+import { Tenor_Sans } from "next/font/google";
 import CookieBanner from "@/components/CookieBanner";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -18,6 +19,13 @@ const libreBaskerville = Libre_Baskerville({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-libre-baskerville",
+  display: "swap",
+})
+
+const tenorSans = Tenor_Sans({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-tenor",
   display: "swap",
 })
 //import AuthProvider from "@/components/AuthProvider";
@@ -36,7 +44,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${libreBaskerville.variable} ${playfair.variable}`}>
+    <html lang={locale} className={`${libreBaskerville.variable} ${playfair.variable} ${tenorSans.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{

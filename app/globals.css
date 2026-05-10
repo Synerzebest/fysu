@@ -28,21 +28,21 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: monospace;
 }
 
 .font-body {
-  font-family: var(--font-libre-baskerville), serif;
+  font-family: var(--font-libre-baskerville), sans-serif;
 }
 
 .font-dior {
-  font-family: var(--font-playfair), serif;
+  font-family: var(--font-tenor), serif;
   letter-spacing: .5px;
 }
 
 .font-pagetitle {
-  font-family: var(--font-libre-baskerville), serif;
-  font-weight: 0;
+  font-family: var(--font-tenor), sans-serif;
+  font-weight: 400;
   letter-spacing: -0.02em;
 }
 
