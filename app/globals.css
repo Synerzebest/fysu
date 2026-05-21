@@ -37,7 +37,7 @@
 
 .font-dior {
   font-family: var(--font-tenor), serif;
-  letter-spacing: .5px;
+  letter-spacing: -.5px;
 }
 
 .font-pagetitle {

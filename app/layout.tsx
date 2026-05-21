@@ -32,7 +32,7 @@ const tenorSans = Tenor_Sans({
 
 export const metadata: Metadata = {
   title: "Fysu",
-  description: "Fysu | the favorite brand of your favorite brand",
+  description: "Fysu",
 };
 
 export default async function RootLayout({

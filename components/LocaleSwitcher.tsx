@@ -1,6 +1,5 @@
 "use client";
 
-import { Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useTransition } from "react";
@@ -30,7 +29,6 @@ export default function LocaleSwitcher() {
 
   return (
     <label className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em]">
-      <Languages size={14} aria-hidden="true" />
       <span className="sr-only">{t("label")}</span>
       <select
         value={locale}
