@@ -34,8 +34,6 @@ export default function ProductFilters({
           onClick={() => setOpen(true)}
           className="
             flex items-center gap-2
-            border border-neutral-300
-            px-5 py-2
             text-xs uppercase tracking-[0.25em]
             bg-transparent cursor-pointer
             transition-all duration-300

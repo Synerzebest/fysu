@@ -11,11 +11,41 @@ import {
   Select,
   Upload,
   Image,
-  Card,
-  Space,
+  Popconfirm,
+  Tooltip,
+  Empty,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, SwapOutlined } from "@ant-design/icons";
 import { ProductType } from "../../../types/product";
+
+type ColorSet = {
+  color: string;
+  images: { id?: number; url: string }[];
+};
+
+type SizeState = {
+  id?: string;
+  size: string;
+  stock: number;
+  is_active: boolean;
+  display_order: number;
+};
+
+type InfoBlockState = {
+  id?: string;
+  image_url: string | null;
+  title: string;
+  subtitle: string;
+  content: string;
+};
+
+type ProductEditPayload = ProductType & {
+  sizes: SizeState[];
+  images: { url: string; color: string }[];
+  colors: number;
+  info_blocks: InfoBlockState[];
+  suggested_product_ids: number[];
+};
 
 type Props = {
   open: boolean;
@@ -23,7 +53,7 @@ type Props = {
   products: ProductType[];
   categories: { id: number; name: string }[];
   onClose: () => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: ProductEditPayload) => void;
 };
 
 export default function ProductEditModal({
@@ -36,23 +66,11 @@ export default function ProductEditModal({
 }: Props) {
   const [form] = Form.useForm();
 
-  const [infoBlocks, setInfoBlocks] = useState<
-    {
-      id?: string;
-      image_url: string | null;
-      title: string;
-      subtitle: string;
-      content: string;
-    }[]
-  >([]);
+  const [infoBlocks, setInfoBlocks] = useState<InfoBlockState[]>([]);
 
-  const [sizes, setSizes] = useState<
-    { id?: string; size: string; stock: number; is_active: boolean; display_order: number }[]
-  >([]);
+  const [sizes, setSizes] = useState<SizeState[]>([]);
 
-  const [colorSets, setColorSets] = useState<
-    { color: string; images: { id?: number; url: string }[] }[]
-  >([]);
+  const [colorSets, setColorSets] = useState<ColorSet[]>([]);
   const [sizeGuideImageUrl, setSizeGuideImageUrl] = useState<string | null>(null);
 
   const [suggestedProducts, setSuggestedProducts] =
@@ -68,25 +86,28 @@ export default function ProductEditModal({
       price: Number(product.price),
     });
 
+    const productSizes = (product.product_sizes || []) as Array<
+      ProductType["product_sizes"][number] & { display_order?: number | null }
+    >;
+
     setSizes(
-      (product.product_sizes || []).map((s: any, index: number) => ({
+      productSizes.map((s, index) => ({
         ...s,
         display_order: s.display_order ?? index
-      }))
+      } as SizeState))
     );
 
-    const grouped: { color: string; images: { id?: number; url: string }[] }[] =
+    const grouped: ColorSet[] =
     Object.values(
       (product.product_images || []).reduce(
-        (
-          acc: Record<string, { color: string; images: { id?: number; url: string }[] }>,
-          img: any
-        ) => {
-          if (!acc[img.color]) {
-            acc[img.color] = { color: img.color, images: [] };
+        (acc: Record<string, ColorSet>, img) => {
+          const color = img.color || "#000000";
+
+          if (!acc[color]) {
+            acc[color] = { color, images: [] };
           }
   
-          acc[img.color].images.push({
+          acc[color].images.push({
             id: img.id,
             url: img.url,
           });
@@ -100,7 +121,7 @@ export default function ProductEditModal({
     setColorSets(grouped);
 
     setInfoBlocks(
-      (product.product_info_blocks || []).map((b: any) => ({
+      (product.product_info_blocks || []).map((b) => ({
         id: b.id,
         image_url: b.image_url,
         title: b.title,
@@ -111,13 +132,11 @@ export default function ProductEditModal({
     setSizeGuideImageUrl(product.size_guide_image_url ?? null)
 
     setSuggestedProducts(
-      product.product_suggestions?.map((p: any) => p.id) ?? []
+      product.product_suggestions?.map((p) => p.id) ?? []
     );
   }, [product, form]);
 
   /* ================= IMAGE UPLOAD ================= */
-
-  const [uploading, setUploading] = useState(false);
 
   // Size guide image upload
   const handleSizeGuideUpload = async (file: File) => {
@@ -129,8 +148,6 @@ export default function ProductEditModal({
     }
   
     try {
-      setUploading(true);
-  
       const formData = new FormData();
       formData.append("file", file);
       formData.append("productId", product.id.toString());
@@ -154,8 +171,6 @@ export default function ProductEditModal({
   
     } catch (err) {
       console.error(err);
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -166,7 +181,7 @@ export default function ProductEditModal({
 
     if (!product) return;
   
-    const color = colorSets[colorIndex].color;
+    const color = normalizeColor(colorSets[colorIndex].color);
   
     const formData = new FormData();
     formData.append("file", file);
@@ -194,15 +209,78 @@ export default function ProductEditModal({
     setColorSets(updated);
   };
 
+  const normalizeColor = (color: string) =>
+    color.trim().toLowerCase() || "#000000";
+
+  const getColorPickerValue = (color: string) =>
+    /^#[0-9a-f]{6}$/i.test(color.trim()) ? color.trim() : "#000000";
+
+  const updateColor = (colorIndex: number, color: string) => {
+    setColorSets((current) =>
+      current.map((set, index) =>
+        index === colorIndex ? { ...set, color } : set
+      )
+    );
+  };
+
+  const removeColor = (colorIndex: number) => {
+    setColorSets((current) => current.filter((_, index) => index !== colorIndex));
+  };
+
+  const removeImage = (colorIndex: number, imageIndex: number) => {
+    setColorSets((current) =>
+      current.map((set, index) => {
+        if (index !== colorIndex) return set;
+
+        return {
+          ...set,
+          images: set.images.filter((_, imgIndex) => imgIndex !== imageIndex),
+        };
+      })
+    );
+  };
+
+  const moveImage = (
+    fromColorIndex: number,
+    imageIndex: number,
+    toColorIndex: number
+  ) => {
+    if (fromColorIndex === toColorIndex) return;
+
+    setColorSets((current) => {
+      const image = current[fromColorIndex]?.images[imageIndex];
+      if (!image) return current;
+
+      return current.map((set, index) => {
+        if (index === fromColorIndex) {
+          return {
+            ...set,
+            images: set.images.filter((_, imgIndex) => imgIndex !== imageIndex),
+          };
+        }
+
+        if (index === toColorIndex) {
+          return {
+            ...set,
+            images: [...set.images, image],
+          };
+        }
+
+        return set;
+      });
+    });
+  };
+
   /* ================= SUBMIT ================= */
 
-  const handleFinish = (values: any) => {
+  const handleFinish = (values: Record<string, unknown>) => {
     if (!product) return;
 
+    const colorSetsWithImages = colorSets.filter((set) => set.images.length > 0);
     const images = colorSets.flatMap((set) =>
       set.images.map((img) => ({
         url: img.url,
-        color: set.color,
+        color: normalizeColor(set.color),
       }))
     );
 
@@ -212,6 +290,7 @@ export default function ProductEditModal({
       price: Number(values.price),
       sizes,
       images,
+      colors: colorSetsWithImages.length,
       info_blocks: infoBlocks,
       size_guide_image_url: sizeGuideImageUrl,
       suggested_product_ids: suggestedProducts,
@@ -264,6 +343,7 @@ export default function ProductEditModal({
               {sizeGuideImageUrl && (
                 <img
                   src={sizeGuideImageUrl}
+                  alt="Guide des tailles"
                   className="w-48 rounded-lg border"
                 />
               )}
@@ -326,58 +406,128 @@ export default function ProductEditModal({
           <div className="flex flex-col gap-6">
 
           {colorSets.map((set, colorIndex) => (
-            <Card key={colorIndex} className="w-full">
+            <div
+              key={colorIndex}
+              className="w-full rounded-xl border border-neutral-200 bg-white p-4"
+            >
 
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
 
-                <input
-                  type="color"
-                  value={set.color}
-                  onChange={(e) => {
-                    const updated = [...colorSets];
-                    updated[colorIndex].color = e.target.value;
-                    setColorSets(updated);
-                  }}
-                />
+                <div className="flex flex-wrap items-center gap-3">
+                  <input
+                    type="color"
+                    value={getColorPickerValue(set.color)}
+                    onChange={(e) => updateColor(colorIndex, e.target.value)}
+                    className="h-9 w-12 cursor-pointer rounded border border-neutral-200"
+                  />
 
-                <span>{set.color}</span>
+                  <Input
+                    value={set.color}
+                    onChange={(e) => updateColor(colorIndex, e.target.value)}
+                    className="w-32"
+                    aria-label="Code couleur"
+                  />
 
-                <Button
-                  danger
-                  size="small"
-                  onClick={() => {
-                    const updated = [...colorSets];
-                    updated.splice(colorIndex, 1);
-                    setColorSets(updated);
-                  }}
-                >
-                  Supprimer couleur
-                </Button>
+                  <span className="text-xs text-neutral-500">
+                    {set.images.length} image{set.images.length > 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Upload
+                    multiple
+                    showUploadList={false}
+                    beforeUpload={(file) => {
+                      handleProductImageUpload(file, colorIndex);
+                      return false;
+                    }}
+                  >
+                    <Button
+                      size="small"
+                      type="dashed"
+                      icon={<PlusOutlined />}
+                    >
+                      Ajouter images
+                    </Button>
+                  </Upload>
+
+                  <Popconfirm
+                    title="Supprimer cette couleur ?"
+                    description="Les images de cette couleur seront retirées du produit au prochain enregistrement."
+                    okText="Supprimer"
+                    cancelText="Annuler"
+                    okButtonProps={{ danger: true }}
+                    onConfirm={() => removeColor(colorIndex)}
+                  >
+                    <Button
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                    >
+                      Supprimer couleur
+                    </Button>
+                  </Popconfirm>
+                </div>
 
               </div>
 
-              <Space wrap>
-                {set.images.map((img, imgIndex) => (
-                  <Card
-                    key={imgIndex}
-                    cover={<Image src={img.url} className="h-40 object-cover" />}
-                  />
-                ))}
+              {set.images.length === 0 ? (
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="Aucune image pour cette couleur"
+                />
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {set.images.map((img, imgIndex) => (
+                    <div
+                      key={`${img.url}-${imgIndex}`}
+                      className="rounded-xl border border-neutral-200 bg-neutral-50 p-2"
+                    >
+                      <Image
+                        src={img.url}
+                        alt={`Image ${imgIndex + 1} - ${set.color}`}
+                        className="h-36 w-full rounded-lg object-cover"
+                      />
 
-                <Upload
-                  showUploadList={false}
-                  beforeUpload={(file) => {
-                    handleProductImageUpload(file, colorIndex);
-                    return false;
-                  }}
-                >
-                  <Card className="w-32 h-40 flex items-center justify-center border-dashed">
-                    <PlusOutlined />
-                  </Card>
-                </Upload>
-              </Space>
+                      <div className="mt-3 flex items-center gap-2">
+                        <Tooltip title="Déplacer vers une autre couleur">
+                          <Select
+                            size="small"
+                            value={colorIndex}
+                            suffixIcon={<SwapOutlined />}
+                            className="min-w-0 flex-1"
+                            options={colorSets.map((colorSet, index) => ({
+                              value: index,
+                              label: colorSet.color,
+                              disabled: index === colorIndex,
+                            }))}
+                            onChange={(targetIndex) =>
+                              moveImage(colorIndex, imgIndex, targetIndex)
+                            }
+                          />
+                        </Tooltip>
 
-            </Card>
+                        <Popconfirm
+                          title="Supprimer cette image ?"
+                          description="Elle sera retirée du produit au prochain enregistrement."
+                          okText="Supprimer"
+                          cancelText="Annuler"
+                          okButtonProps={{ danger: true }}
+                          onConfirm={() => removeImage(colorIndex, imgIndex)}
+                        >
+                          <Button
+                            danger
+                            size="small"
+                            icon={<DeleteOutlined />}
+                          />
+                        </Popconfirm>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
           ))}
 
           <Button
@@ -486,7 +636,7 @@ export default function ProductEditModal({
           <Divider />
 
           <h3 className="text-lg font-medium mb-4">
-            Blocs d'information
+            Blocs d&apos;information
           </h3>
 
           <div className="space-y-6">
@@ -534,6 +684,7 @@ export default function ProductEditModal({
                 {block.image_url && (
                   <img
                     src={block.image_url}
+                    alt={block.title || "Bloc d'information"}
                     className="w-48 rounded-lg border"
                   />
                 )}
@@ -632,6 +783,7 @@ export default function ProductEditModal({
                             p.product_images?.[0]?.url ||
                             "/placeholder.png"
                         }
+                        alt={p.name}
                         className="w-8 h-10 object-cover rounded"
                         />
                         {p.name}

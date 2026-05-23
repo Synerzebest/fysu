@@ -113,6 +113,19 @@ export default function CollectionPage() {
   }
 
   const hasHero = Boolean(page.hero_image)
+  const visibleSections = sections
+    .sort((a, b) => a.display_order - b.display_order)
+    .map((section) => {
+      const products = section.section_products
+        ?.sort((a, b) => a.display_order - b.display_order)
+        .map((sp) => sp.product)
+
+      return {
+        ...section,
+        filteredProducts: applyFilters(products ?? []),
+      }
+    })
+    .filter((section) => section.filteredProducts.length > 0)
 
 
   return (
@@ -193,22 +206,8 @@ export default function CollectionPage() {
           <>
             <ProductFilters filters={filters} setFilters={setFilters} />
 
-            {sections
-              .sort((a, b) => a.display_order - b.display_order)
-              .map((section) => {
-                const products = section.section_products
-                  ?.sort(
-                    (a, b) =>
-                      a.display_order - b.display_order
-                  )
-                  .map((sp) => sp.product)
-
-                const filteredProducts = applyFilters(
-                  products ?? []
-                )
-
-                if (filteredProducts.length === 0) return null
-
+            {visibleSections
+              .map((section, sectionIndex) => {
                 return (
                   <div key={section.id} className="mb-20">
 
@@ -234,7 +233,7 @@ export default function CollectionPage() {
                         "
                       >
 
-                        {filteredProducts.map((product, index) => (
+                        {section.filteredProducts.map((product, index) => (
                           <div
                             key={product.id}
                             className="
@@ -245,7 +244,11 @@ export default function CollectionPage() {
                               flex-shrink-0
                             "
                           >
-                            <Product product={product} scrollRef={scrollRef} isFirst={index === 0} />
+                            <Product
+                              product={product}
+                              scrollRef={scrollRef}
+                              isFirst={sectionIndex === 0 && index === 0}
+                            />
                           </div>
                         ))}
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "antd";
-import { Pencil, Trash2 } from "lucide-react";
+import { Copy, Pencil, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductType } from "@/types/product";
 import ProductEditModal from "./ProductEditModal";
@@ -12,7 +12,8 @@ type ProductTableProps = {
   categories: { id: number; name: string }[];
   loading: boolean;
   handleDelete: (id: number) => void;
-  handleUpdate: (product: any) => void;
+  handleDuplicate: (id: number) => void;
+  handleUpdate: (product: unknown) => void;
 };
 
 export default function ProductTable({
@@ -20,6 +21,7 @@ export default function ProductTable({
   categories,
   loading,
   handleDelete,
+  handleDuplicate,
   handleUpdate,
 }: ProductTableProps) {
 
@@ -69,6 +71,7 @@ export default function ProductTable({
                         <div className="flex items-center gap-4">
                           <img
                             src={p.product_images?.[0]?.url || "/placeholder.png"}
+                            alt={p.name}
                             className="w-12 h-16 object-cover rounded-lg bg-neutral-100"
                           />
                           <div>
@@ -98,12 +101,20 @@ export default function ProductTable({
                         <div className="flex justify-end gap-2">
                           <Button
                             type="text"
+                            title="Dupliquer"
+                            icon={<Copy size={16} />}
+                            onClick={() => handleDuplicate(p.id)}
+                          />
+                          <Button
+                            type="text"
+                            title="Modifier"
                             icon={<Pencil size={16} />}
                             onClick={() => handleOpenEdit(p)}
                           />
                           <Button
                             type="text"
                             danger
+                            title="Supprimer"
                             icon={<Trash2 size={16} />}
                             onClick={() => handleDelete(p.id)}
                           />
@@ -127,6 +138,7 @@ export default function ProductTable({
               >
                 <img
                   src={p.product_images?.[0]?.url || "/placeholder.png"}
+                  alt={p.name}
                   className="w-16 h-20 object-cover rounded-lg"
                 />
 
@@ -140,12 +152,20 @@ export default function ProductTable({
                 <div className="flex flex-col justify-center gap-2">
                   <Button
                     type="text"
+                    title="Dupliquer"
+                    icon={<Copy size={16} />}
+                    onClick={() => handleDuplicate(p.id)}
+                  />
+                  <Button
+                    type="text"
+                    title="Modifier"
                     icon={<Pencil size={16} />}
                     onClick={() => handleOpenEdit(p)}
                   />
                   <Button
                     type="text"
                     danger
+                    title="Supprimer"
                     icon={<Trash2 size={16} />}
                     onClick={() => handleDelete(p.id)}
                   />

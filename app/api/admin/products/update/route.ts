@@ -1,9 +1,47 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
+type ProductSizeInput = {
+  size: string;
+  stock: number;
+  is_active: boolean;
+  display_order: number;
+};
+
+type ProductImageInput = {
+  url: string;
+  color: string;
+};
+
+type ProductInfoBlockInput = {
+  image_url: string | null;
+  title: string;
+  subtitle: string;
+  content: string;
+};
+
+type ProductUpdatePayload = {
+  id?: number;
+  name?: string;
+  description?: string;
+  details?: string;
+  size_fit?: string;
+  price?: number;
+  category_id?: number | null;
+  gender?: string;
+  colors?: number;
+  images?: ProductImageInput[];
+  care_instructions?: string;
+  shipping?: string;
+  size_guide_image_url?: string | null;
+  sizes?: ProductSizeInput[];
+  info_blocks?: ProductInfoBlockInput[];
+  suggested_product_ids?: number[];
+};
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = (await req.json()) as ProductUpdatePayload;
 
     const {
       id,
@@ -14,6 +52,7 @@ export async function POST(req: Request) {
       price,
       category_id,
       gender,
+      colors,
       images,
       care_instructions,
       shipping,
@@ -42,6 +81,7 @@ export async function POST(req: Request) {
         price,
         category_id,
         gender,
+        colors,
         care_instructions,
         shipping,
         size_guide_image_url,
@@ -63,7 +103,7 @@ export async function POST(req: Request) {
       .eq("product_id", id);
 
     if (sizes?.length) {
-      const formattedSizes = sizes.map((s: any) => ({
+      const formattedSizes = sizes.map((s) => ({
         product_id: id,
         size: s.size,
         stock: s.stock,
@@ -92,8 +132,8 @@ export async function POST(req: Request) {
 
     if (images?.length) {
       const formattedImages = images
-        .filter((img: any) => img.url && img.color)
-        .map((img: any) => ({
+        .filter((img) => img.url && img.color)
+        .map((img) => ({
           productId: id,
           url: img.url,
           color: img.color
@@ -120,7 +160,7 @@ export async function POST(req: Request) {
 
     if (info_blocks?.length) {
       const formattedBlocks = info_blocks.map(
-        (block: any, index: number) => ({
+        (block, index) => ({
           product_id: id,
           image_url: block.image_url,
           title: block.title,
